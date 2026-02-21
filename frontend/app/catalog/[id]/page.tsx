@@ -64,7 +64,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         </h1>
 
                         <div className="flex items-center gap-4 mb-8">
-                            <div className="text-5xl font-black text-foreground tracking-tighter">${product.price}</div>
+                            <div className="text-4xl font-semibold text-foreground tracking-tight">${product.price}</div>
                             <div className="h-8 w-[1px] bg-border/40" />
                             <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-tight">
                                 IVA INCLUIDO <br /> RECIÉN HORNEADO

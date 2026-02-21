@@ -61,7 +61,7 @@ export const ProductCard = ({
                 <div className="flex items-center justify-between gap-4 mt-auto mb-8 bg-muted/20 p-4 rounded-3xl border border-border/30">
                     <div className="flex flex-col">
                         <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Precio</span>
-                        <span className="text-3xl font-black text-foreground tracking-tighter">${product.price}</span>
+                        <span className="text-2xl font-semibold text-foreground tracking-tight">${product.price}</span>
                     </div>
 
                     <div className="h-10 w-[1px] bg-border/40 invisible sm:visible" />
