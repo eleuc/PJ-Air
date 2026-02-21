@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@import "./styles/theme.css";
+@import "./styles/animations.css";
+@import "./styles/base.css";
+
+/* Tailwind 4 theme overrides */
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --font-sans: "Inter", "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --font-serif: "Inter", "Geist Sans", sans-serif;
+  /* Replaced serif with sans-serif */
+  /* Fallback for now if serif not loaded */
+
+  --radius-xl: var(--radius-xl);
+  --shadow-premium: var(--shadow-premium);
+}
+
+/* Custom global styles that don't fit in layers */
+* {
+  @apply border-border;
+}
+
+body {
+  font-family: var(--font-geist-sans), sans-serif;
+}

@@ -1,0 +1,51 @@
+:root {
+    /* Brand Colors - Gray/Slate Palette */
+    --color-primary: #18181b;
+    /* Zinc 900 */
+    --color-primary-foreground: #ffffff;
+    --color-secondary: #f4f4f5;
+    /* Zinc 100 */
+    --color-secondary-foreground: #09090b;
+    /* Zinc 950 */
+    --color-accent: #3f3f46;
+    /* Zinc 700 */
+    --color-accent-foreground: #ffffff;
+
+    /* UI Colors */
+    --background: #fafafa;
+    --foreground: #09090b;
+    --card: #ffffff;
+    --card-foreground: #09090b;
+    --popover: #ffffff;
+    --popover-foreground: #09090b;
+    --muted: #f4f4f5;
+    --muted-foreground: #52525b;
+    /* Zinc 600 */
+    --border: #e4e4e7;
+    /* Zinc 200 */
+    --input: #e4e4e7;
+    --ring: #18181b;
+
+    /* Radius */
+    --radius: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+
+    /* Shadows */
+    --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+}
+
+.dark {
+    --background: #09090b;
+    --foreground: #fafafa;
+    --card: #18181b;
+    --card-foreground: #fafafa;
+    --popover: #18181b;
+    --popover-foreground: #fafafa;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --border: #27272a;
+    --input: #27272a;
+    --primary: #fafafa;
+    --primary-foreground: #09090b;
+}
