@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/layout/Navbar';
 import { CheckCircle2, Package, Calendar, Clock, MapPin, ChevronRight, ShoppingBag, Receipt } from 'lucide-react';
 import Link from 'next/link';
 

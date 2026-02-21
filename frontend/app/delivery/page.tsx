@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/layout/Navbar';
 import { Truck, MapPin, Camera, CheckCircle2, Navigation, Clock, Phone, ChevronRight, Map as MapIcon, Loader2 } from 'lucide-react';
 
 export default function DeliveryPanel() {

@@ -32,7 +32,7 @@ export default function RegisterPage() {
 
         setTimeout(() => {
             setIsLoading(false);
-            router.push('/');
+            router.push('/profile/addresses/new');
         }, 1500);
     };
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/layout/Navbar';
 import { Calendar, MapPin, CreditCard, ChevronRight, ShoppingBag, Info } from 'lucide-react';
 
 export default function CheckoutPage() {

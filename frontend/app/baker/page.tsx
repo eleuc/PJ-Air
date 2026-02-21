@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/layout/Navbar';
 import { Package, Clock, CheckCircle2, Eye, Filter, Search, ChevronDown, ListFilter, AlertCircle } from 'lucide-react';
 
 const STATUS_OPTIONS = ['Pedido', 'En Producción', 'Finalizado', 'En Entrega', 'Entregado'];

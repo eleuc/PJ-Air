@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/layout/Navbar';
 import { Package, Truck, CheckCircle2, AlertCircle, Clock, Eye, MessageSquareQuote } from 'lucide-react';
 
 const MOCK_CLIENT_ORDERS = [

@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { MapPin, Search, ChevronRight, Navigation, Loader2, Map as MapIcon, RotateCcw } from 'lucide-react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/layout/Navbar';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 
 const ZONES = ['Norte', 'Sur', 'Este', 'Oeste', 'Centro'];

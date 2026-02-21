@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/layout/Navbar';
 import { MapPin, Plus, Trash2, Home, Briefcase, Map as MapIcon, ChevronRight } from 'lucide-react';
 
 const MOCK_ZONES = ['Norte', 'Sur', 'Este', 'Oeste', 'Centro'];
