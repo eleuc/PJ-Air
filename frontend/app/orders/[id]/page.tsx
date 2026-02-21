@@ -119,7 +119,7 @@ export default function OrderConfirmationPage({ params }: { params: { id: string
                                 <Link href="/orders" className="w-full flex items-center justify-center gap-2 py-4 bg-muted hover:bg-border transition-all rounded-2xl font-bold text-sm">
                                     <Receipt size={18} /> Ver Mis Pedidos
                                 </Link>
-                                <Link href="/catalog" className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-white rounded-2xl font-bold text-sm shadow-xl hover:bg-black transition-all group">
+                                <Link href="/" className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-white rounded-2xl font-bold text-sm shadow-xl hover:bg-black transition-all group">
                                     Seguir Comprando <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
                             </div>

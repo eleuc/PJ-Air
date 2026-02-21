@@ -56,6 +56,7 @@ export default function NewAddressPage() {
     }, []);
 
     const reverseGeocode = (pos: { lat: number, lng: number }) => {
+        if (typeof google === 'undefined') return;
         const geocoder = new google.maps.Geocoder();
         geocoder.geocode({ location: pos }, (results, status) => {
             if (status === 'OK' && results && results[0]) {
@@ -70,7 +71,7 @@ export default function NewAddressPage() {
         // After adding address, go to catalog
         setTimeout(() => {
             setIsLoading(false);
-            router.push('/catalog');
+            router.push('/');
         }, 1200);
     };
 
@@ -183,7 +184,7 @@ export default function NewAddressPage() {
                                                     reverseGeocode(newPos);
                                                 }
                                             }}
-                                            animation={google.maps.Animation.DROP}
+                                            animation={typeof google !== 'undefined' ? google.maps.Animation.DROP : undefined}
                                         />
                                     </GoogleMap>
                                 ) : (

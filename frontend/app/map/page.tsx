@@ -62,7 +62,7 @@ const FLOW_NODES: FlowSection[] = [
         id: 'core',
         title: 'Exploración',
         children: [
-            { title: 'Catálogo', icon: <Search size={18} />, href: '/catalog' },
+            { title: 'Catálogo', icon: <Search size={18} />, href: '/' },
             { title: 'Detalle Producto', icon: <Star size={18} />, href: '/catalog/1' }
         ]
     },
