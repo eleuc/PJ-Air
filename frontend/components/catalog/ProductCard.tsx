@@ -30,11 +30,11 @@ export const ProductCard = ({
 }: ProductCardProps) => {
     return (
         <div 
-            className="group jhoanes-card bg-white/40 p-8 border-transparent hover:border-primary/10 hover:bg-white animate-slide-in flex flex-col h-full"
+            className="group jhoanes-card bg-white/40 p-6 border-transparent hover:border-primary/10 hover:bg-white animate-slide-in flex flex-col h-full"
             style={{ animationDelay }}
         >
             {/* Image Section */}
-            <Link href={`/catalog/${product.id}`} className="relative w-full mb-8 overflow-hidden rounded-[2.5rem] aspect-square bg-muted/30 flex items-center justify-center">
+            <Link href={`/catalog/${product.id}`} className="relative w-full mb-5 overflow-hidden rounded-[2.5rem] aspect-square bg-muted/30 flex items-center justify-center">
                 <img
                     src={product.image}
                     alt={product.name}
@@ -52,13 +52,13 @@ export const ProductCard = ({
 
             {/* Info Section */}
             <div className="flex-1 flex flex-col">
-                <div className="flex items-center gap-2 mb-4">
+                <div className="flex items-center gap-2 mb-3">
                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/60 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10">{product.category}</span>
                 </div>
-                <h3 className="text-2xl font-bold font-serif mb-4 tracking-tighter group-hover:text-primary transition-colors leading-tight">{product.name}</h3>
+                <h3 className="text-2xl font-bold font-serif mb-3 tracking-tighter group-hover:text-primary transition-colors leading-tight">{product.name}</h3>
                 
                 {/* Price and Quantity Side by Side */}
-                <div className="flex items-center justify-between gap-4 mt-auto mb-8 bg-muted/20 p-4 rounded-3xl border border-border/30">
+                <div className="flex items-center justify-between gap-4 mt-auto mb-5 bg-muted/20 p-4 rounded-3xl border border-border/30">
                     <div className="flex flex-col">
                         <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Precio</span>
                         <span className="text-2xl font-semibold text-foreground tracking-tight">${product.price}</span>

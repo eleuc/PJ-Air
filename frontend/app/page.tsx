@@ -59,7 +59,7 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 px-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-6 px-2">
                     {filteredProducts.map((product, idx) => {
                         const isInCart = cart.find(item => item.id === product.id)?.quantity;
                         const isJustAdded = addedIds.includes(product.id);
