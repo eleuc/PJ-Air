@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/layout/Navbar';
 import { useCart } from '@/context/CartContext';
 import { PRODUCTS, Product } from '@/lib/products';
 import { ProductCard } from '@/components/catalog/ProductCard';

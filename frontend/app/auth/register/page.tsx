@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, ArrowRight, Loader2, Phone } from 'lucide-react';
+import { User } from 'lucide-react';
+import { RegisterForm } from '@/components/auth/RegisterForm';
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -29,11 +30,9 @@ export default function RegisterPage() {
 
         setIsLoading(true);
 
-        // Simulate API call
         setTimeout(() => {
             setIsLoading(false);
-            // As per wireframe: "Cuando crea la cuenta es enviado a Agregar Nueva Dirección"
-            router.push('/profile/addresses/new');
+            router.push('/');
         }, 1500);
     };
 
@@ -48,120 +47,13 @@ export default function RegisterPage() {
                     <p className="text-muted-foreground font-medium">Crea tu cuenta para gestionar tus pedidos personalizados</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-8">
-                    {error && (
-                        <div className="p-4 bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-xl animate-fade-in text-center">
-                            {error}
-                        </div>
-                    )}
-
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Nombre Completo</label>
-                            <div className="relative">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
-                                <input
-                                    required
-                                    type="text"
-                                    placeholder="Ej: Juan Pérez"
-                                    className="premium-input pl-12"
-                                    value={formData.full_name}
-                                    onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Nombre de Usuario</label>
-                            <div className="relative">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 text-[10px] font-bold">@</div>
-                                <input
-                                    required
-                                    type="text"
-                                    placeholder="usuario123"
-                                    className="premium-input pl-12"
-                                    value={formData.username}
-                                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Email</label>
-                            <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
-                                <input
-                                    required
-                                    type="email"
-                                    placeholder="juan@ejemplo.com"
-                                    className="premium-input pl-12"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Teléfono</label>
-                            <div className="relative">
-                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
-                                <input
-                                    required
-                                    type="tel"
-                                    placeholder="Ej: +51 987 654 321"
-                                    className="premium-input pl-12"
-                                    value={formData.phone}
-                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-3 invisible md:visible">
-                            {/* Spacer for grid alignment */}
-                        </div>
-
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Contraseña</label>
-                            <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
-                                <input
-                                    required
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className="premium-input pl-12"
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Confirmar Contraseña</label>
-                            <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
-                                <input
-                                    required
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className="premium-input pl-12"
-                                    value={formData.confirm_password}
-                                    onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="pt-4">
-                        <button
-                            disabled={isLoading}
-                            className="w-full premium-button jhoanes-gradient text-white text-sm uppercase tracking-widest py-4 flex items-center justify-center gap-3"
-                        >
-                            {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
-                                <>Crear mi cuenta <ArrowRight size={20} /></>
-                            )}
-                        </button>
-                    </div>
-                </form>
+                <RegisterForm 
+                    formData={formData}
+                    setFormData={setFormData}
+                    onSubmit={handleSubmit}
+                    isLoading={isLoading}
+                    error={error}
+                />
 
                 <div className="mt-12 pt-8 border-t border-border/40 text-center">
                     <p className="text-sm text-muted-foreground font-medium">

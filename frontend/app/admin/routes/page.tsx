@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import AdminSidebar from '@/components/AdminSidebar';
+import AdminSidebar from '@/components/layout/AdminSidebar';
 import { Truck, Calendar, Clock, Plus, Edit2, Trash2, MapPin, Search, ChevronRight } from 'lucide-react';
 
 const MOCK_TRANSPORTS = [

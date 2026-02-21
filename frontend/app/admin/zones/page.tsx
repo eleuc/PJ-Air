@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import AdminSidebar from '@/components/AdminSidebar';
+import AdminSidebar from '@/components/layout/AdminSidebar';
 import { MapPin, Plus, Edit2, Trash2, Search, Globe, ChevronRight } from 'lucide-react';
 
 const MOCK_ZONES = [

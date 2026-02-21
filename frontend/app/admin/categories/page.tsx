@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import AdminSidebar from '@/components/AdminSidebar';
+import AdminSidebar from '@/components/layout/AdminSidebar';
 import { Plus, Edit2, Trash2, Folder, Search, ChevronRight } from 'lucide-react';
 
 const INITIAL_CATEGORIES = [

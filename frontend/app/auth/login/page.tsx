@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, LogIn, Loader2, ArrowRight, User } from 'lucide-react';
+import { LogIn } from 'lucide-react';
+import { LoginForm } from '@/components/auth/LoginForm';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -15,11 +16,9 @@ export default function LoginPage() {
         e.preventDefault();
         setIsLoading(true);
 
-        // Simulate Login
         setTimeout(() => {
             setIsLoading(false);
-            // As per wireframe: "Después de logueado va a Catálogo de producto"
-            router.push('/catalog');
+            router.push('/');
         }, 1500);
     };
 
@@ -34,51 +33,14 @@ export default function LoginPage() {
                     <p className="text-muted-foreground font-medium">Delicias frescas te están esperando</p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-8">
-                    <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1 text-foreground/70">Nombre de Usuario o Email</label>
-                        <div className="relative">
-                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
-                            <input
-                                required
-                                type="text"
-                                placeholder="tu@correo.com o usuario"
-                                className="premium-input pl-12 h-14"
-                                value={identifier}
-                                onChange={(e) => setIdentifier(e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center ml-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest text-foreground/70">Contraseña</label>
-                            <button type="button" className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">¿Olvidaste tu contraseña?</button>
-                        </div>
-                        <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
-                            <input
-                                required
-                                type="password"
-                                placeholder="••••••••"
-                                className="premium-input pl-12 h-14"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="pt-4">
-                        <button
-                            disabled={isLoading}
-                            className="w-full premium-button jhoanes-gradient text-white text-sm uppercase tracking-widest py-4 flex items-center justify-center gap-3"
-                        >
-                            {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
-                                <>Ingresar <ArrowRight size={20} /></>
-                            )}
-                        </button>
-                    </div>
-                </form>
+                <LoginForm 
+                    identifier={identifier}
+                    setIdentifier={setIdentifier}
+                    password={password}
+                    setPassword={setPassword}
+                    onSubmit={handleLogin}
+                    isLoading={isLoading}
+                />
 
                 <div className="mt-12 pt-8 border-t border-border/40 text-center">
                     <p className="text-sm text-muted-foreground font-medium">

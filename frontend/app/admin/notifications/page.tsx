@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import AdminSidebar from '@/components/AdminSidebar';
+import AdminSidebar from '@/components/layout/AdminSidebar';
 import { Bell, Clock, Zap, Settings, Save, AlertTriangle } from 'lucide-react';
 
 export default function AdminNotificationsPage() {

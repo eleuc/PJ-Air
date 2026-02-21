@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, use } from 'react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/layout/Navbar';
 import { Plus, Minus, ShoppingCart, Star, ArrowLeft, Check, ShieldCheck, Clock, Truck } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { PRODUCTS } from '@/lib/products';
