@@ -173,13 +173,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         }`}>
                             <button
                                 onClick={() => router.push('/')}
-                                className="h-14 rounded-2xl border-2 border-border bg-card hover:border-primary/40 hover:bg-primary/5 text-foreground font-bold text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2"
+                                className="h-14 rounded-2xl border-2 border-black bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2"
                             >
                                 Seguir Comprando
                             </button>
                             <button
                                 onClick={() => router.push('/checkout')}
-                                className="h-14 rounded-2xl jhoanes-gradient text-white font-bold text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
+                                className="h-14 rounded-2xl bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
                             >
                                 Confirmar Pedido <ChevronRight size={16} />
                             </button>
