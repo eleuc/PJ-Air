@@ -31,15 +31,19 @@ export default function AdminSidebar() {
             {/* Header */}
             <div className="p-4 border-b border-border flex items-center justify-between gap-2 min-h-[72px]">
                 {!collapsed && (
-                    <Link href="/admin" className="text-xl font-bold text-primary flex items-center gap-2 flex-1 min-w-0">
+                    <button
+                        onClick={() => setCollapsed(true)}
+                        className="text-xl font-bold text-primary flex items-center gap-2 flex-1 min-w-0 text-left hover:opacity-70 transition-opacity"
+                        title="Colapsar menú"
+                    >
                         <span className="bg-primary text-white px-2 py-1 rounded-lg text-sm shrink-0">PJ</span>
                         <span className="truncate">Admin Panel</span>
-                    </Link>
+                    </button>
                 )}
                 {collapsed && (
-                    <Link href="/admin" className="mx-auto">
+                    <button onClick={() => setCollapsed(false)} className="mx-auto" title="Expandir menú">
                         <span className="bg-primary text-white px-2 py-1 rounded-lg text-sm font-bold">PJ</span>
-                    </Link>
+                    </button>
                 )}
                 <button
                     onClick={() => setCollapsed(c => !c)}
