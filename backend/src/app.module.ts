@@ -6,12 +6,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
-import { CategoriesModule } from './categories/categories.module';
 import { AddressesModule } from './addresses/addresses.module';
-import { ZonesModule } from './zones/zones.module';
-import { RoutesModule } from './routes/routes.module';
-import { NotificationsModule } from './notifications/notifications.module';
-import { PromotionsModule } from './promotions/promotions.module';
 import { DevtoolsModule } from './devtools/devtools.module';
 import { AuthModule } from './auth/auth.module';
 
@@ -37,12 +32,7 @@ import { OrderItem } from './orders/order-item.entity';
     UsersModule,
     ProductsModule,
     OrdersModule,
-    CategoriesModule,
     AddressesModule,
-    ZonesModule,
-    RoutesModule,
-    NotificationsModule,
-    PromotionsModule,
     DevtoolsModule,
     AuthModule,
   ],
