@@ -24,6 +24,11 @@ export class UsersController {
     return this.usersService.updateProfile(id, profileData);
   }
 
+  @Patch(':id/role')
+  async updateRole(@Param('id') id: string, @Body() body: { role: string }) {
+    return this.usersService.updateRole(id, body.role);
+  }
+
   @Post(':id/avatar')
   @UseInterceptors(
     FileInterceptor('file', {
