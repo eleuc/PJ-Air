@@ -50,4 +50,15 @@ export class ProductsService {
   async syncLocalProducts(products: Product[]) {
     return this.productRepository.save(products);
   }
+
+  async update(id: number, data: Partial<Product>) {
+    await this.productRepository.update(id, data);
+    return this.productRepository.findOne({ where: { id } });
+  }
+
+  async delete(id: number) {
+    const product = await this.productRepository.findOne({ where: { id } });
+    if (!product) return null;
+    return this.productRepository.remove(product);
+  }
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, UseInterceptors, UploadedFiles, Body, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Patch, Delete, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './products.service';
 
@@ -21,6 +21,21 @@ export class ProductsController {
         return this.productsService.findOne(parseInt(id));
     }
 
+    @Post()
+    async create(@Body() body: any) {
+        return this.productsService.create(body);
+    }
+
+    @Patch(':id')
+    async update(@Param('id') id: string, @Body() body: any) {
+        return this.productsService.update(parseInt(id), body);
+    }
+
+    @Delete(':id')
+    async delete(@Param('id') id: string) {
+        return this.productsService.delete(parseInt(id));
+    }
+
     @Post('upload')
     @UseInterceptors(FilesInterceptor('files'))
     async uploadProducts(
@@ -28,12 +43,9 @@ export class ProductsController {
         @Body() body: any
     ) {
         const csvFile = files.find(f => f.originalname.endsWith('.csv'));
-
         if (csvFile) {
             await this.productsService.processCSV(csvFile);
         }
-
-        // ZIP/Image processing is disabled in local mode for now
         return { message: 'Upload processed successfully' };
     }
 }
