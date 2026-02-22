@@ -1,63 +1,53 @@
 import { Injectable } from '@nestjs/common';
-import { SupabaseService } from '../supabase/supabase.service';
-const csv = require('csv-parser');
-const AdmZip = require('adm-zip');
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Product } from './product.entity';
 import { Readable } from 'stream';
+const csv = require('csv-parser');
 
 @Injectable()
 export class ProductsService {
-    constructor(private supabaseService: SupabaseService) { }
+  constructor(
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
+  ) {}
 
-    async processCSV(file: Express.Multer.File) {
-        const results: any[] = [];
-        const stream = Readable.from(file.buffer);
+  async processCSV(file: Express.Multer.File) {
+    const results: any[] = [];
+    const stream = Readable.from(file.buffer);
 
-        return new Promise((resolve, reject) => {
-            stream
-                .pipe(csv())
-                .on('data', (data: any) => results.push(data))
-                .on('end', async () => {
-                    try {
-                        const { error } = await this.supabaseService.getClient()
-                            .from('products')
-                            .upsert(results);
-                        if (error) throw error;
-                        resolve(results);
-                    } catch (e) {
-                        reject(e);
-                    }
-                });
+    return new Promise((resolve, reject) => {
+      stream
+        .pipe(csv())
+        .on('data', (data: any) => results.push(data))
+        .on('end', async () => {
+          try {
+            await this.productRepository.save(results);
+            resolve(results);
+          } catch (e) {
+            reject(e);
+          }
         });
-    }
+    });
+  }
 
-    async processZIP(file: Express.Multer.File) {
-        const zip = new AdmZip(file.buffer);
-        const zipEntries = zip.getEntries();
+  async findAll() {
+    return this.productRepository.find();
+  }
 
-        for (const entry of zipEntries) {
-            if (!entry.isDirectory) {
-                const content = entry.getData();
-                const fileName = entry.entryName;
+  async findByCategory(category: string) {
+    return this.productRepository.find({ where: { category } });
+  }
 
-                // Upload to Supabase Storage
-                const { error } = await this.supabaseService.getClient()
-                    .storage
-                    .from('product-images')
-                    .upload(fileName, content, {
-                        upsert: true,
-                        contentType: 'image/jpeg' // or determine from extension
-                    });
+  async findOne(id: number) {
+    return this.productRepository.findOne({ where: { id } });
+  }
 
-                if (error) console.error(`Error uploading ${fileName}:`, error.message);
-            }
-        }
-    }
+  async create(product: Partial<Product>) {
+    return this.productRepository.save(product);
+  }
 
-    async findAll() {
-        const { data, error } = await this.supabaseService.getClient()
-            .from('products')
-            .select('*, categories(name)');
-        if (error) throw error;
-        return data;
-    }
+  async syncLocalProducts(products: Product[]) {
+    return this.productRepository.save(products);
+  }
 }

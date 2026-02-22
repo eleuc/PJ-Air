@@ -4,22 +4,38 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LogIn } from 'lucide-react';
+import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import { LoginForm } from '@/components/auth/LoginForm';
 
 export default function LoginPage() {
     const router = useRouter();
+    const { updateLocalSession } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError('');
         setIsLoading(true);
 
-        setTimeout(() => {
+        try {
+            const data = await api.post('/auth/login', {
+                email: identifier.trim(),
+                password: password,
+            });
+
+            if (data.session) {
+                updateLocalSession(data);
+                router.push('/');
+            }
+        } catch (err: any) {
+            setError(err.message || 'Error al iniciar sesión');
+        } finally {
             setIsLoading(false);
-            router.push('/');
-        }, 1500);
+        }
     };
 
     return (
@@ -40,6 +56,7 @@ export default function LoginPage() {
                     setPassword={setPassword}
                     onSubmit={handleLogin}
                     isLoading={isLoading}
+                    error={error}
                 />
 
                 <div className="mt-12 pt-8 border-t border-border/40 text-center">

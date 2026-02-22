@@ -7,7 +7,7 @@ import { Product } from '@/lib/products';
 
 interface ProductCardProps {
     product: Product;
-    quantity: number;
+    quantity: number | string;
     isInCart?: number;
     isJustAdded: boolean;
     onIncrement: (id: number) => void;
@@ -70,26 +70,34 @@ export const ProductCard = ({
                         <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1 flex items-center gap-1">
                             Cantidad <Edit3 size={8} />
                         </span>
-                        <div className="flex items-center bg-white border border-primary/20 rounded-xl p-0.5 shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                        <div className="flex items-center bg-white border-2 border-neutral-200 rounded-2xl p-1 shadow-sm overflow-hidden focus-within:ring-4 focus-within:ring-primary/10 focus-within:border-primary/30 transition-all w-36 h-12">
                             <button 
                                 onClick={() => onDecrement(product.id)}
-                                className="p-1 px-2 text-muted-foreground hover:text-primary transition-colors"
+                                className="flex-1 h-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
+                                aria-label="Disminuir cantidad"
                             >
-                                <Minus size={12} />
+                                <Minus size={16} strokeWidth={2.5} />
                             </button>
                             <input 
                                 type="number" 
                                 min="1"
                                 value={quantity} 
                                 onChange={(e) => onUpdateQuantity(product.id, e.target.value)}
+                                onFocus={(e) => {
+                                    if (quantity === 1 || quantity === '1') {
+                                        onUpdateQuantity(product.id, '');
+                                    }
+                                    e.target.select();
+                                }}
                                 title="Haga clic para editar cantidad"
-                                className="w-8 bg-transparent text-center font-black text-xs outline-none text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none cursor-pointer focus:bg-primary/5 rounded" 
+                                className="w-12 h-full bg-transparent text-center font-bold text-lg outline-none text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none cursor-pointer focus:bg-primary/5 border-x border-neutral-100" 
                             />
                             <button 
                                 onClick={() => onIncrement(product.id)}
-                                className="p-1 px-2 text-muted-foreground hover:text-primary transition-colors"
+                                className="flex-1 h-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
+                                aria-label="Aumentar cantidad"
                             >
-                                <Plus size={12} />
+                                <Plus size={16} strokeWidth={2.5} />
                             </button>
                         </div>
                     </div>

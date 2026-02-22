@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 export interface CartItem {
     id: number;
@@ -15,6 +16,7 @@ interface CartContextType {
     cart: CartItem[];
     addToCart: (product: any, quantity: number) => void;
     removeFromCart: (productId: number) => void;
+    updateQuantity: (productId: number, quantity: number) => void;
     clearCart: () => void;
     getCartTotal: () => number;
     getCartCount: () => number;
@@ -23,27 +25,35 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+    const { user } = useAuth();
     const [cart, setCart] = useState<CartItem[]>([]);
+    
+    // Key depends on user ID to isolate carts
+    const cartKey = user ? `jhoanes-cart-${user.id}` : 'jhoanes-cart-guest';
 
-    // Save to localStorage on change
+    // Load from localStorage when user changes or component mounts
     useEffect(() => {
-        const savedCart = localStorage.getItem('jhoanes-cart');
+        const savedCart = localStorage.getItem(cartKey);
         if (savedCart) {
             try {
                 setCart(JSON.parse(savedCart));
             } catch (e) {
                 console.error("Error loading cart", e);
+                setCart([]);
             }
+        } else {
+            setCart([]);
         }
-    }, []);
+    }, [cartKey]);
 
+    // Save to localStorage on cart change
     useEffect(() => {
         if (cart.length > 0) {
-            localStorage.setItem('jhoanes-cart', JSON.stringify(cart));
+            localStorage.setItem(cartKey, JSON.stringify(cart));
         } else {
-            localStorage.removeItem('jhoanes-cart');
+            localStorage.removeItem(cartKey);
         }
-    }, [cart]);
+    }, [cart, cartKey]);
 
     const addToCart = (product: any, quantity: number) => {
         setCart(prevCart => {
@@ -70,6 +80,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setCart(prevCart => prevCart.filter(item => item.id !== productId));
     };
 
+    const updateQuantity = (productId: number, quantity: number) => {
+        setCart(prevCart => {
+            if (quantity <= 0) {
+                return prevCart.filter(item => item.id !== productId);
+            }
+            return prevCart.map(item => 
+                item.id === productId ? { ...item, quantity } : item
+            );
+        });
+    };
+
     const clearCart = () => {
         setCart([]);
     };
@@ -87,6 +108,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             cart, 
             addToCart, 
             removeFromCart, 
+            updateQuantity,
             clearCart, 
             getCartTotal, 
             getCartCount 

@@ -1,46 +1,66 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import { Package, Truck, CheckCircle2, AlertCircle, Clock, Eye, MessageSquareQuote } from 'lucide-react';
-
-const MOCK_CLIENT_ORDERS = [
-    { id: '1001', date: '2026-02-19', status: 'En Entrega', total: 12.00, delivery_date: '2026-02-22' },
-    { id: '1000', date: '2026-02-15', status: 'Entregado', total: 25.50, delivery_date: '2026-02-18', payment_date: '2026-02-24' },
-];
+import { Package, Truck, CheckCircle2, AlertCircle, Clock, Eye, MessageSquareQuote, Loader2, ShoppingBag } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { api } from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 export default function ClientOrdersPage() {
-    const [orders, setOrders] = useState(MOCK_CLIENT_ORDERS);
+    const { user } = useAuth();
+    const router = useRouter();
+    const [orders, setOrders] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [showConfirmModal, setShowConfirmModal] = useState<string | null>(null);
     const [note, setNote] = useState('');
 
-    const confirmReception = (id: string) => {
-        // In real app, call API
-        setOrders(orders.map(o => {
-            if (o.id === id) {
-                const payDate = new Date();
-                payDate.setDate(payDate.getDate() + 6);
-                return {
-                    ...o,
-                    status: 'Entregado',
-                    payment_date: payDate.toISOString().split('T')[0]
-                };
+    useEffect(() => {
+        const fetchOrders = async () => {
+            if (!user) return;
+            setIsLoading(true);
+            try {
+                const data = await api.get(`/orders/user/${user.id}`);
+                setOrders(data || []);
+            } catch (err) {
+                console.error('Error fetching orders:', err);
+            } finally {
+                setIsLoading(false);
             }
-            return o;
-        }));
-        setShowConfirmModal(null);
-        setNote('');
+        };
+        fetchOrders();
+    }, [user]);
+
+    const confirmReception = async (id: string) => {
+        try {
+            await api.patch(`/orders/${id}/status`, { status: "Entregado" });
+            setOrders(orders.map(o => (o.id === id ? { ...o, status: 'Entregado' } : o)));
+            setShowConfirmModal(null);
+            setNote('');
+        } catch (err) {
+            console.error('Error:', err);
+            alert('Error al confirmar');
+        }
     };
 
     const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'Pedido': return <Clock className="text-blue-500" />;
-            case 'En Producción': return <Package className="text-orange-500" />;
-            case 'Finalizado': return <CheckCircle2 className="text-green-500" />;
-            case 'En Entrega': return <Truck className="text-purple-500" />;
-            case 'Entregado': return <CheckCircle2 className="text-primary" />;
-            default: return <AlertCircle />;
-        }
+        const s = status.toLowerCase();
+        if (s.includes('pedido') || s.includes('pending')) return <Clock className="text-blue-500" />;
+        if (s.includes('produ') || s.includes('processing')) return <Package className="text-orange-500" />;
+        if (s.includes('finalizado') || s.includes('completed')) return <CheckCircle2 className="text-green-500" />;
+        if (s.includes('entrega') || s.includes('delivery')) return <Truck className="text-purple-500" />;
+        if (s.includes('entregado') || s.includes('delivered')) return <CheckCircle2 className="text-primary" />;
+        return <AlertCircle />;
+    };
+
+    const getStatusLabel = (status: string) => {
+        const s = status.toLowerCase();
+        if (s === 'pending' || s === 'pedido') return 'Pedido Recibido';
+        if (s === 'processing' || s === 'en producción') return 'En Producción';
+        if (s === 'completed' || s === 'finalizado') return 'Finalizado';
+        if (s === 'delivery' || s === 'en entrega') return 'En Entrega';
+        if (s === 'delivered' || s === 'entregado') return 'Entregado';
+        return status;
     };
 
     return (
@@ -52,60 +72,81 @@ export default function ClientOrdersPage() {
                 <p className="text-muted-foreground mb-10">Sigue el estado de tus delicias en tiempo real</p>
 
                 <div className="space-y-6">
-                    {orders.map(order => (
-                        <div key={order.id} className="bg-card rounded-3xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all">
-                            <div className="p-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                                <div className="flex items-center gap-6 w-full md:w-auto">
-                                    <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center shrink-0">
-                                        {getStatusIcon(order.status)}
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <h3 className="text-xl font-bold">Orden #{order.id}</h3>
-                                            <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${order.status === 'Entregado' ? 'bg-green-100 text-green-700' : 'bg-primary/10 text-primary'}`}>
-                                                {order.status}
-                                            </span>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground font-medium">Realizado el {order.date}</p>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 md:flex items-center gap-8 w-full md:w-auto border-t md:border-t-0 pt-4 md:pt-0">
-                                    <div>
-                                        <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Total</p>
-                                        <p className="text-lg font-black">${order.total.toFixed(2)}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Entrega</p>
-                                        <p className="text-sm font-bold text-foreground">{order.delivery_date}</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-3 w-full md:w-auto">
-                                    <button className="flex-1 md:flex-none p-3 bg-muted text-foreground rounded-xl hover:bg-border transition-colors flex items-center justify-center gap-2">
-                                        <Eye size={18} /> <span className="md:hidden">Ver Detalle</span>
-                                    </button>
-                                    {order.status === 'En Entrega' && (
-                                        <button
-                                            onClick={() => setShowConfirmModal(order.id)}
-                                            className="flex-1 md:flex-none px-6 py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-lg hover:bg-black transition-all"
-                                        >
-                                            Confirmar Recepción
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {order.status === 'Entregado' && order.payment_date && (
-                                <div className="bg-primary/5 px-8 py-4 border-t border-primary/10 flex justify-between items-center">
-                                    <p className="text-xs font-bold text-primary flex items-center gap-2">
-                                        <Clock size={14} /> Este pedido deberá ser pagado el: <span className="underline uppercase">{order.payment_date}</span>
-                                    </p>
-                                    <button className="text-[10px] font-black text-primary border border-primary px-3 py-1 rounded hover:bg-primary hover:text-white transition-all uppercase">Ver Factura</button>
-                                </div>
-                            )}
+                    {isLoading ? (
+                        <div className="py-20 flex flex-col items-center justify-center animate-pulse">
+                            <Loader2 size={40} className="animate-spin text-primary/20 mb-4" />
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cargando tus pedidos...</p>
                         </div>
-                    ))}
+                    ) : orders.length > 0 ? (
+                        orders.map(order => (
+                            <div key={order.id} className="bg-card rounded-3xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all">
+                                <div className="p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                                    <div className="flex items-center gap-6 w-full md:w-auto">
+                                        <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center shrink-0">
+                                            {getStatusIcon(order.status)}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <h3 className="text-xl font-bold">Orden #{order.id.slice(0, 8)}</h3>
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${order.status.toLowerCase().includes('entregado') ? 'bg-green-100 text-green-700' : 'bg-primary/10 text-primary'}`}>
+                                                    {getStatusLabel(order.status)}
+                                                </span>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground font-medium">Realizado el {new Date(order.created_at).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 md:flex items-center gap-8 w-full md:w-auto border-t md:border-t-0 pt-4 md:pt-0">
+                                        <div>
+                                            <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Total</p>
+                                            <p className="text-lg font-black">${(Number(order.total) || 0).toFixed(2)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Entrega</p>
+                                            <p className="text-sm font-bold text-foreground">{order.delivery_date || 'Pendiente'}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3 w-full md:w-auto">
+                                        <button 
+                                            onClick={() => router.push(`/orders/${order.id}`)}
+                                            className="flex-1 md:flex-none p-3 bg-muted text-foreground rounded-xl hover:bg-border transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            <Eye size={18} /> <span className="md:hidden">Ver Detalle</span>
+                                        </button>
+                                        {(order.status === 'delivery' || order.status === 'En Entrega') && (
+                                            <button
+                                                onClick={() => setShowConfirmModal(order.id)}
+                                                className="flex-1 md:flex-none px-6 py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-lg hover:bg-black transition-all"
+                                            >
+                                                Confirmar Recepción
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {(order.status.toLowerCase().includes('entregado')) && order.payment_due_date && (
+                                    <div className="bg-primary/5 px-8 py-4 border-t border-primary/10 flex justify-between items-center">
+                                        <p className="text-xs font-bold text-primary flex items-center gap-2">
+                                            <Clock size={14} /> Este pedido deberá ser pagado antes del: <span className="underline uppercase">{order.payment_due_date}</span>
+                                        </p>
+                                        <button className="text-[10px] font-black text-primary border border-primary px-3 py-1 rounded hover:bg-primary hover:text-white transition-all uppercase">Ver Factura</button>
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <div className="py-20 text-center bg-muted/20 rounded-3xl border border-dashed border-border flex flex-col items-center">
+                            <ShoppingBag className="text-muted-foreground/30 mb-4" size={48} />
+                            <p className="text-muted-foreground font-medium mb-6">Aún no has realizado ningún pedido.</p>
+                            <button 
+                                onClick={() => router.push('/')}
+                                className="premium-button py-3 px-8"
+                            >
+                                Empezar a comprar
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Modal Confirmación */}

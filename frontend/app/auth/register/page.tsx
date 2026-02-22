@@ -4,10 +4,13 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { User } from 'lucide-react';
+import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 
 export default function RegisterPage() {
     const router = useRouter();
+    const { updateLocalSession } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
@@ -30,10 +33,39 @@ export default function RegisterPage() {
 
         setIsLoading(true);
 
-        setTimeout(() => {
+        // Client-side validation: Check basic email format (must include TLD like .com)
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const sanitizedEmail = formData.email.trim();
+        
+        if (!emailRegex.test(sanitizedEmail)) {
+            setError('Por favor, ingresa un correo electrónico válido (ej: usuario@ejemplo.com)');
             setIsLoading(false);
-            router.push('/profile/addresses/new');
-        }, 1500);
+            return;
+        }
+
+        try {
+            // 1. Sign up user via local API
+            const data = await api.post('/auth/signup', {
+                email: sanitizedEmail,
+                password: formData.password,
+                full_name: formData.full_name,
+                username: formData.username,
+                phone: formData.phone,
+            });
+
+            // 2. Auto-login and Update context
+            if (data.session) {
+                updateLocalSession(data);
+                // 3. Redirect to address registration instead of login
+                router.push('/profile/addresses/new');
+            } else {
+                router.push('/auth/login?registered=true');
+            }
+        } catch (err: any) {
+            setError(err.message || 'Error al crear la cuenta');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

@@ -10,6 +10,7 @@ interface LoginFormProps {
     setPassword: (val: string) => void;
     onSubmit: (e: React.FormEvent) => void;
     isLoading: boolean;
+    error?: string;
 }
 
 export const LoginForm = ({
@@ -18,10 +19,16 @@ export const LoginForm = ({
     password,
     setPassword,
     onSubmit,
-    isLoading
+    isLoading,
+    error
 }: LoginFormProps) => {
     return (
         <form onSubmit={onSubmit} className="space-y-8">
+            {error && (
+                <div className="p-4 bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-xl animate-fade-in text-center">
+                    {error}
+                </div>
+            )}
             <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1 text-foreground/70">Nombre de Usuario o Email</label>
                 <div className="relative">

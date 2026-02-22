@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Terminal, Github, Key, MapPin, Database, Zap, User } from 'lucide-react';
+import { Terminal, Github, Key, MapPin, Database, Zap, User, LogOut } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export default function DevTools() {
+    const { user, profile, signOut } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [status, setStatus] = useState<string>('');
 
@@ -59,15 +61,33 @@ export default function DevTools() {
                 {/* User Status */}
                 <section className="bg-primary/5 p-4 rounded-xl border border-primary/10">
                     <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                        <User size={14} /> Usuario Conectado
+                        <User size={14} /> Estado de Sesión
                     </h3>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center font-bold shadow-md">A</div>
-                        <div>
-                            <p className="text-xs font-bold text-foreground">Admin Jhoanes</p>
-                            <p className="text-[10px] text-muted-foreground mt-1 font-medium">Rol: <span className="text-primary">Administrador</span></p>
+                    {user ? (
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center font-bold shadow-md">
+                                    {(profile?.full_name || user.email || 'U')[0].toUpperCase()}
+                                </div>
+                                <div>
+                                    <p className="text-xs font-bold text-foreground">{profile?.full_name || 'Usuario'}</p>
+                                    <p className="text-[10px] text-muted-foreground mt-1 font-medium">{user.email}</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => signOut()}
+                                className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                title="Cerrar Sesión"
+                            >
+                                <LogOut size={16} />
+                            </button>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="flex flex-col items-center py-4 gap-2">
+                            <p className="text-[10px] font-black text-muted-foreground uppercase">No hay sesión activa</p>
+                            <p className="text-[9px] text-muted-foreground/60 text-center italic">Usa el formulario de login para ingresar como admin@test.com</p>
+                        </div>
+                    )}
                 </section>
 
                 {/* Session Debugger */}
@@ -113,19 +133,38 @@ export default function DevTools() {
                 {/* Product Upload Utility */}
                 <section>
                     <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                        <Database size={14} /> Carga de Productos
+                        <Database size={14} /> Gestión de Catálogo
                     </h3>
                     <div className="space-y-4 bg-muted/60 p-6 rounded-3xl border border-border/50">
+                        <p className="text-[10px] text-muted-foreground font-medium mb-2">Sincroniza los productos definidos localmente en `lib/products.ts` con la base de datos remota.</p>
+                        <button 
+                            onClick={async () => {
+                                setStatus('Syncing products...');
+                                try {
+                                    const { PRODUCTS } = await import('@/lib/products');
+                                    const { error } = await supabase
+                                        .from('products')
+                                        .upsert(PRODUCTS, { onConflict: 'id' });
+                                    
+                                    if (error) throw error;
+                                    setStatus('Success: Products synced to Supabase.');
+                                } catch (e: any) {
+                                    setStatus('Sync Error: ' + e.message);
+                                }
+                            }}
+                            className="w-full py-3 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                        >
+                            Sincronizar Catálogo Local
+                        </button>
+
+                        <div className="h-[1px] bg-border/40 my-4" />
+
                         <div className="space-y-1">
-                            <label className="text-[9px] font-black text-muted-foreground uppercase ml-1">Archivo CSV (Data)</label>
+                            <label className="text-[9px] font-black text-muted-foreground uppercase ml-1">Archivo CSV (Opcional)</label>
                             <input type="file" accept=".csv" className="w-full text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[9px] file:font-black file:bg-primary file:text-white hover:file:bg-black transition-all cursor-pointer" />
                         </div>
-                        <div className="space-y-1">
-                            <label className="text-[9px] font-black text-muted-foreground uppercase ml-1">Archivo ZIP (Imágenes)</label>
-                            <input type="file" accept=".zip" className="w-full text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[9px] file:font-black file:bg-accent file:text-white hover:file:bg-black transition-all cursor-pointer" />
-                        </div>
-                        <button className="w-full py-3 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                            Procesar y Descomprimir
+                        <button className="w-full py-3 bg-zinc-800 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-black/10 hover:scale-[1.02] transition-all">
+                            Procesar CSV Externo
                         </button>
                     </div>
                 </section>

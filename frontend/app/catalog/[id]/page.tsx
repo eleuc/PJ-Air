@@ -4,26 +4,70 @@ import React, { useState, use } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import { Plus, Minus, ShoppingCart, Star, ArrowLeft, Check, ShieldCheck, Clock, Truck } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
-import { PRODUCTS } from '@/lib/products';
+import { Product } from '@/lib/products';
+import { api } from '@/lib/api';
 import Link from 'next/link';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
     const productId = parseInt(resolvedParams.id);
-    const product = PRODUCTS.find(p => p.id === productId);
+    const [product, setProduct] = useState<Product | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     
     const { addToCart } = useCart();
-    const [quantity, setQuantity] = useState(1);
+    const [quantity, setQuantity] = useState<number | string>(1);
     const [isAdded, setIsAdded] = useState(false);
 
+    React.useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const data = await api.get(`/products/${productId}`);
+                setProduct(data);
+            } catch (err) {
+                console.error('Error fetching product:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchProduct();
+    }, [productId]);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center animate-pulse">
+                <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cargando detalles...</p>
+            </div>
+        );
+    }
+
     if (!product) {
-        return <div className="min-h-screen flex items-center justify-center font-bold text-2xl">Producto no encontrado</div>;
+        return <div className="min-h-screen flex items-center justify-center font-bold text-2xl text-foreground">Producto no encontrado</div>;
     }
 
     const handleAddToCart = () => {
-        addToCart(product, quantity);
+        if (!product) return;
+        const qty = Number(quantity) || 1;
+        addToCart(product, qty);
         setIsAdded(true);
         setTimeout(() => setIsAdded(false), 2000);
+    };
+
+    const handleIncrement = () => {
+        setQuantity(prev => (Number(prev) || 0) + 1);
+    };
+
+    const handleDecrement = () => {
+        setQuantity(prev => Math.max(1, (Number(prev) || 1) - 1));
+    };
+
+    const updateQuantity = (val: string) => {
+        if (val === '') {
+            setQuantity('');
+            return;
+        }
+        const num = parseInt(val);
+        setQuantity(isNaN(num) ? '' : num);
     };
 
     return (
@@ -75,40 +119,35 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             {product.description}
                         </p>
 
-                        <div className="grid grid-cols-3 gap-4 mb-12 p-6 bg-secondary/20 rounded-[2rem] border border-border/40">
-                            <div className="flex flex-col items-center text-center gap-2">
-                                <Clock size={20} className="text-primary" />
-                                <span className="text-[8px] font-black uppercase tracking-widest">Listo en 1h</span>
-                            </div>
-                            <div className="flex flex-col items-center text-center gap-2 border-x border-border/40">
-                                <Truck size={20} className="text-primary" />
-                                <span className="text-[8px] font-black uppercase tracking-widest">Delivery Express</span>
-                            </div>
-                            <div className="flex flex-col items-center text-center gap-2">
-                                <ShieldCheck size={20} className="text-primary" />
-                                <span className="text-[8px] font-black uppercase tracking-widest">Garantía Jhoanes</span>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row items-stretch gap-4">
-                            <div className="flex items-center bg-muted/30 border border-border/40 rounded-2xl p-2 h-16 px-4">
+                        <div className="flex flex-col sm:flex-row items-stretch gap-4 mb-12">
+                            <div className="flex items-center bg-white border-2 border-neutral-200 rounded-2xl p-1 shadow-sm overflow-hidden focus-within:ring-4 focus-within:ring-primary/10 focus-within:border-primary/30 transition-all w-36 h-16">
                                 <button 
-                                    onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-                                    className="p-3 text-muted-foreground hover:text-primary transition-colors"
+                                    onClick={handleDecrement}
+                                    className="flex-1 h-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
+                                    aria-label="Disminuir cantidad"
                                 >
-                                    <Minus size={18} />
+                                    <Minus size={18} strokeWidth={2.5} />
                                 </button>
                                 <input 
                                     type="number" 
-                                    value={quantity}
-                                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                                    className="w-16 bg-transparent text-center font-black text-lg outline-none text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                                    min="1"
+                                    value={quantity} 
+                                    onChange={(e) => updateQuantity(e.target.value)}
+                                    onFocus={(e) => {
+                                        if (quantity === 1 || quantity === '1') {
+                                            updateQuantity('');
+                                        }
+                                        e.target.select();
+                                    }}
+                                    title="Haga clic para editar cantidad"
+                                    className="w-12 h-full bg-transparent text-center font-bold text-xl outline-none text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none cursor-pointer focus:bg-primary/5 border-x border-neutral-100" 
                                 />
                                 <button 
-                                    onClick={() => setQuantity(prev => prev + 1)}
-                                    className="p-3 text-muted-foreground hover:text-primary transition-colors"
+                                    onClick={handleIncrement}
+                                    className="flex-1 h-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
+                                    aria-label="Aumentar cantidad"
                                 >
-                                    <Plus size={18} />
+                                    <Plus size={18} strokeWidth={2.5} />
                                 </button>
                             </div>
 
@@ -122,6 +161,21 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                                     <><ShoppingCart size={20} strokeWidth={2.5} /> Añadir al Pedido</>
                                 )}
                             </button>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-4 p-6 bg-secondary/20 rounded-[2rem] border border-border/40">
+                            <div className="flex flex-col items-center text-center gap-2">
+                                <Clock size={20} className="text-primary" />
+                                <span className="text-[8px] font-black uppercase tracking-widest">Listo en 1h</span>
+                            </div>
+                            <div className="flex flex-col items-center text-center gap-2 border-x border-border/40">
+                                <Truck size={20} className="text-primary" />
+                                <span className="text-[8px] font-black uppercase tracking-widest">Delivery Express</span>
+                            </div>
+                            <div className="flex flex-col items-center text-center gap-2">
+                                <ShieldCheck size={20} className="text-primary" />
+                                <span className="text-[8px] font-black uppercase tracking-widest">Garantía Jhoanes</span>
+                            </div>
                         </div>
                     </div>
                 </div>

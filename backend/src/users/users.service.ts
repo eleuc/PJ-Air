@@ -1,46 +1,90 @@
-import { Injectable } from '@nestjs/common';
-import { SupabaseService } from '../supabase/supabase.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
+import { Profile } from './profile.entity';
 
 @Injectable()
 export class UsersService {
-    constructor(private supabaseService: SupabaseService) { }
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    @InjectRepository(Profile)
+    private profileRepository: Repository<Profile>,
+  ) {}
 
-    async findAll() {
-        const { data, error } = await this.supabaseService.getClient()
-            .from('users')
-            .select('*');
-        if (error) throw error;
-        return data;
-    }
+  async findAll(): Promise<User[]> {
+    return this.userRepository.find({ relations: ['profile'] });
+  }
 
-    async findOne(id: string) {
-        const { data, error } = await this.supabaseService.getClient()
-            .from('users')
-            .select('*')
-            .eq('id', id)
-            .single();
-        if (error) throw error;
-        return data;
-    }
+  async findOne(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({ 
+      where: { id },
+      relations: ['profile', 'addresses'] 
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
 
-    async create(userData: any) {
-        const { data, error } = await this.supabaseService.getClient()
-            .from('users')
-            .insert([userData])
-            .select()
-            .single();
-        if (error) throw error;
-        return data;
+  async updateProfile(userId: string, profileData: Partial<Profile>): Promise<Profile> {
+    const profile = await this.profileRepository.findOne({ where: { id: userId } });
+    if (!profile) {
+      // If profile doesn't exist, create it
+      const newProfile = this.profileRepository.create({ ...profileData, id: userId });
+      return this.profileRepository.save(newProfile);
     }
+    
+    Object.assign(profile, profileData);
+    return this.profileRepository.save(profile);
+  }
 
-    async updateRole(id: string, role: string) {
-        const { data, error } = await this.supabaseService.getClient()
-            .from('users')
-            .update({ role })
-            .eq('id', id)
-            .select()
-            .single();
-        if (error) throw error;
-        return data;
+  async findByEmail(email: string): Promise<User | null> {
+    // We must explicitly select the password because it is hidden by default in the entity
+    return this.userRepository.findOne({ 
+      where: { email },
+      select: ['id', 'email', 'password'],
+      relations: ['profile']
+    });
+  }
+
+  async findByIdentifier(identifier: string): Promise<User | null> {
+    // Check email
+    const userByEmail = await this.findByEmail(identifier);
+    if (userByEmail) return userByEmail;
+
+    // Check username
+    return this.userRepository.findOne({
+      where: { profile: { username: identifier } },
+      select: ['id', 'email', 'password'],
+      relations: ['profile']
+    });
+  }
+
+  async create(userData: any): Promise<User> {
+    const user = this.userRepository.create(userData);
+    const result = await this.userRepository.save(user);
+    return Array.isArray(result) ? result[0] : result;
+  }
+
+  async createProfile(profileData: Partial<Profile>): Promise<Profile> {
+    const profile = this.profileRepository.create(profileData);
+    const result = await this.profileRepository.save(profile);
+    return Array.isArray(result) ? result[0] : result;
+  }
+
+  async updateAvatar(userId: string, avatarUrl: string): Promise<Profile> {
+    const profile = await this.profileRepository.findOne({ where: { id: userId } });
+    if (!profile) {
+      const newProfile = this.profileRepository.create({ id: userId, avatar_url: avatarUrl });
+      return this.profileRepository.save(newProfile);
     }
+    profile.avatar_url = avatarUrl;
+    return this.profileRepository.save(profile);
+  }
+
+  async updateRole(id: string, role: any): Promise<User> {
+    const user = await this.findOne(id);
+    const result = await this.userRepository.save(user);
+    return Array.isArray(result) ? result[0] : result;
+  }
 }

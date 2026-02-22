@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { MapPin, Search, ChevronRight, Navigation, Loader2, Map as MapIcon, RotateCcw } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { useAuth } from '@/context/AuthContext';
+import { api } from '@/lib/api';
 
 const ZONES = ['Norte', 'Sur', 'Este', 'Oeste', 'Centro'];
 
@@ -31,14 +33,24 @@ const mapOptions = {
     ]
 };
 
+// Removed Supabase import as we now use local API
+// import { supabase } from '@/lib/supabase';
+
 export default function NewAddressPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get('redirect');
+    const { user, isLoading: isAuthLoading } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [address, setAddress] = useState('');
     const [alias, setAlias] = useState('');
     const [zone, setZone] = useState('');
     const [notes, setNotes] = useState('');
     const [markerPos, setMarkerPos] = useState(centerNY);
+    const [geocodedPos, setGeocodedPos] = useState<{lat: number, lng: number} | null>(null);
+    const [refinedPos, setRefinedPos] = useState<{lat: number, lng: number} | null>(null);
+    const [isManualAdjustment, setIsManualAdjustment] = useState(false);
+    const [error, setError] = useState('');
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
@@ -51,6 +63,8 @@ export default function NewAddressPage() {
         if (e.latLng) {
             const newPos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
             setMarkerPos(newPos);
+            setRefinedPos(newPos);
+            setIsManualAdjustment(true);
             reverseGeocode(newPos);
         }
     }, []);
@@ -65,14 +79,61 @@ export default function NewAddressPage() {
         });
     };
 
-    const handleSave = (e: React.FormEvent) => {
-        e.preventDefault();
+    const forwardGeocode = () => {
+        if (typeof google === 'undefined' || !address) return;
         setIsLoading(true);
-        // After adding address, go to catalog
-        setTimeout(() => {
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: address }, (results, status) => {
             setIsLoading(false);
-            router.push('/');
-        }, 1200);
+            if (status === 'OK' && results && results[0]) {
+                const newPos = { 
+                    lat: results[0].geometry.location.lat(), 
+                    lng: results[0].geometry.location.lng() 
+                };
+                setMarkerPos(newPos);
+                setGeocodedPos(newPos);
+                setIsManualAdjustment(false);
+                setRefinedPos(null);
+                map?.panTo(newPos);
+            } else {
+                setError('No se pudo encontrar la ubicación en el mapa. Por favor, intenta con una dirección más específica.');
+            }
+        });
+    };
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setIsLoading(true);
+
+        try {
+            if (!user) {
+                if (!isAuthLoading) {
+                    router.push('/auth/login');
+                } else {
+                    setError('Esperando autenticación...');
+                }
+                return;
+            }
+
+            await api.post('/addresses', {
+                userId: user.id,
+                alias,
+                zone,
+                address,
+                notes,
+                lat: geocodedPos?.lat || markerPos.lat,
+                lng: geocodedPos?.lng || markerPos.lng,
+                refined_lat: isManualAdjustment ? refinedPos?.lat : null,
+                refined_lng: isManualAdjustment ? refinedPos?.lng : null,
+            });
+
+            router.push(redirect || '/');
+        } catch (err: any) {
+            setError(err.message || 'Error al guardar la dirección');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const onLoad = useCallback(function callback(map: google.maps.Map) {
@@ -95,6 +156,11 @@ export default function NewAddressPage() {
                     </div>
 
                     <form onSubmit={handleSave} className="p-12 space-y-10">
+                        {error && (
+                            <div className="p-4 bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-xl animate-fade-in text-center">
+                                {error}
+                            </div>
+                        )}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">Nombre (Alias)</label>
@@ -123,14 +189,24 @@ export default function NewAddressPage() {
 
                         <div className="space-y-3">
                             <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">Dirección Completa</label>
-                            <textarea
-                                required
-                                rows={3}
-                                placeholder="Calle, Av, Edificio, Número de casa..."
-                                className="premium-input px-6 py-4 font-bold"
-                                value={address}
-                                onChange={(e) => setAddress(e.target.value)}
-                            />
+                            <div className="relative group">
+                                <textarea
+                                    required
+                                    rows={3}
+                                    placeholder="Calle, Av, Edificio, Número de casa..."
+                                    className="premium-input px-6 py-4 font-bold pr-32"
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    onBlur={() => { if(address.length > 5) forwardGeocode(); }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={forwardGeocode}
+                                    className="absolute right-4 bottom-4 px-4 py-2 bg-primary text-white text-[9px] font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2"
+                                >
+                                    <MapPin size={12} /> Ubicar
+                                </button>
+                            </div>
                         </div>
 
                         <div className="space-y-3">
@@ -181,6 +257,8 @@ export default function NewAddressPage() {
                                                 if (e.latLng) {
                                                     const newPos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
                                                     setMarkerPos(newPos);
+                                                    setRefinedPos(newPos);
+                                                    setIsManualAdjustment(true);
                                                     reverseGeocode(newPos);
                                                 }
                                             }}
@@ -200,14 +278,23 @@ export default function NewAddressPage() {
                             </div>
                         </div>
 
-                        <div className="pt-4">
+                        <div className="space-y-4 pt-4">
                             <button
+                                type="submit"
                                 disabled={isLoading}
                                 className="w-full premium-button jhoanes-gradient text-white py-5 shadow-2xl"
                             >
                                 {isLoading ? <Loader2 className="animate-spin" size={24} /> : (
                                     <>Confirmar y Guardar Dirección <ChevronRight size={20} /></>
                                 )}
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => router.push('/')}
+                                className="w-full py-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors bg-muted/30 rounded-[28px] border border-transparent hover:border-primary/10"
+                            >
+                                Saltar este paso por ahora (Ir al catálogo)
                             </button>
                         </div>
                     </form>
