@@ -9,6 +9,11 @@ import * as fs from 'fs';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Get()
+  async findAll() {
+    return this.usersService.findAll();
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);

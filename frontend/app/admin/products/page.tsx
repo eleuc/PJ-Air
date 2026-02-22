@@ -148,8 +148,7 @@ export default function AdminProductsPage() {
                 setProducts(prev => prev.map(p => p.id === editingProduct.id ? { ...p, ...updated } : p));
                 showToast('✅ Producto actualizado correctamente');
             } else {
-                const maxId = products.reduce((m, p) => Math.max(m, Number(p.id)), 0);
-                const created = await api.post('/products', { id: maxId + 1, ...payload });
+                const created = await api.post('/products', payload);
                 setProducts(prev => [...prev, created]);
                 showToast('✅ Producto creado correctamente');
             }

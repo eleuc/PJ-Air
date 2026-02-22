@@ -5,9 +5,12 @@ import AdminSidebar from '@/components/layout/AdminSidebar';
 import { Plus, Trash2, Folder, Loader2, AlertCircle, X, Save, Edit2, CheckCircle2, Package } from 'lucide-react';
 import { api } from '@/lib/api';
 
+const LS_KEY = 'admin_custom_categories';
+
 interface CategorySummary {
     name: string;
     count: number;
+    isCustom?: boolean; // added by admin, not yet linked to products
 }
 
 export default function AdminCategoriesPage() {
@@ -36,16 +39,37 @@ export default function AdminCategoriesPage() {
         setTimeout(() => setToast(null), 3500);
     };
 
+    const getCustomCategories = (): string[] => {
+        try {
+            return JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+        } catch { return []; }
+    };
+
+    const saveCustomCategories = (names: string[]) => {
+        localStorage.setItem(LS_KEY, JSON.stringify(names));
+    };
+
     const fetchCategories = async () => {
         try {
             setLoading(true);
             setError(null);
             const products: any[] = await api.get('/products');
-            const map = products.reduce<Record<string, number>>((acc, p) => {
-                acc[p.category] = (acc[p.category] || 0) + 1;
-                return acc;
-            }, {});
-            setCategories(Object.entries(map).map(([name, count]) => ({ name, count })));
+
+            // Build map from products
+            const map: Record<string, number> = {};
+            products.forEach(p => {
+                if (p.category) map[p.category] = (map[p.category] || 0) + 1;
+            });
+
+            // Merge with locally-stored custom categories
+            const customCats = getCustomCategories();
+            customCats.forEach(name => {
+                if (!(name in map)) map[name] = 0;
+            });
+
+            setCategories(
+                Object.entries(map).sort(([a], [b]) => a.localeCompare(b)).map(([name, count]) => ({ name, count }))
+            );
         } catch (err: any) {
             setError(err.message || 'No se pudieron cargar las categorías');
         } finally {
@@ -69,8 +93,7 @@ export default function AdminCategoriesPage() {
 
     const handleSave = async () => {
         const trimmed = catName.trim();
-        if (!trimmed) { setFormError('El nombre de la categoría no puede estar vacío.'); return; }
-
+        if (!trimmed) { setFormError('El nombre no puede estar vacío.'); return; }
         if (!editingCategory && categories.find(c => c.name.toLowerCase() === trimmed.toLowerCase())) {
             setFormError('Ya existe una categoría con ese nombre.');
             return;
@@ -80,24 +103,31 @@ export default function AdminCategoriesPage() {
         setFormError(null);
         try {
             if (editingCategory) {
-                // Rename category: update all products with old category name
+                // Rename: update all products with old category name
                 const products: any[] = await api.get('/products');
                 const affected = products.filter(p => p.category === editingCategory.name);
-                await Promise.all(
-                    affected.map(p => api.patch(`/products/${p.id}`, { category: trimmed }))
-                );
+                await Promise.all(affected.map(p => api.patch(`/products/${p.id}`, { category: trimmed })));
+
+                // Also update localStorage custom categories
+                const custom = getCustomCategories().map(c => c === editingCategory.name ? trimmed : c);
+                saveCustomCategories(custom);
+
                 setCategories(prev =>
-                    prev.map(c => c.name === editingCategory.name ? { name: trimmed, count: c.count } : c)
+                    prev.map(c => c.name === editingCategory.name ? { ...c, name: trimmed } : c)
                 );
                 showToast(`✅ Categoría renombrada a "${trimmed}"`);
             } else {
-                // New category — just add it to local state (it becomes real when a product uses it)
+                // New category — persist in localStorage
+                const custom = getCustomCategories();
+                if (!custom.includes(trimmed)) {
+                    saveCustomCategories([...custom, trimmed]);
+                }
                 setCategories(prev => [...prev, { name: trimmed, count: 0 }]);
                 showToast(`✅ Categoría "${trimmed}" creada`);
             }
             setShowModal(false);
         } catch (err: any) {
-            setFormError(err.message || 'Error al guardar la categoría');
+            setFormError(err.message || 'Error al guardar');
         } finally {
             setSaving(false);
         }
@@ -107,19 +137,20 @@ export default function AdminCategoriesPage() {
         if (!deleteConfirm) return;
         setDeleting(true);
         try {
-            // Remove category from products (set to empty or reassign)
             const products: any[] = await api.get('/products');
             const affected = products.filter(p => p.category === deleteConfirm.name);
             if (affected.length > 0) {
-                await Promise.all(
-                    affected.map(p => api.patch(`/products/${p.id}`, { category: 'Sin categoría' }))
-                );
+                await Promise.all(affected.map(p => api.patch(`/products/${p.id}`, { category: 'Sin categoría' })));
             }
+            // Remove from localStorage
+            const custom = getCustomCategories().filter(c => c !== deleteConfirm.name);
+            saveCustomCategories(custom);
+
             setCategories(prev => prev.filter(c => c.name !== deleteConfirm.name));
             setDeleteConfirm(null);
             showToast(`🗑️ Categoría "${deleteConfirm.name}" eliminada`);
         } catch (err: any) {
-            showToast(err.message || 'Error al eliminar la categoría', 'error');
+            showToast(err.message || 'Error al eliminar', 'error');
         } finally {
             setDeleting(false);
         }
@@ -131,12 +162,11 @@ export default function AdminCategoriesPage() {
 
             <main className="flex-1 p-8 overflow-auto">
                 <div className="max-w-4xl">
-                    {/* Header */}
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
                         <div>
                             <h1 className="text-3xl font-bold mb-1">Gestión de Categorías</h1>
                             <p className="text-muted-foreground font-medium">
-                                {loading ? 'Cargando...' : `${categories.length} categorías activas`}
+                                {loading ? 'Cargando...' : `${categories.length} categorías`}
                             </p>
                         </div>
                         <button onClick={openCreate} className="btn-premium bg-primary text-white flex items-center gap-2">
@@ -169,28 +199,19 @@ export default function AdminCategoriesPage() {
                             {categories.map(cat => (
                                 <div key={cat.name} className="bg-card p-8 rounded-[32px] border border-border shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-2 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity rounded-l-[32px]" />
-
                                     <div className="w-14 h-14 bg-primary/5 text-primary rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-all">
                                         <Folder size={28} />
                                     </div>
-
                                     <h3 className="text-xl font-bold mb-1">{cat.name}</h3>
                                     <div className="flex items-center gap-1.5 text-xs font-black text-muted-foreground uppercase tracking-widest">
                                         <Package size={12} />
-                                        <span>{cat.count} Productos</span>
+                                        <span>{cat.count} Productos{cat.count === 0 ? ' · Nueva' : ''}</span>
                                     </div>
-
                                     <div className="flex items-center gap-3 mt-8 pt-6 border-t border-border">
-                                        <button
-                                            onClick={() => openEdit(cat)}
-                                            className="flex-1 flex items-center justify-center gap-2 py-3 bg-muted hover:bg-primary/10 hover:text-primary rounded-xl text-xs font-bold transition-all text-foreground/70"
-                                        >
+                                        <button onClick={() => openEdit(cat)} className="flex-1 flex items-center justify-center gap-2 py-3 bg-muted hover:bg-primary/10 hover:text-primary rounded-xl text-xs font-bold transition-all text-foreground/70">
                                             <Edit2 size={14} /> Renombrar
                                         </button>
-                                        <button
-                                            onClick={() => setDeleteConfirm(cat)}
-                                            className="p-3 bg-muted hover:bg-red-50 hover:text-red-500 rounded-xl transition-all text-foreground/70"
-                                        >
+                                        <button onClick={() => setDeleteConfirm(cat)} className="p-3 bg-muted hover:bg-red-50 hover:text-red-500 rounded-xl transition-all text-foreground/70">
                                             <Trash2 size={16} />
                                         </button>
                                     </div>
@@ -201,25 +222,22 @@ export default function AdminCategoriesPage() {
                 </div>
             </main>
 
-            {/* ─── TOAST ─── */}
             {toast && (
                 <div className={`fixed bottom-6 right-6 z-[100] flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl text-white font-semibold text-sm animate-fade-in ${toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
                     <CheckCircle2 size={20} />{toast.msg}
                 </div>
             )}
 
-            {/* ─── CREATE / EDIT MODAL ─── */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-fade-in">
                         <div className="flex items-center justify-between px-8 py-6 border-b border-border bg-muted/20">
                             <div>
                                 <h2 className="text-xl font-bold">{editingCategory ? 'Renombrar Categoría' : 'Nueva Categoría'}</h2>
-                                <p className="text-sm text-muted-foreground">{editingCategory ? `Actualmente: "${editingCategory.name}"` : 'Añade una nueva categoría al catálogo'}</p>
+                                <p className="text-sm text-muted-foreground">{editingCategory ? `Actualmente: "${editingCategory.name}"` : 'Añade una categoría al catálogo'}</p>
                             </div>
-                            <button onClick={() => setShowModal(false)} className="p-2 hover:bg-muted rounded-full transition-all"><X size={20} /></button>
+                            <button onClick={() => setShowModal(false)} className="p-2 hover:bg-muted rounded-full"><X size={20} /></button>
                         </div>
-
                         <div className="p-8 space-y-4">
                             {formError && (
                                 <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
@@ -227,7 +245,7 @@ export default function AdminCategoriesPage() {
                                 </div>
                             )}
                             <div>
-                                <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Nombre de la Categoría *</label>
+                                <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Nombre *</label>
                                 <input
                                     type="text"
                                     value={catName}
@@ -235,29 +253,27 @@ export default function AdminCategoriesPage() {
                                     onKeyDown={e => e.key === 'Enter' && handleSave()}
                                     placeholder="Ej: Croissants, Postres, Pasteles..."
                                     autoFocus
-                                    className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                    className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 font-medium"
                                 />
                             </div>
                             {editingCategory && editingCategory.count > 0 && (
                                 <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-100 rounded-xl text-amber-700 text-sm">
                                     <AlertCircle size={15} />
-                                    <span>Se actualizarán los <strong>{editingCategory.count} productos</strong> de esta categoría.</span>
+                                    <span>Actualizará los <strong>{editingCategory.count} productos</strong> de esta categoría.</span>
                                 </div>
                             )}
                         </div>
-
                         <div className="px-8 py-6 bg-muted/10 flex gap-4 border-t border-border">
-                            <button onClick={() => setShowModal(false)} className="flex-1 py-3.5 font-bold text-muted-foreground hover:bg-muted rounded-2xl transition-all">Cancelar</button>
-                            <button onClick={handleSave} disabled={saving} className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-primary text-white font-bold rounded-2xl shadow-xl hover:bg-black transition-all disabled:opacity-60">
+                            <button onClick={() => setShowModal(false)} className="flex-1 py-3.5 font-bold text-muted-foreground hover:bg-muted rounded-2xl">Cancelar</button>
+                            <button onClick={handleSave} disabled={saving} className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-primary text-white font-bold rounded-2xl disabled:opacity-60">
                                 {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-                                {saving ? 'Guardando...' : editingCategory ? 'Renombrar' : 'Crear Categoría'}
+                                {saving ? 'Guardando...' : editingCategory ? 'Renombrar' : 'Crear'}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* ─── DELETE CONFIRM ─── */}
             {deleteConfirm && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-fade-in">
@@ -265,13 +281,12 @@ export default function AdminCategoriesPage() {
                             <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4"><Trash2 size={32} /></div>
                             <h2 className="text-xl font-bold mb-2">¿Eliminar categoría?</h2>
                             <p className="text-muted-foreground text-sm">
-                                La categoría <strong>"{deleteConfirm.name}"</strong> tiene <strong>{deleteConfirm.count} productos</strong>.
-                                {deleteConfirm.count > 0 && ' Serán movidos a "Sin categoría".'}
+                                <strong>"{deleteConfirm.name}"</strong>{deleteConfirm.count > 0 ? ` tiene ${deleteConfirm.count} productos. Serán movidos a "Sin categoría".` : ' No tiene productos asociados.'}
                             </p>
                         </div>
                         <div className="p-6 flex gap-4">
-                            <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3.5 font-bold text-muted-foreground hover:bg-muted rounded-2xl transition-all">Cancelar</button>
-                            <button onClick={handleDelete} disabled={deleting} className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-red-500 text-white font-bold rounded-2xl hover:bg-red-600 transition-all disabled:opacity-60">
+                            <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-3.5 font-bold text-muted-foreground hover:bg-muted rounded-2xl">Cancelar</button>
+                            <button onClick={handleDelete} disabled={deleting} className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-red-500 text-white font-bold rounded-2xl disabled:opacity-60">
                                 {deleting ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
                                 {deleting ? 'Eliminando...' : 'Sí, eliminar'}
                             </button>
