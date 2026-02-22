@@ -1,18 +1,44 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminSidebar from '@/components/layout/AdminSidebar';
-import { Plus, Edit2, Trash2, Folder, Search, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, Folder, Loader2, AlertCircle } from 'lucide-react';
+import { api } from '@/lib/api';
 
-const INITIAL_CATEGORIES = [
-    { id: 1, name: 'Croissant', count: 12 },
-    { id: 2, name: 'Dessert', count: 8 },
-    { id: 3, name: 'CakesSlices', count: 15 },
-];
+interface CategorySummary {
+    name: string;
+    count: number;
+}
 
 export default function AdminCategoriesPage() {
-    const [categories, setCategories] = useState(INITIAL_CATEGORIES);
-    const [showModal, setShowModal] = useState(false);
+    const [categories, setCategories] = useState<CategorySummary[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const products: any[] = await api.get('/products');
+
+                // Derive categories and counts from real product data
+                const categoryMap = products.reduce<Record<string, number>>((acc, p) => {
+                    acc[p.category] = (acc[p.category] || 0) + 1;
+                    return acc;
+                }, {});
+
+                setCategories(
+                    Object.entries(categoryMap).map(([name, count]) => ({ name, count }))
+                );
+            } catch (err: any) {
+                setError(err.message || 'No se pudieron cargar las categorías');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     return (
         <div className="flex min-h-screen bg-muted/30">
@@ -23,69 +49,56 @@ export default function AdminCategoriesPage() {
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
                         <div>
                             <h1 className="text-3xl font-bold font-serif mb-2 text-primary">Gestión de Categorías</h1>
-                            <p className="text-muted-foreground font-medium">Organiza tus productos para una mejor navegación</p>
+                            <p className="text-muted-foreground font-medium">
+                                {loading ? 'Cargando categorías...' : `${categories.length} categorías activas`}
+                            </p>
                         </div>
-                        <button
-                            onClick={() => setShowModal(true)}
-                            className="btn-premium bg-primary text-white flex items-center gap-2"
-                        >
+                        <button className="btn-premium bg-primary text-white flex items-center gap-2">
                             <Plus size={20} /> Nueva Categoría
                         </button>
                     </header>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {categories.map(cat => (
-                            <div key={cat.id} className="bg-card p-8 rounded-[32px] border border-border shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-2 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                                <div className="w-14 h-14 bg-primary/5 text-primary rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-all">
-                                    <Folder size={28} />
-                                </div>
-
-                                <h3 className="text-xl font-bold mb-1">{cat.name}</h3>
-                                <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">{cat.count} Productos</p>
-
-                                <div className="flex items-center gap-3 mt-8 pt-6 border-t border-border">
-                                    <button className="flex-1 py-3 bg-muted hover:bg-border rounded-xl text-xs font-bold transition-all text-foreground/70">Editar</button>
-                                    <button className="p-3 bg-muted hover:bg-red-50 hover:text-red-500 rounded-xl transition-all text-foreground/70">
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-
-                        <button
-                            onClick={() => setShowModal(true)}
-                            className="border-2 border-dashed border-border rounded-[32px] p-8 flex flex-col items-center justify-center gap-4 text-muted-foreground hover:border-primary hover:text-primary transition-all group min-h-[220px]"
-                        >
-                            <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
-                                <Plus size={24} />
-                            </div>
-                            <span className="font-bold text-sm uppercase tracking-widest">Añadir Categoría</span>
-                        </button>
-                    </div>
-                </div>
-
-                {/* Modal simplified */}
-                {showModal && (
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div className="bg-card w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden animate-fade-in">
-                            <div className="p-8 border-b border-border bg-muted/20">
-                                <h2 className="text-2xl font-bold font-serif">Nueva Categoría</h2>
-                            </div>
-                            <div className="p-8 space-y-4">
-                                <div>
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground mb-1 block ml-2">Nombre de la Categoría</label>
-                                    <input type="text" placeholder="Ej: Especialidades de Temporada" className="w-full px-6 py-4 bg-muted rounded-2xl outline-none focus:ring-4 focus:ring-primary/10 transition-all font-bold" />
-                                </div>
-                            </div>
-                            <div className="p-8 flex gap-4 bg-muted/10">
-                                <button onClick={() => setShowModal(false)} className="flex-1 py-4 font-bold text-muted-foreground hover:bg-muted transition-all rounded-2xl">Cancelar</button>
-                                <button className="flex-1 py-4 bg-primary text-white rounded-2xl font-bold shadow-xl hover:bg-black transition-all">Guardar</button>
-                            </div>
+                    {/* Loading */}
+                    {loading && (
+                        <div className="flex items-center justify-center py-20 gap-3 text-muted-foreground">
+                            <Loader2 size={24} className="animate-spin text-primary" />
+                            <span className="font-medium">Cargando categorías...</span>
                         </div>
-                    </div>
-                )}
+                    )}
+
+                    {/* Error */}
+                    {error && !loading && (
+                        <div className="flex items-center gap-3 p-6 bg-red-50 border border-red-100 rounded-2xl text-red-600">
+                            <AlertCircle size={20} />
+                            <span className="font-medium">{error}</span>
+                        </div>
+                    )}
+
+                    {/* Category Cards */}
+                    {!loading && !error && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {categories.map(cat => (
+                                <div key={cat.name} className="bg-card p-8 rounded-[32px] border border-border shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-2 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                    <div className="w-14 h-14 bg-primary/5 text-primary rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-all">
+                                        <Folder size={28} />
+                                    </div>
+
+                                    <h3 className="text-xl font-bold mb-1">{cat.name}</h3>
+                                    <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">{cat.count} Productos</p>
+
+                                    <div className="flex items-center gap-3 mt-8 pt-6 border-t border-border">
+                                        <button className="flex-1 py-3 bg-muted hover:bg-border rounded-xl text-xs font-bold transition-all text-foreground/70">Editar</button>
+                                        <button className="p-3 bg-muted hover:bg-red-50 hover:text-red-500 rounded-xl transition-all text-foreground/70">
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </main>
         </div>
     );
