@@ -25,7 +25,7 @@ import { OrderItem } from './orders/order-item.entity';
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'database.sqlite',
+      database: '../database.sqlite',
       entities: [Product, User, Profile, Address, Order, OrderItem],
       synchronize: true,
     }),

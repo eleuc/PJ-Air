@@ -1,14 +1,14 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('products')
 export class Product {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   category: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
@@ -17,6 +17,6 @@ export class Product {
   @Column('text', { nullable: true })
   description: string;
 
-  @Column()
+  @Column({ nullable: true })
   image: string;
 }
