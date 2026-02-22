@@ -35,8 +35,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 const { user, session } = JSON.parse(savedSession);
                 setUser(user);
                 setSession(session);
-                // In local mode, we can fetch profile from local backend later if needed
-                // For now, metadata might suffice or we add a fetchProfile(user.id) call
+                // Restore profile from user_metadata (includes role)
+                if (user?.user_metadata) {
+                    setProfile(user.user_metadata);
+                }
             } catch (e) {
                 console.error('Error parsing local session:', e);
             }
