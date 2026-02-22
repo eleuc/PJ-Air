@@ -68,7 +68,7 @@ export default function CheckoutPage() {
                 userId: user.id,
                 addressId: selectedAddressId,
                 total: getCartTotal(),
-                status: 'pending',
+                status: 'Pedido Enviado',
                 deliveryDate: deliveryDate,
                 paymentDueDate: paymentDate,
                 items: cart.map(item => ({

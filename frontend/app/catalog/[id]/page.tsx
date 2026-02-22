@@ -2,11 +2,12 @@
 
 import React, { useState, use } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import { Plus, Minus, ShoppingCart, Star, ArrowLeft, Check, ShieldCheck, Clock, Truck } from 'lucide-react';
+import { Plus, Minus, ShoppingCart, Star, ArrowLeft, Check, ShieldCheck, Clock, Truck, ChevronRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { Product } from '@/lib/products';
 import { api } from '@/lib/api';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
@@ -15,8 +16,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     const [isLoading, setIsLoading] = useState(true);
     
     const { addToCart } = useCart();
+    const router = useRouter();
     const [quantity, setQuantity] = useState<number | string>(1);
     const [isAdded, setIsAdded] = useState(false);
+    const [showActions, setShowActions] = useState(false);
 
     React.useEffect(() => {
         const fetchProduct = async () => {
@@ -50,6 +53,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         const qty = Number(quantity) || 1;
         addToCart(product, qty);
         setIsAdded(true);
+        setShowActions(true);
         setTimeout(() => setIsAdded(false), 2000);
     };
 
@@ -160,6 +164,24 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                                 ) : (
                                     <><ShoppingCart size={20} strokeWidth={2.5} /> Añadir al Pedido</>
                                 )}
+                            </button>
+                        </div>
+
+                        {/* Post-add CTA buttons */}
+                        <div className={`grid grid-cols-2 gap-3 transition-all duration-500 overflow-hidden ${
+                            showActions ? 'max-h-20 opacity-100 mb-12' : 'max-h-0 opacity-0'
+                        }`}>
+                            <button
+                                onClick={() => router.push('/')}
+                                className="h-14 rounded-2xl border-2 border-border bg-card hover:border-primary/40 hover:bg-primary/5 text-foreground font-bold text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2"
+                            >
+                                Seguir Comprando
+                            </button>
+                            <button
+                                onClick={() => router.push('/checkout')}
+                                className="h-14 rounded-2xl jhoanes-gradient text-white font-bold text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
+                            >
+                                Confirmar Pedido <ChevronRight size={16} />
                             </button>
                         </div>
 
