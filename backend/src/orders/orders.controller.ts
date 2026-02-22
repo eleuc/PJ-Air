@@ -11,6 +11,11 @@ export class OrdersController {
     return this.ordersService.create(userId, orderData);
   }
 
+  @Get()
+  async findAll() {
+    return this.ordersService.findAll();
+  }
+
   @Get('user/:userId')
   async findByUser(@Param('userId') userId: string) {
     return this.ordersService.findByUser(userId);
@@ -24,5 +29,15 @@ export class OrdersController {
   @Patch(':id/status')
   async updateStatus(@Param('id') id: string, @Body('status') status: string) {
     return this.ordersService.updateStatus(id, status);
+  }
+
+  @Patch(':id/assign')
+  async assignDelivery(@Param('id') id: string, @Body('deliveryUserId') deliveryUserId: string) {
+    return this.ordersService.assignDelivery(id, deliveryUserId);
+  }
+
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() body: any) {
+    return this.ordersService.update(id, body);
   }
 }

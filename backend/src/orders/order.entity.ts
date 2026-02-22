@@ -26,8 +26,18 @@ export class Order {
   @Column({ nullable: true })
   payment_due_date: string;
 
+  @Column({ nullable: true })
+  delivery_user_id: string;
+
+  @Column({ nullable: true, type: 'text' })
+  notes: string;
+
   @CreateDateColumn()
   created_at: Date;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'delivery_user_id' })
+  delivery_user: User;
 
   @ManyToOne(() => User, (user) => user.orders)
   @JoinColumn({ name: 'user_id' })

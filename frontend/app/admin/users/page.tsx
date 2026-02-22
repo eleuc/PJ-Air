@@ -8,8 +8,13 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 
-interface Address { id: string; street: string; city: string; state?: string; zip_code?: string; country?: string; is_default?: boolean; }
-interface OrderItem { id: string; product_name: string; quantity: number; unit_price: number; }
+interface Address { id: string; address: string; city: string; state?: string; zip_code?: string; country?: string; is_default?: boolean; }
+interface OrderItem { 
+    id: string; 
+    quantity: number; 
+    price_at_time: number; 
+    product?: { name: string; description?: string; };
+}
 interface Order { id: string; total: number; status: string; created_at: string; delivery_date?: string; items?: OrderItem[]; }
 interface UserRecord {
     id: string; email: string; role: string;
@@ -254,7 +259,7 @@ export default function AdminUsersPage() {
                                         {selectedUser.addresses.map(addr => (
                                             <div key={addr.id} className="bg-muted/40 rounded-2xl p-4 text-sm">
                                                 <div className="flex justify-between items-start">
-                                                    <p className="font-semibold">{addr.street}</p>
+                                                    <p className="font-semibold">{addr.address}</p>
                                                     {addr.is_default && <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">Principal</span>}
                                                 </div>
                                                 <p className="text-muted-foreground">{[addr.city, addr.state, addr.zip_code, addr.country].filter(Boolean).join(', ')}</p>
@@ -286,14 +291,23 @@ export default function AdminUsersPage() {
                                                         <Clock size={12} />
                                                         <span className="text-xs">{new Date(order.created_at).toLocaleDateString('es')}</span>
                                                     </div>
-                                                    <span className="font-bold text-primary">${Number(order.total).toFixed(2)}</span>
+                                                    <span className="font-bold text-primary">${Number(order.total || 0).toFixed(2)}</span>
                                                 </div>
                                                 {order.items && order.items.length > 0 && (
-                                                    <div className="mt-3 pt-3 border-t border-border space-y-1">
+                                                    <div className="mt-3 pt-3 border-t border-border space-y-2">
                                                         {order.items.map(item => (
-                                                            <div key={item.id} className="flex justify-between text-xs text-muted-foreground">
-                                                                <span>{item.quantity}× {item.product_name}</span>
-                                                                <span>${Number(item.unit_price * item.quantity).toFixed(2)}</span>
+                                                            <div key={item.id} className="flex flex-col gap-1 py-1 border-b border-border/10 last:border-0">
+                                                                <div className="flex justify-between items-start">
+                                                                    <div className="flex flex-col flex-1">
+                                                                        <span className="font-semibold text-foreground text-xs">{item.quantity} x {item.product?.name || 'Producto'}</span>
+                                                                        {item.product?.description && (
+                                                                            <span className="text-[10px] text-muted-foreground italic line-clamp-2 mt-0.5 leading-tight">{item.product.description}</span>
+                                                                        )}
+                                                                    </div>
+                                                                    <span className="font-bold text-primary text-xs ml-4">
+                                                                        ${((Number(item.price_at_time) || 0) * (Number(item.quantity) || 0)).toFixed(2)}
+                                                                    </span>
+                                                                </div>
                                                             </div>
                                                         ))}
                                                     </div>

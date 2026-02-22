@@ -12,6 +12,7 @@ const MENU_ITEMS = [
     { name: 'Categorías',  icon: Layers,           href: '/admin/categories' },
     { name: 'Usuarios',    icon: Users,            href: '/admin/users' },
     { name: 'Rutas',       icon: Truck,            href: '/admin/routes' },
+    { name: 'Pedidos',     icon: ShoppingBag,      href: '/admin/orders' },
     { name: 'Config.',     icon: Settings,         href: '/admin/settings' },
 ];
 
