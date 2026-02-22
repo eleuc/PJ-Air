@@ -16,6 +16,7 @@ export default function Home() {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [activeCategory, setActiveCategory] = useState('Todos');
+    const [searchQuery, setSearchQuery] = useState('');
     const [addedIds, setAddedIds] = useState<number[]>([]);
     const [quantities, setQuantities] = useState<Record<number, any>>({});
 
@@ -64,9 +65,9 @@ export default function Home() {
         setTimeout(() => setAddedIds(prev => prev.filter(id => id !== product.id)), 2000);
     };
 
-    const filteredProducts = activeCategory === 'Todos' 
-        ? products 
-        : products.filter(p => p.category === activeCategory);
+    const filteredProducts = products
+        .filter(p => activeCategory === 'Todos' || p.category === activeCategory)
+        .filter(p => !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return (
         <div className="min-h-screen bg-background border-none">
@@ -79,7 +80,9 @@ export default function Home() {
                         <CategoryFilters 
                             categories={CATEGORIES} 
                             activeCategory={activeCategory} 
-                            onCategoryChange={setActiveCategory} 
+                            onCategoryChange={setActiveCategory}
+                            searchQuery={searchQuery}
+                            onSearchChange={setSearchQuery}
                         />
                     </div>
                 </div>

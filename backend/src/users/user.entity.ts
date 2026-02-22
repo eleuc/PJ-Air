@@ -14,6 +14,9 @@ export class User {
   @Column({ select: false }) // Hide password by default
   password: string;
 
+  @Column({ default: 'client' })
+  role: string;
+
   @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
   profile: Profile;
 

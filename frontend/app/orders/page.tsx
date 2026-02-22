@@ -2,18 +2,21 @@
 
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import { Package, Truck, CheckCircle2, AlertCircle, Clock, Eye, MessageSquareQuote, Loader2, ShoppingBag } from 'lucide-react';
+import { Package, Truck, CheckCircle2, AlertCircle, Clock, Eye, Loader2, ShoppingBag, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+
+const CLIENT_STATUS_OPTIONS = [
+    { value: 'Pedido Enviado',  label: 'Pedido Enviado' },
+    { value: 'Pedido Recibido', label: 'Marcar como Recibido' },
+];
 
 export default function ClientOrdersPage() {
     const { user } = useAuth();
     const router = useRouter();
     const [orders, setOrders] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [showConfirmModal, setShowConfirmModal] = useState<string | null>(null);
-    const [note, setNote] = useState('');
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -31,36 +34,28 @@ export default function ClientOrdersPage() {
         fetchOrders();
     }, [user]);
 
-    const confirmReception = async (id: string) => {
+    const handleStatusChange = async (orderId: string, newStatus: string) => {
         try {
-            await api.patch(`/orders/${id}/status`, { status: "Entregado" });
-            setOrders(orders.map(o => (o.id === id ? { ...o, status: 'Entregado' } : o)));
-            setShowConfirmModal(null);
-            setNote('');
+            await api.patch(`/orders/${orderId}/status`, { status: newStatus });
+            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
         } catch (err) {
-            console.error('Error:', err);
-            alert('Error al confirmar');
+            console.error('Error updating status:', err);
+            alert('Error al actualizar el estado');
         }
     };
 
     const getStatusIcon = (status: string) => {
-        const s = status.toLowerCase();
-        if (s.includes('pedido') || s.includes('pending')) return <Clock className="text-blue-500" />;
-        if (s.includes('produ') || s.includes('processing')) return <Package className="text-orange-500" />;
-        if (s.includes('finalizado') || s.includes('completed')) return <CheckCircle2 className="text-green-500" />;
-        if (s.includes('entrega') || s.includes('delivery')) return <Truck className="text-purple-500" />;
-        if (s.includes('entregado') || s.includes('delivered')) return <CheckCircle2 className="text-primary" />;
-        return <AlertCircle />;
+        const s = (status || '').toLowerCase();
+        if (s.includes('enviado')) return <Clock className="text-blue-500" />;
+        if (s.includes('producción') || s.includes('processing')) return <Package className="text-orange-500" />;
+        if (s.includes('delivery') || s.includes('camino')) return <Truck className="text-purple-500" />;
+        if (s.includes('recibido') || s.includes('entregado')) return <CheckCircle2 className="text-green-500" />;
+        return <AlertCircle className="text-muted-foreground" />;
     };
 
-    const getStatusLabel = (status: string) => {
-        const s = status.toLowerCase();
-        if (s === 'pending' || s === 'pedido') return 'Pedido Recibido';
-        if (s === 'processing' || s === 'en producción') return 'En Producción';
-        if (s === 'completed' || s === 'finalizado') return 'Finalizado';
-        if (s === 'delivery' || s === 'en entrega') return 'En Entrega';
-        if (s === 'delivered' || s === 'entregado') return 'Entregado';
-        return status;
+    const isClientEditable = (status: string) => {
+        const s = (status || '').toLowerCase();
+        return s.includes('enviado') || s.includes('delivery') || s.includes('camino');
     };
 
     return (
@@ -88,8 +83,12 @@ export default function ClientOrdersPage() {
                                         <div>
                                             <div className="flex items-center gap-2 mb-1">
                                                 <h3 className="text-xl font-bold">Orden #{order.id.slice(0, 8)}</h3>
-                                                <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${order.status.toLowerCase().includes('entregado') ? 'bg-green-100 text-green-700' : 'bg-primary/10 text-primary'}`}>
-                                                    {getStatusLabel(order.status)}
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
+                                                    (order.status || '').toLowerCase().includes('recibido') || (order.status || '').toLowerCase().includes('entregado')
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : 'bg-primary/10 text-primary'
+                                                }`}>
+                                                    {order.status || 'Pedido Enviado'}
                                                 </span>
                                             </div>
                                             <p className="text-sm text-muted-foreground font-medium">Realizado el {new Date(order.created_at).toLocaleDateString()}</p>
@@ -107,25 +106,33 @@ export default function ClientOrdersPage() {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-3 w-full md:w-auto">
-                                        <button 
+                                    <div className="flex items-center gap-3 w-full md:w-auto flex-wrap">
+                                        {/* Client status dropdown — visible when order can be confirmed */}
+                                        {isClientEditable(order.status) && (
+                                            <div className="relative flex-1 md:flex-none">
+                                                <select
+                                                    value={order.status}
+                                                    onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                                                    className="appearance-none w-full pl-4 pr-8 py-3 bg-primary/5 border border-primary/20 rounded-xl text-xs font-black uppercase tracking-widest text-primary cursor-pointer hover:bg-primary/10 transition-all outline-none"
+                                                >
+                                                    {CLIENT_STATUS_OPTIONS.map(opt => (
+                                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary pointer-events-none" />
+                                            </div>
+                                        )}
+
+                                        <button
                                             onClick={() => router.push(`/orders/${order.id}`)}
                                             className="flex-1 md:flex-none p-3 bg-muted text-foreground rounded-xl hover:bg-border transition-colors flex items-center justify-center gap-2"
                                         >
                                             <Eye size={18} /> <span className="md:hidden">Ver Detalle</span>
                                         </button>
-                                        {(order.status === 'delivery' || order.status === 'En Entrega') && (
-                                            <button
-                                                onClick={() => setShowConfirmModal(order.id)}
-                                                className="flex-1 md:flex-none px-6 py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-lg hover:bg-black transition-all"
-                                            >
-                                                Confirmar Recepción
-                                            </button>
-                                        )}
                                     </div>
                                 </div>
 
-                                {(order.status.toLowerCase().includes('entregado')) && order.payment_due_date && (
+                                {((order.status || '').toLowerCase().includes('recibido') || (order.status || '').toLowerCase().includes('entregado')) && order.payment_due_date && (
                                     <div className="bg-primary/5 px-8 py-4 border-t border-primary/10 flex justify-between items-center">
                                         <p className="text-xs font-bold text-primary flex items-center gap-2">
                                             <Clock size={14} /> Este pedido deberá ser pagado antes del: <span className="underline uppercase">{order.payment_due_date}</span>
@@ -139,52 +146,10 @@ export default function ClientOrdersPage() {
                         <div className="py-20 text-center bg-muted/20 rounded-3xl border border-dashed border-border flex flex-col items-center">
                             <ShoppingBag className="text-muted-foreground/30 mb-4" size={48} />
                             <p className="text-muted-foreground font-medium mb-6">Aún no has realizado ningún pedido.</p>
-                            <button 
-                                onClick={() => router.push('/')}
-                                className="premium-button py-3 px-8"
-                            >
-                                Empezar a comprar
-                            </button>
+                            <button onClick={() => router.push('/')} className="premium-button py-3 px-8">Empezar a comprar</button>
                         </div>
                     )}
                 </div>
-
-                {/* Modal Confirmación */}
-                {showConfirmModal && (
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-fade-in">
-                            <div className="p-8 text-center border-b border-border">
-                                <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <CheckCircle2 size={40} />
-                                </div>
-                                <h2 className="text-2xl font-bold mb-2">¿Recibiste tu pedido?</h2>
-                                <p className="text-sm text-muted-foreground">Confirma que el pedido ha llegado a tus manos en perfectas condiciones.</p>
-                            </div>
-
-                            <div className="p-8 space-y-4">
-                                <label className="block text-xs font-black text-muted-foreground uppercase mb-1 flex items-center gap-1">
-                                    <MessageSquareQuote size={14} /> ¿Alguna nota sobre el pedido?
-                                </label>
-                                <textarea
-                                    className="w-full p-4 bg-muted rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm h-24"
-                                    placeholder="Excelente calidad, gracias..."
-                                    value={note}
-                                    onChange={(e) => setNote(e.target.value)}
-                                />
-                            </div>
-
-                            <div className="p-8 bg-muted/10 flex gap-4">
-                                <button onClick={() => setShowConfirmModal(null)} className="flex-1 py-4 font-bold text-muted-foreground hover:bg-muted transition-all">Cancelar</button>
-                                <button
-                                    onClick={() => confirmReception(showConfirmModal)}
-                                    className="flex-1 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl hover:bg-black transition-all"
-                                >
-                                    Sí, Recibido
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </main>
         </div>
     );

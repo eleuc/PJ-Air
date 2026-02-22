@@ -82,9 +82,18 @@ export class UsersService {
     return this.profileRepository.save(profile);
   }
 
-  async updateRole(id: string, role: any): Promise<User> {
+  async updateRole(id: string, role: string): Promise<User> {
     const user = await this.findOne(id);
+    user.role = role;
     const result = await this.userRepository.save(user);
     return Array.isArray(result) ? result[0] : result;
+  }
+
+  async findByEmailWithRole(email: string): Promise<User | null> {
+    return this.userRepository.findOne({ 
+      where: { email },
+      select: ['id', 'email', 'password', 'role'],
+      relations: ['profile']
+    });
   }
 }

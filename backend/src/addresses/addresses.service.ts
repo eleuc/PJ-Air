@@ -26,6 +26,13 @@ export class AddressesService {
     return this.addressRepository.save(address);
   }
 
+  async update(id: string, addressData: any) {
+    const address = await this.addressRepository.findOne({ where: { id } });
+    if (!address) throw new NotFoundException('Address not found');
+    Object.assign(address, addressData);
+    return this.addressRepository.save(address);
+  }
+
   async delete(id: string) {
     const address = await this.addressRepository.findOne({ where: { id } });
     if (!address) throw new NotFoundException('Address not found');
