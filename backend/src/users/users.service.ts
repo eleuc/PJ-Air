@@ -39,10 +39,9 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    // We must explicitly select the password because it is hidden by default in the entity
     return this.userRepository.findOne({ 
       where: { email },
-      select: ['id', 'email', 'password'],
+      select: ['id', 'email', 'password', 'role'],
       relations: ['profile']
     });
   }
@@ -55,7 +54,7 @@ export class UsersService {
     // Check username
     return this.userRepository.findOne({
       where: { profile: { username: identifier } },
-      select: ['id', 'email', 'password'],
+      select: ['id', 'email', 'password', 'role'],
       relations: ['profile']
     });
   }
