@@ -25,17 +25,29 @@ interface ProductForm {
     image: string;
 }
 
-const CATEGORIES = ['Croissants', 'Postres', 'Pasteles'];
+const LS_CATS_KEY = 'admin_custom_categories';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 const emptyForm: ProductForm = {
-    name: '', category: 'Croissants', price: '', description: '', image: ''
+    name: '', category: '', price: '', description: '', image: ''
 };
+
+function getDynamicCategories(products: Product[]): string[] {
+    const fromProducts = [...new Set(products.map(p => p.category).filter(Boolean))];
+    try {
+        const custom: string[] = JSON.parse(localStorage.getItem(LS_CATS_KEY) || '[]');
+        const all = [...new Set([...fromProducts, ...custom])];
+        return all.sort();
+    } catch {
+        return fromProducts.sort();
+    }
+}
 
 export default function AdminProductsPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -69,7 +81,9 @@ export default function AdminProductsPage() {
             setLoading(true);
             setError(null);
             const data = await api.get('/products');
-            setProducts(data || []);
+            const list = data || [];
+            setProducts(list);
+            setCategories(getDynamicCategories(list));
         } catch (err: any) {
             setError(err.message || 'No se pudieron cargar los productos');
         } finally {
@@ -347,7 +361,8 @@ export default function AdminProductsPage() {
                                 <div>
                                     <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Categoría *</label>
                                     <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium">
-                                        {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                        <option value="">— Seleccionar —</option>
+                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
                                     </select>
                                 </div>
                                 <div>
