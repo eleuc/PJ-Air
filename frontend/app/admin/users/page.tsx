@@ -142,6 +142,7 @@ export default function AdminUsersPage() {
                                     <th className="px-6 py-4">Email</th>
                                     <th className="px-6 py-4">Teléfono</th>
                                     <th className="px-6 py-4">Rol</th>
+                                    <th className="px-6 py-4">Actividad</th>
                                     <th className="px-6 py-4 text-right">Detalle</th>
                                 </tr>
                             </thead>
@@ -184,6 +185,18 @@ export default function AdminUsersPage() {
                                                 >
                                                     {ROLES.map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
                                                 </select>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-4 text-xs font-bold">
+                                                <div className="flex items-center gap-1.5 text-slate-500" title="Direcciones">
+                                                    <MapPin size={14} className="text-slate-400" />
+                                                    {u.addresses?.length || 0}
+                                                </div>
+                                                <div className="flex items-center gap-1.5 text-slate-500" title="Pedidos">
+                                                    <ShoppingBag size={14} className="text-slate-400" />
+                                                    {u.orders?.length || 0}
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
