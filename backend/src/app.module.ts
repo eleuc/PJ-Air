@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -23,12 +23,16 @@ import { OrderItem } from './orders/order-item.entity';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: '../database.sqlite',
-      entities: [Product, User, Profile, Address, Order, OrderItem],
-      synchronize: false,
-      logging: false,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'sqlite',
+        database: configService.get<string>('DATABASE_PATH') || '../database.sqlite',
+        entities: [Product, User, Profile, Address, Order, OrderItem],
+        synchronize: configService.get<string>('NODE_ENV') !== 'production',
+        logging: false,
+      }),
     }),
     UsersModule,
     ProductsModule,

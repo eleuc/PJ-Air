@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MapPin, Search, ChevronRight, Navigation, Loader2, Map as MapIcon, RotateCcw } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
@@ -33,10 +33,7 @@ const mapOptions = {
     ]
 };
 
-// Removed Supabase import as we now use local API
-// import { supabase } from '@/lib/supabase';
-
-export default function NewAddressPage() {
+function NewAddressContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirect = searchParams.get('redirect');
@@ -301,5 +298,17 @@ export default function NewAddressPage() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function NewAddressPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa]">
+                <Loader2 className="animate-spin text-primary" size={40} />
+            </div>
+        }>
+            <NewAddressContent />
+        </Suspense>
     );
 }
