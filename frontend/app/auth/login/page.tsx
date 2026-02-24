@@ -29,7 +29,15 @@ export default function LoginPage() {
 
             if (data.session) {
                 updateLocalSession(data);
-                router.push('/');
+                
+                // Get role for redirection
+                const userDetail = await api.get(`/users/${data.user.id}`);
+                const role = userDetail.role || 'client';
+
+                if (role === 'admin') router.push('/admin');
+                else if (role === 'produccion') router.push('/produccion');
+                else if (role === 'delivery') router.push('/delivery');
+                else router.push('/');
             }
         } catch (err: any) {
             setError(err.message || 'Error al iniciar sesión');

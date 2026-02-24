@@ -15,7 +15,7 @@ export class OrdersService {
 
   async findAll(): Promise<Order[]> {
     return this.orderRepository.find({ 
-      relations: ['items', 'items.product', 'user', 'user.profile', 'delivery_user', 'delivery_user.profile'],
+      relations: ['items', 'items.product', 'user', 'user.profile', 'delivery_user', 'delivery_user.profile', 'address'],
       order: { created_at: 'DESC' }
     });
   }
@@ -77,9 +77,6 @@ export class OrdersService {
   async assignDelivery(id: string, deliveryUserId: string): Promise<Order> {
     const order = await this.findOne(id);
     order.delivery_user_id = deliveryUserId;
-    if (order.status === 'pending' || order.status === 'Pedido') {
-      order.status = 'En Entrega';
-    }
     return this.orderRepository.save(order);
   }
 

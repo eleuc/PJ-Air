@@ -7,21 +7,46 @@ import { ShoppingBag, Layers, Users, TrendingUp, ArrowRight, Loader2 } from 'luc
 import { api } from '@/lib/api';
 
 export default function AdminDashboardPage() {
-    const [productCount, setProductCount] = useState<number | null>(null);
+    const [statsData, setStatsData] = useState({
+        products: 0,
+        categories: 0,
+        users: 0,
+        orders: 0
+    });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        api.get('/products')
-            .then((data: any[]) => setProductCount(data.length))
-            .catch(() => setProductCount(0))
-            .finally(() => setLoading(false));
+        const fetchStats = async () => {
+            try {
+                const [products, users, orders] = await Promise.all([
+                    api.get('/products'),
+                    api.get('/users'),
+                    api.get('/orders')
+                ]);
+
+                // Calculate unique categories from products
+                const categories = products ? Array.from(new Set(products.map((p: any) => p.category))).length : 0;
+
+                setStatsData({
+                    products: products?.length || 0,
+                    categories: categories,
+                    users: users?.length || 0,
+                    orders: orders?.length || 0
+                });
+            } catch (err) {
+                console.error('Error fetching dashboard stats:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
     }, []);
 
     const stats = [
-        { label: 'Productos', value: loading ? '...' : productCount, icon: ShoppingBag, href: '/admin/products', color: 'text-primary bg-primary/10' },
-        { label: 'Categorías', value: '—', icon: Layers, href: '/admin/categories', color: 'text-violet-600 bg-violet-50' },
-        { label: 'Usuarios', value: '—', icon: Users, href: '/admin/users', color: 'text-emerald-600 bg-emerald-50' },
-        { label: 'Pedidos', value: '—', icon: TrendingUp, href: '/admin/routes', color: 'text-amber-600 bg-amber-50' },
+        { label: 'Productos', value: loading ? '...' : statsData.products, icon: ShoppingBag, href: '/admin/products', color: 'text-primary bg-primary/10' },
+        { label: 'Categorías', value: loading ? '...' : statsData.categories, icon: Layers, href: '/admin/categories', color: 'text-violet-600 bg-violet-50' },
+        { label: 'Usuarios', value: loading ? '...' : statsData.users, icon: Users, href: '/admin/users', color: 'text-emerald-600 bg-emerald-50' },
+        { label: 'Pedidos', value: loading ? '...' : statsData.orders, icon: TrendingUp, href: '/admin/orders', color: 'text-amber-600 bg-amber-50' },
     ];
 
     return (

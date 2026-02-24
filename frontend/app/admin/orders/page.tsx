@@ -39,13 +39,14 @@ interface DeliveryUser {
 }
 
 const STATUS_OPTIONS = [
-    'Pedido', 'En Producción', 'Finalizado', 'En Entrega', 'Entregado', 'Cancelado'
+    'Pedido', 'En Producción', 'Finalizado', 'En camino', 'En Entrega', 'Entregado', 'Cancelado'
 ];
 
 const STATUS_COLORS: Record<string, string> = {
     'Pedido':        'bg-blue-50 text-blue-600 border-blue-100',
     'En Producción': 'bg-violet-50 text-violet-600 border-violet-100',
-    'Finalizado':    'bg-amber-50 text-amber-600 border-amber-100',
+    'Finalizado':    'bg-teal-50 text-teal-600 border-teal-100',
+    'En camino':      'bg-orange-50 text-orange-600 border-orange-100',
     'En Entrega':    'bg-indigo-50 text-indigo-600 border-indigo-100',
     'Entregado':     'bg-green-50 text-green-600 border-green-100',
     'Cancelado':     'bg-red-50 text-red-600 border-red-100',
@@ -198,12 +199,20 @@ export default function AdminOrdersPage() {
         if (!selectedOrder) return;
         try {
             setSaving(true);
-            await api.patch(`/orders/${selectedOrder.id}/assign`, { deliveryUserId: deliveryId });
-            const updated = await api.get(`/orders/${selectedOrder.id}`);
+            // Optimistic update for instant UI feedback
+            const optimisticOrder = { ...selectedOrder, delivery_user_id: deliveryId };
+            setSelectedOrder(optimisticOrder);
+
+            const updated = await api.patch(`/orders/${selectedOrder.id}/assign`, { deliveryUserId: deliveryId });
+            
+            // Sync with final server state
             setOrders(prev => prev.map(o => o.id === selectedOrder.id ? updated : o));
             setSelectedOrder(updated);
             showToast('✅ Delivery asignado');
         } catch (err) {
+            // Revert on error
+            const original = await api.get(`/orders/${selectedOrder.id}`);
+            setSelectedOrder(original);
             showToast('❌ Error al asignar delivery', 'error');
         } finally {
             setSaving(false);
@@ -457,7 +466,9 @@ export default function AdminOrdersPage() {
                                                     </div>
                                                     <div>
                                                         <p className={`text-sm font-black leading-tight ${selectedOrder.delivery_user_id === delivery.id ? 'text-white' : 'text-slate-700'}`}>{delivery.profile?.full_name}</p>
-                                                        <p className={`text-[10px] font-bold mt-0.5 ${selectedOrder.delivery_user_id === delivery.id ? 'text-white/70' : 'text-primary'}`}>Activo</p>
+                                                        <p className={`text-[10px] font-bold mt-0.5 ${selectedOrder.delivery_user_id === delivery.id ? 'text-white/90' : 'text-primary'}`}>
+                                                            {selectedOrder.delivery_user_id === delivery.id ? '● ASIGNADO' : 'Disponible'}
+                                                        </p>
                                                     </div>
                                                 </div>
                                                 <ChevronRight size={18} className={selectedOrder.delivery_user_id === delivery.id ? 'text-white' : 'text-slate-300 group-hover:translate-x-1 group-hover:text-primary transition-all'} />
