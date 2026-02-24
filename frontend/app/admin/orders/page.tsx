@@ -270,6 +270,7 @@ export default function AdminOrdersPage() {
                                     <th className="px-8 py-5">Estado</th>
                                     <th className="px-8 py-5">Repartidor</th>
                                     <th className="px-8 py-5 text-right">Total</th>
+                                    <th className="px-8 py-5 text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
@@ -319,6 +320,25 @@ export default function AdminOrdersPage() {
                                         </td>
                                         <td className="px-8 py-5 text-right">
                                             <span className="text-lg font-black text-primary">${Number(order.total || 0).toFixed(2)}</span>
+                                        </td>
+                                        <td className="px-8 py-5 text-right" onClick={e => e.stopPropagation()}>
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button 
+                                                    onClick={() => openOrderDetail(order)}
+                                                    className="p-2 bg-slate-100 text-slate-400 hover:bg-primary/10 hover:text-primary rounded-xl transition-all"
+                                                    title="Ver detalles"
+                                                >
+                                                    <ChevronRight size={18} />
+                                                </button>
+                                                {!order.delivery_user && (
+                                                    <button 
+                                                        onClick={() => openOrderDetail(order)}
+                                                        className="px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-lg text-[10px] font-black uppercase hover:bg-primary/20 transition-all"
+                                                    >
+                                                        Asignar
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
