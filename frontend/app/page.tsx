@@ -10,18 +10,31 @@ import { CategoryFilters } from '@/components/catalog/CategoryFilters';
 import { CatalogHeader } from '@/components/catalog/CatalogHeader';
 import { useLanguage } from '@/context/LanguageContext';
 
-const BASE_CATEGORIES = ['Croissants', 'Postres', 'Pasteles'];
 
 export default function Home() {
     const { addToCart, cart } = useCart();
-    const { t } = useLanguage();
+    const { t, locale } = useLanguage();
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [activeCategory, setActiveCategory] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
-    const CATEGORIES = [t.catalog.allCategories, ...BASE_CATEGORIES];
     const [addedIds, setAddedIds] = useState<number[]>([]);
     const [quantities, setQuantities] = useState<Record<number, any>>({});
+
+    // Build unique bilingual category options from products
+    const categoryOptions = React.useMemo(() => {
+        const map: Record<string, string> = {};
+        products.forEach(p => {
+            if (p.category) map[p.category] = (p as any).category_en || p.category;
+        });
+        return Object.entries(map).sort(([a], [b]) => a.localeCompare(b)).map(([es, en]) => ({
+            key: es,
+            label: locale === 'en' ? en : es,
+        }));
+    }, [products, locale]);
+
+    const CATEGORIES = [t.catalog.allCategories, ...categoryOptions.map(c => c.label)];
+
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -68,8 +81,18 @@ export default function Home() {
         setTimeout(() => setAddedIds(prev => prev.filter(id => id !== product.id)), 2000);
     };
 
+    // Reset active category to 'all' when language changes
+    React.useEffect(() => { setActiveCategory('all'); }, [locale]);
+
     const filteredProducts = products
-        .filter(p => activeCategory === 'all' || activeCategory === t.catalog.allCategories || p.category === activeCategory)
+        .filter(p => {
+            if (activeCategory === 'all' || activeCategory === t.catalog.allCategories) return true;
+            // Find the canonical ES key for the active label
+            const match = categoryOptions.find(c => c.label === activeCategory);
+            if (match) return p.category === match.key;
+            // Fallback: direct match
+            return p.category === activeCategory || (p as any).category_en === activeCategory;
+        })
         .filter(p => !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return (
@@ -83,7 +106,9 @@ export default function Home() {
                         <CategoryFilters 
                             categories={CATEGORIES} 
                             activeCategory={activeCategory} 
-                            onCategoryChange={setActiveCategory}
+                            onCategoryChange={(cat) => {
+                                setActiveCategory(cat === t.catalog.allCategories ? 'all' : cat);
+                            }}
                             searchQuery={searchQuery}
                             onSearchChange={setSearchQuery}
                         />

@@ -29,7 +29,10 @@ export const ProductCard = ({
     onAddToCart,
     animationDelay
 }: ProductCardProps) => {
-    const { t } = useLanguage();
+    const { t, locale } = useLanguage();
+    const categoryLabel = locale === 'en'
+        ? ((product as any).category_en || product.category)
+        : product.category;
     return (
         <div 
             className="group jhoanes-card bg-white/40 p-6 border-transparent hover:border-primary/10 hover:bg-white animate-slide-in flex flex-col h-full"
@@ -55,7 +58,7 @@ export const ProductCard = ({
             {/* Info Section */}
             <div className="flex-1 flex flex-col">
                 <div className="flex items-center gap-2 mb-3">
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/60 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10">{product.category}</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/60 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10">{categoryLabel}</span>
                 </div>
                 <h3 className="text-2xl font-bold font-serif mb-3 tracking-tighter group-hover:text-primary transition-colors leading-tight">{product.name}</h3>
                 

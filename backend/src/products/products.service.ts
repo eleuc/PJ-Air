@@ -61,4 +61,16 @@ export class ProductsService {
     if (!product) return null;
     return this.productRepository.remove(product);
   }
+
+  /** Update category (ES) and category_en (EN) on all products with oldName */
+  async renameCategory(oldName: string, newName: string, newNameEn: string) {
+    const products = await this.productRepository.find({ where: { category: oldName } });
+    if (products.length === 0) return { updated: 0 };
+    await Promise.all(
+      products.map(p =>
+        this.productRepository.update(p.id, { category: newName, category_en: newNameEn })
+      )
+    );
+    return { updated: products.length };
+  }
 }

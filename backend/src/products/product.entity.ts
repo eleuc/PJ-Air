@@ -11,6 +11,9 @@ export class Product {
   @Column({ nullable: true })
   category: string;
 
+  @Column({ nullable: true })
+  category_en: string;
+
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 

@@ -29,6 +29,12 @@ export class ProductsController {
         return this.productsService.create(body);
     }
 
+    /** Batch-rename a category across all products */
+    @Patch('rename-category')
+    async renameCategory(@Body() body: { oldName: string; newName: string; newNameEn: string }) {
+        return this.productsService.renameCategory(body.oldName, body.newName, body.newNameEn);
+    }
+
     @Patch(':id')
     async update(@Param('id') id: string, @Body() body: any) {
         return this.productsService.update(parseInt(id), body);
