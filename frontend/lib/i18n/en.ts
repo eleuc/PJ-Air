@@ -33,6 +33,12 @@ const en = {
     price: 'Price',
     quantity: 'Qty',
     noProducts: 'No products found.',
+    viewAll: 'View all',
+    promotions: 'Promotions & Offers',
+    promotionsSubtitle: 'The best deals just for you',
+    noProductsInCategory: 'No products in this category yet.',
+    searchResults: 'Search results for',
+    allProducts: 'All Products',
   },
 
   // ── Product Card / Detail ───────────────────────────────────────────────────

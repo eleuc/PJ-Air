@@ -35,6 +35,12 @@ const es: Translations = {
     price: 'Precio',
     quantity: 'Cantidad',
     noProducts: 'No se encontraron productos.',
+    viewAll: 'Ver todos',
+    promotions: 'Promociones y Ofertas',
+    promotionsSubtitle: 'Las mejores ofertas solo para ti',
+    noProductsInCategory: 'No hay productos en esta categoría aún.',
+    searchResults: 'Resultados de búsqueda para',
+    allProducts: 'Todos los Productos',
   },
 
   // ── Product Card / Detail ───────────────────────────────────────────────────
