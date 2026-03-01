@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./database.sqlite:/app/database.sqlite
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+      - SUPABASE_URL=https://jdeojeykyapjhvkhrxnc.supabase.co
+      - SUPABASE_KEY=sb_publishable_Uf8u5ScK60j6Xnbv1xB_bQ_aH9tM82R
+      - GOOGLE_MAPS_KEY=AIzaSyCMfaV6rGZZvsXEqJKWcHCANCUuEwWBc-k
+      - DATABASE_PATH=/app/database.sqlite
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - NEXT_PUBLIC_API_URL=http://187.124.67.53:3001
+        - NEXT_PUBLIC_SUPABASE_URL=https://jdeojeykyapjhvkhrxnc.supabase.co
+        - NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_Uf8u5ScK60j6Xnbv1xB_bQ_aH9tM82R
+        - NEXT_PUBLIC_GOOGLE_MAPS_KEY=AIzaSyCMfaV6rGZZvsXEqJKWcHCANCUuEwWBc-k
+    ports:
+      - "80:3000"
+    depends_on:
+      - backend
+    restart: always
