@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, UnauthorizedException, BadRequestException, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -21,5 +21,22 @@ export class AuthController {
       throw new BadRequestException('Email and password are required');
     }
     return this.authService.login(email, password);
+  }
+
+  @Post('recover-password')
+  async recoverPassword(@Body() body: { identifier: string }) {
+    if (!body.identifier) {
+      throw new BadRequestException('Identifier is required');
+    }
+    return this.authService.recoverPassword(body.identifier);
+  }
+
+  @Patch('change-password')
+  async changePassword(@Body() body: any) {
+    const { userId, currentPassword, newPassword } = body;
+    if (!userId || !currentPassword || !newPassword) {
+      throw new BadRequestException('All fields are required');
+    }
+    return this.authService.changePassword(userId, currentPassword, newPassword);
   }
 }

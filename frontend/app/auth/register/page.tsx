@@ -87,10 +87,18 @@ export default function RegisterPage() {
                     error={error}
                 />
 
-                <div className="mt-12 pt-8 border-t border-border/40 text-center">
+                <div className="mt-12 pt-8 border-t border-border/40 text-center space-y-4">
                     <p className="text-sm text-muted-foreground font-medium">
                         ¿Ya eres parte de Jhoanes? <Link href="/auth/login" className="text-primary font-bold hover:underline ml-1">Inicia sesión aquí</Link>
                     </p>
+                    <div className="pt-2">
+                        <Link 
+                            href="/auth/forgot-password"
+                            className="text-[10px] font-black text-muted-foreground hover:text-primary hover:underline uppercase tracking-widest"
+                        >
+                            ¿Olvidaste tu contraseña?
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

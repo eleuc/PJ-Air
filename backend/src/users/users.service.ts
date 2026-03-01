@@ -95,4 +95,8 @@ export class UsersService {
       relations: ['profile']
     });
   }
+
+  async updatePassword(userId: string, newPassword: string): Promise<void> {
+    await this.userRepository.update(userId, { password: newPassword });
+  }
 }

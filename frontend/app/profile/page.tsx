@@ -19,7 +19,14 @@ export default function ProfilePage() {
         username: '',
         phone: ''
     });
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
     const [message, setMessage] = useState({ type: '', text: '' });
+    const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
 
     const [isUploading, setIsUploading] = useState(false);
 
@@ -95,6 +102,35 @@ export default function ProfilePage() {
             setMessage({ type: 'error', text: 'Error al actualizar el perfil' });
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const handleChangePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user) return;
+        
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            setPasswordMessage({ type: 'error', text: 'Las contraseñas nuevas no coinciden' });
+            return;
+        }
+        
+        setIsChangingPassword(true);
+        setPasswordMessage({ type: '', text: '' });
+        
+        try {
+            await api.patch('/auth/change-password', {
+                userId: user.id,
+                currentPassword: passwordData.currentPassword,
+                newPassword: passwordData.newPassword
+            });
+            setPasswordMessage({ type: 'success', text: 'Contraseña actualizada correctamente' });
+            setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+            setTimeout(() => setPasswordMessage({ type: '', text: '' }), 3000);
+        } catch (err: any) {
+            console.error('Error changing password:', err);
+            setPasswordMessage({ type: 'error', text: err.message || 'Error al cambiar la contraseña' });
+        } finally {
+            setIsChangingPassword(false);
         }
     };
 
@@ -278,6 +314,62 @@ export default function ProfilePage() {
                                     </div>
                                 )}
                             </div>
+                        </div>
+
+                        {/* Change Password Card */}
+                        <div className="bg-card rounded-[32px] border border-border p-8 shadow-sm">
+                            <h3 className="text-xl font-bold font-serif mb-8 flex items-center gap-2">
+                                <Plus className="text-primary" size={24} /> Seguridad de la Cuenta
+                            </h3>
+
+                            <form onSubmit={handleChangePassword} className="space-y-6">
+                                {passwordMessage.text && (
+                                    <div className={`p-4 rounded-2xl text-xs font-bold text-center animate-fade-in ${passwordMessage.type === 'success' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-red-50 text-red-600 border border-red-100'}`}>
+                                        {passwordMessage.text}
+                                    </div>
+                                )}
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">Contraseña Actual</label>
+                                    <input 
+                                        type="password"
+                                        className="premium-input px-6 h-14 font-bold"
+                                        value={passwordData.currentPassword}
+                                        onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">Nueva Contraseña</label>
+                                        <input 
+                                            type="password"
+                                            className="premium-input px-6 h-14 font-bold"
+                                            value={passwordData.newPassword}
+                                            onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">Confirmar Nueva Contraseña</label>
+                                        <input 
+                                            type="password"
+                                            className="premium-input px-6 h-14 font-bold"
+                                            value={passwordData.confirmPassword}
+                                            onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <button 
+                                    disabled={isChangingPassword}
+                                    className="w-full premium-button bg-black text-white py-4 shadow-xl flex items-center justify-center gap-2"
+                                >
+                                    {isChangingPassword ? <Loader2 className="animate-spin" size={20} /> : <>Actualizar Contraseña</>}
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

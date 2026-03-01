@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { User, Lock, Loader2, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 interface LoginFormProps {
     identifier: string;
@@ -20,7 +21,7 @@ export const LoginForm = ({
     setPassword,
     onSubmit,
     isLoading,
-    error
+    error,
 }: LoginFormProps) => {
     return (
         <form onSubmit={onSubmit} className="space-y-8">
@@ -47,7 +48,6 @@ export const LoginForm = ({
             <div className="space-y-3">
                 <div className="flex justify-between items-center ml-1">
                     <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest text-foreground/70">Contraseña</label>
-                    <button type="button" className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">¿Olvidaste tu contraseña?</button>
                 </div>
                 <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
@@ -62,7 +62,7 @@ export const LoginForm = ({
                 </div>
             </div>
 
-            <div className="pt-4">
+            <div className="pt-4 space-y-4">
                 <button
                     disabled={isLoading}
                     className="w-full premium-button jhoanes-gradient text-white text-sm uppercase tracking-widest py-4 flex items-center justify-center gap-3"
@@ -71,6 +71,15 @@ export const LoginForm = ({
                         <>Ingresar <ArrowRight size={20} /></>
                     )}
                 </button>
+
+                <div className="text-center">
+                    <Link 
+                        href="/auth/forgot-password"
+                        className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest"
+                    >
+                        ¿Olvidaste tu contraseña?
+                    </Link>
+                </div>
             </div>
         </form>
     );

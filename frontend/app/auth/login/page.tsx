@@ -11,9 +11,6 @@ import { LoginForm } from '@/components/auth/LoginForm';
 export default function LoginPage() {
     const router = useRouter();
     const { updateLocalSession } = useAuth();
-    const [isLoading, setIsLoading] = useState(false);
-    const [identifier, setIdentifier] = useState('');
-    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -45,6 +42,10 @@ export default function LoginPage() {
             setIsLoading(false);
         }
     };
+    
+    const [isLoading, setIsLoading] = useState(false);
+    const [identifier, setIdentifier] = useState('');
+    const [password, setPassword] = useState('');
 
     return (
         <div className="min-h-screen bg-secondary/20 flex items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
