@@ -5,10 +5,13 @@ import Link from 'next/link';
 import { ShoppingCart, User, Menu, X, ShoppingBag, Plus, LayoutDashboard, Package, Users, ClipboardList, Truck, Map } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 
 export default function Navbar() {
     const { getCartCount } = useCart();
     const { user, profile, signOut } = useAuth();
+    const { t } = useLanguage();
     const cartCount = getCartCount();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -23,29 +26,25 @@ export default function Navbar() {
                             {/* Logo */}
                             <Link href="/" className="flex flex-col group">
                                 <span className="text-2xl font-black tracking-tight text-foreground leading-none group-hover:text-primary transition-colors">Jhoanes</span>
-                                <span className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground mt-0.5">Sistema de Pedidos</span>
+                                <span className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground mt-0.5">{t.nav.orderSystem}</span>
                             </Link>
 
                             <div className="hidden lg:flex items-center gap-8 ml-8">
-                                <Link href="/" className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70 hover:text-primary transition-colors">Catalogo</Link>
-                                <Link href="/orders" className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70 hover:text-primary transition-colors">Pedidos</Link>
-                                <Link href="/map" className="text-[10px] font-black uppercase tracking-[0.2em] text-primary hover:text-primary/80 transition-colors bg-primary/5 px-3 py-1 rounded-full border border-primary/10">Mapa</Link>
+                                <Link href="/" className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70 hover:text-primary transition-colors">{t.nav.catalog}</Link>
+                                <Link href="/orders" className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70 hover:text-primary transition-colors">{t.nav.orders}</Link>
+                                <Link href="/map" className="text-[10px] font-black uppercase tracking-[0.2em] text-primary hover:text-primary/80 transition-colors bg-primary/5 px-3 py-1 rounded-full border border-primary/10">{t.nav.map}</Link>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-4">
+                            {/* Language Switcher */}
+                            <div className="hidden lg:block">
+                                <LanguageSwitcher variant="pill" />
+                            </div>
+
                             <div className="hidden lg:flex items-center gap-4 border-r border-border/40 pr-6 mr-2">
                                 {user ? (
                                     <div className="flex items-center gap-6">
-                                        <div className="flex items-center gap-3">
-                                            <Link href="/auth/login" className="text-[10px] font-black uppercase tracking-widest text-foreground/40 hover:text-primary transition-colors">
-                                                Ingresar
-                                            </Link>
-                                            <Link href="/auth/register" className="text-[10px] font-black uppercase tracking-widest text-foreground/40 hover:text-primary transition-colors">
-                                                Registro
-                                            </Link>
-                                        </div>
-                                        <div className="w-[1px] h-6 bg-border/40" />
                                         <div className="flex items-center gap-4">
                                             <Link href="/profile" className="flex flex-col items-end group/user">
                                                 <span className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover/user:text-primary transition-colors">{user.email?.split('@')[0]}</span>
@@ -53,7 +52,7 @@ export default function Navbar() {
                                                     onClick={(e) => { e.preventDefault(); signOut(); }}
                                                     className="text-[8px] font-black uppercase tracking-widest text-primary hover:underline"
                                                 >
-                                                    Cerrar Sesión
+                                                    {t.nav.logout}
                                                 </button>
                                             </Link>
                                             <Link href="/profile" className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary border border-primary/20 hover:bg-primary hover:text-white transition-all overflow-hidden">
@@ -67,15 +66,15 @@ export default function Navbar() {
                                     </div>
                                 ) : (
                                     <>
-                                        <Link href="/auth/login" className="text-[10px] font-black uppercase tracking-widest text-foreground/70 hover:text-primary transition-colors">Ingresar</Link>
-                                        <Link href="/auth/register" className="px-5 py-2 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full border border-primary/20 hover:bg-primary hover:text-white transition-all">Registrarse</Link>
+                                        <Link href="/auth/login" className="text-[10px] font-black uppercase tracking-widest text-foreground/70 hover:text-primary transition-colors">{t.nav.login}</Link>
+                                        <Link href="/auth/register" className="px-5 py-2 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full border border-primary/20 hover:bg-primary hover:text-white transition-all">{t.nav.register}</Link>
                                     </>
                                 )}
                             </div>
 
                             {user && (
                                 <Link href="/orders" className="hidden sm:flex items-center gap-2 px-6 py-2 bg-muted/50 rounded-full border border-border/50 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-muted transition-all">
-                                    Mis Pedidos
+                                    {t.nav.myOrders}
                                 </Link>
                             )}
 
@@ -97,7 +96,7 @@ export default function Navbar() {
                             <button
                                 onClick={() => setIsMenuOpen(true)}
                                 className="p-2 text-foreground hover:bg-muted rounded-full transition-all"
-                                aria-label="Abrir menú"
+                                aria-label="Open menu"
                             >
                                 <Menu size={22} strokeWidth={1.5} />
                             </button>
@@ -119,7 +118,7 @@ export default function Navbar() {
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-6 border-b border-border">
                     <div>
-                        <p className="font-black text-sm">{user ? user.email?.split('@')[0] : 'Menú'}</p>
+                        <p className="font-black text-sm">{user ? user.email?.split('@')[0] : t.nav.menu}</p>
                         {isAdmin && (
                             <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded-full">Admin</span>
                         )}
@@ -130,43 +129,49 @@ export default function Navbar() {
                 </div>
 
                 <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+                    {/* Language switcher in the panel */}
+                    <div className="px-3 py-2 flex items-center justify-between">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{t.common.language}</span>
+                        <LanguageSwitcher variant="pill" />
+                    </div>
+
                     {/* Common links */}
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground px-3 py-2">General</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground px-3 py-2">{t.nav.general}</p>
                     <Link href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-muted transition-all font-bold text-sm">
-                        <Package size={18} className="text-primary" /> Catálogo
+                        <Package size={18} className="text-primary" /> {t.nav.catalog}
                     </Link>
                     <Link href="/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-muted transition-all font-bold text-sm">
-                        <ClipboardList size={18} className="text-primary" /> Mis Pedidos
+                        <ClipboardList size={18} className="text-primary" /> {t.nav.myOrders}
                     </Link>
                     <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-muted transition-all font-bold text-sm">
-                        <User size={18} className="text-primary" /> Mi Perfil
+                        <User size={18} className="text-primary" /> {t.nav.myProfile}
                     </Link>
                     <Link href="/map" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-muted transition-all font-bold text-sm">
-                        <Map size={18} className="text-primary" /> Mapa de Zonas
+                        <Map size={18} className="text-primary" /> {t.nav.zoneMap}
                     </Link>
 
                     {/* Admin links */}
                     {isAdmin && (
                         <>
                             <div className="my-3 border-t border-border" />
-                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground px-3 py-2">Administración</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground px-3 py-2">{t.nav.administration}</p>
                             <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-primary/10 text-primary transition-all font-bold text-sm">
-                                <LayoutDashboard size={18} /> Panel Admin
+                                <LayoutDashboard size={18} /> {t.nav.adminPanel}
                             </Link>
                             <Link href="/admin/products" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-primary/10 text-primary transition-all font-bold text-sm">
-                                <Package size={18} /> Productos
+                                <Package size={18} /> {t.nav.products}
                             </Link>
                             <Link href="/admin/categories" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-primary/10 text-primary transition-all font-bold text-sm">
-                                <ClipboardList size={18} /> Categorías
+                                <ClipboardList size={18} /> {t.nav.categories}
                             </Link>
                             <Link href="/admin/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-primary/10 text-primary transition-all font-bold text-sm">
-                                <ShoppingCart size={18} /> Pedidos Admin
+                                <ShoppingCart size={18} /> {t.nav.adminOrders}
                             </Link>
                             <Link href="/admin/users" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-primary/10 text-primary transition-all font-bold text-sm">
-                                <Users size={18} /> Usuarios
+                                <Users size={18} /> {t.nav.users}
                             </Link>
                             <Link href="/admin/deliveries" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-primary/10 text-primary transition-all font-bold text-sm">
-                                <Truck size={18} /> Deliveries
+                                <Truck size={18} /> {t.nav.deliveries}
                             </Link>
                         </>
                     )}
@@ -179,7 +184,7 @@ export default function Navbar() {
                             onClick={() => { signOut(); setIsMenuOpen(false); }}
                             className="w-full py-3 text-center text-sm font-black uppercase tracking-widest text-red-500 hover:bg-red-50 rounded-xl transition-all"
                         >
-                            Cerrar Sesión
+                            {t.nav.logout}
                         </button>
                     </div>
                 )}

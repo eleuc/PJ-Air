@@ -4,11 +4,13 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Mail, ArrowLeft, Loader2, CheckCircle2, User } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ForgotPasswordPage() {
     const [identifier, setIdentifier] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
+    const { t } = useLanguage();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,9 +42,9 @@ export default function ForgotPasswordPage() {
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-[24px] mb-6 text-primary">
                         <Mail size={32} />
                     </div>
-                    <h1 className="text-3xl font-black font-serif mb-3 tracking-tighter">Recuperar Acceso</h1>
+                    <h1 className="text-3xl font-black font-serif mb-3 tracking-tighter">{t.forgotPassword.title}</h1>
                     <p className="text-muted-foreground font-medium text-sm px-4">
-                        Ingresa tu correo o nombre de usuario y te enviaremos tu clave directamente a tu email.
+                        {t.forgotPassword.subtitle}
                     </p>
                 </div>
 
@@ -59,7 +61,7 @@ export default function ForgotPasswordPage() {
                                 href="/auth/login" 
                                 className="inline-block mt-6 text-xs font-black uppercase tracking-widest text-primary hover:underline"
                             >
-                                Volver al Inicio
+                                {t.forgotPassword.successLink}
                             </Link>
                         )}
                     </div>
@@ -67,7 +69,7 @@ export default function ForgotPasswordPage() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-3">
                             <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1 text-foreground/70">
-                                Email o Usuario
+                                {t.forgotPassword.emailOrUser}
                             </label>
                             <div className="relative">
                                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
@@ -86,14 +88,14 @@ export default function ForgotPasswordPage() {
                             disabled={isLoading}
                             className="w-full premium-button jhoanes-gradient text-white text-sm uppercase tracking-widest py-4 flex items-center justify-center gap-3 shadow-lg"
                         >
-                            {isLoading ? <Loader2 className="animate-spin" size={20} /> : "Enviar Contraseña"}
+                            {isLoading ? <Loader2 className="animate-spin" size={20} /> : t.forgotPassword.submit}
                         </button>
                     </form>
                 )}
 
                 <div className="mt-10 pt-8 border-t border-border/40 text-center">
                     <Link href="/auth/login" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
-                        <ArrowLeft size={14} /> Regresar al Login
+                        <ArrowLeft size={14} /> {t.forgotPassword.backToLogin}
                     </Link>
                 </div>
             </div>

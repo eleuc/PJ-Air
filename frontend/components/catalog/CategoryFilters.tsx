@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Search } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface CategoryFiltersProps {
     categories: string[];
@@ -12,6 +13,7 @@ interface CategoryFiltersProps {
 }
 
 export const CategoryFilters = ({ categories, activeCategory, onCategoryChange, searchQuery, onSearchChange }: CategoryFiltersProps) => {
+    const { t } = useLanguage();
     return (
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Category pills */}
@@ -32,7 +34,7 @@ export const CategoryFilters = ({ categories, activeCategory, onCategoryChange, 
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
                 <input
                     type="text"
-                    placeholder="Buscar producto..."
+                    placeholder={t.catalog.searchPlaceholder}
                     value={searchQuery}
                     onChange={(e) => onSearchChange(e.target.value)}
                     className="w-full sm:w-56 pl-11 pr-4 py-4 rounded-[2rem] bg-white/50 backdrop-blur-md border border-border/40 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all shadow-sm placeholder:text-muted-foreground/60"

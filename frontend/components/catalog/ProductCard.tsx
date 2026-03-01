@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Minus, Plus, ShoppingCart, Info, Check, Edit3 } from 'lucide-react';
 import { Product } from '@/lib/products';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ProductCardProps {
     product: Product;
@@ -28,6 +29,7 @@ export const ProductCard = ({
     onAddToCart,
     animationDelay
 }: ProductCardProps) => {
+    const { t } = useLanguage();
     return (
         <div 
             className="group jhoanes-card bg-white/40 p-6 border-transparent hover:border-primary/10 hover:bg-white animate-slide-in flex flex-col h-full"
@@ -60,7 +62,7 @@ export const ProductCard = ({
                 {/* Price and Quantity Side by Side */}
                 <div className="flex items-center justify-between gap-4 mt-auto mb-5 bg-muted/20 p-4 rounded-3xl border border-border/30">
                     <div className="flex flex-col">
-                        <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Precio</span>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">{t.product.price}</span>
                         <span className="text-2xl font-semibold text-foreground tracking-tight">${product.price}</span>
                     </div>
 
@@ -68,7 +70,7 @@ export const ProductCard = ({
 
                     <div className="flex flex-col items-end">
                         <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1 flex items-center gap-1">
-                            Cantidad <Edit3 size={8} />
+                            {t.product.quantity} <Edit3 size={8} />
                         </span>
                         <div className="flex items-center bg-white border-2 border-neutral-200 rounded-2xl p-1 shadow-sm overflow-hidden focus-within:ring-4 focus-within:ring-primary/10 focus-within:border-primary/30 transition-all w-36 h-12">
                             <button 
@@ -109,7 +111,7 @@ export const ProductCard = ({
                 <div className="flex items-center justify-center gap-2 mb-4 animate-fade-in">
                     <div className="h-[1px] flex-1 bg-green-500/20" />
                     <span className="text-[9px] font-black text-green-600 uppercase tracking-widest bg-green-50 px-3 py-1 rounded-full border border-green-200 flex items-center gap-1">
-                        <Check size={10} strokeWidth={3} /> En Carrito: {isInCart}
+                        <Check size={10} strokeWidth={3} /> {t.product.inCart}: {isInCart}
                     </span>
                     <div className="h-[1px] flex-1 bg-green-500/20" />
                 </div>
@@ -121,9 +123,9 @@ export const ProductCard = ({
                 className={`w-full premium-button h-14 text-[10px] font-black uppercase tracking-[0.2em] gap-3 transition-all duration-500 rounded-2xl ${isJustAdded ? 'bg-green-500 text-white translate-y-[-2px] shadow-lg shadow-green-200' : 'jhoanes-gradient text-white hover:shadow-xl shadow-primary/20'}`}
             >
                 {isJustAdded ? (
-                    <><Check size={18} strokeWidth={3} /> ¡Agregado!</>
+                    <><Check size={18} strokeWidth={3} /> {t.product.added}</>
                 ) : (
-                    <><ShoppingCart size={18} strokeWidth={2.5} /> Añadir al Pedido</>
+                    <><ShoppingCart size={18} strokeWidth={2.5} /> {t.product.addToOrder}</>
                 )}
             </button>
         </div>

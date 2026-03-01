@@ -7,10 +7,12 @@ import { User } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { RegisterForm } from '@/components/auth/RegisterForm';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function RegisterPage() {
     const router = useRouter();
     const { updateLocalSession } = useAuth();
+    const { t } = useLanguage();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
@@ -27,7 +29,7 @@ export default function RegisterPage() {
         setError('');
 
         if (formData.password !== formData.confirm_password) {
-            setError('Las contraseñas no coinciden');
+            setError(t.register.passwordMismatch);
             return;
         }
 
@@ -38,7 +40,7 @@ export default function RegisterPage() {
         const sanitizedEmail = formData.email.trim();
         
         if (!emailRegex.test(sanitizedEmail)) {
-            setError('Por favor, ingresa un correo electrónico válido (ej: usuario@ejemplo.com)');
+            setError(t.register.invalidEmail);
             setIsLoading(false);
             return;
         }
@@ -75,8 +77,8 @@ export default function RegisterPage() {
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-[24px] mb-6 text-primary">
                         <User size={32} />
                     </div>
-                    <h1 className="text-4xl font-black font-serif mb-3 tracking-tighter">Únete a Jhoanes</h1>
-                    <p className="text-muted-foreground font-medium">Crea tu cuenta para gestionar tus pedidos personalizados</p>
+                    <h1 className="text-4xl font-black font-serif mb-3 tracking-tighter">{t.register.title}</h1>
+                    <p className="text-muted-foreground font-medium">{t.register.subtitle}</p>
                 </div>
 
                 <RegisterForm 
@@ -89,14 +91,14 @@ export default function RegisterPage() {
 
                 <div className="mt-12 pt-8 border-t border-border/40 text-center space-y-4">
                     <p className="text-sm text-muted-foreground font-medium">
-                        ¿Ya eres parte de Jhoanes? <Link href="/auth/login" className="text-primary font-bold hover:underline ml-1">Inicia sesión aquí</Link>
+                        {t.register.alreadyMember} <Link href="/auth/login" className="text-primary font-bold hover:underline ml-1">{t.register.loginHere}</Link>
                     </p>
                     <div className="pt-2">
                         <Link 
                             href="/auth/forgot-password"
                             className="text-[10px] font-black text-muted-foreground hover:text-primary hover:underline uppercase tracking-widest"
                         >
-                            ¿Olvidaste tu contraseña?
+                            {t.register.forgotPassword}
                         </Link>
                     </div>
                 </div>

@@ -7,10 +7,12 @@ import { LogIn } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function LoginPage() {
     const router = useRouter();
     const { updateLocalSession } = useAuth();
+    const { t } = useLanguage();
     const [error, setError] = useState('');
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -54,8 +56,8 @@ export default function LoginPage() {
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-[24px] mb-6 text-primary">
                         <LogIn size={32} />
                     </div>
-                    <h1 className="text-4xl font-black font-serif mb-3 tracking-tighter">Bienvenido de nuevo</h1>
-                    <p className="text-muted-foreground font-medium">Delicias frescas te están esperando</p>
+                    <h1 className="text-4xl font-black font-serif mb-3 tracking-tighter">{t.login.title}</h1>
+                    <p className="text-muted-foreground font-medium">{t.login.subtitle}</p>
                 </div>
 
                 <LoginForm 
@@ -70,7 +72,7 @@ export default function LoginPage() {
 
                 <div className="mt-12 pt-8 border-t border-border/40 text-center">
                     <p className="text-sm text-muted-foreground font-medium">
-                        ¿No tienes cuenta aún? <Link href="/auth/register" className="text-primary font-bold hover:underline ml-1">Regístrate ahora</Link>
+                    ¿No tienes cuenta aún? <Link href="/auth/register" className="text-primary font-bold hover:underline ml-1">{t.login.registerNow}</Link>
                     </p>
                 </div>
             </div>

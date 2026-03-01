@@ -8,15 +8,18 @@ import { api } from '@/lib/api';
 import { ProductCard } from '@/components/catalog/ProductCard';
 import { CategoryFilters } from '@/components/catalog/CategoryFilters';
 import { CatalogHeader } from '@/components/catalog/CatalogHeader';
+import { useLanguage } from '@/context/LanguageContext';
 
-const CATEGORIES = ['Todos', 'Croissants', 'Postres', 'Pasteles'];
+const BASE_CATEGORIES = ['Croissants', 'Postres', 'Pasteles'];
 
 export default function Home() {
     const { addToCart, cart } = useCart();
+    const { t } = useLanguage();
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [activeCategory, setActiveCategory] = useState('Todos');
+    const [activeCategory, setActiveCategory] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const CATEGORIES = [t.catalog.allCategories, ...BASE_CATEGORIES];
     const [addedIds, setAddedIds] = useState<number[]>([]);
     const [quantities, setQuantities] = useState<Record<number, any>>({});
 
@@ -66,7 +69,7 @@ export default function Home() {
     };
 
     const filteredProducts = products
-        .filter(p => activeCategory === 'Todos' || p.category === activeCategory)
+        .filter(p => activeCategory === 'all' || activeCategory === t.catalog.allCategories || p.category === activeCategory)
         .filter(p => !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return (
@@ -91,7 +94,7 @@ export default function Home() {
                     {isLoading ? (
                         <div className="col-span-full flex flex-col items-center justify-center py-20 animate-pulse">
                             <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cargando delicias...</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.catalog.loading}</p>
                         </div>
                     ) : (
                         filteredProducts.map((product, idx) => {

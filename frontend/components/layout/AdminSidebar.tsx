@@ -5,22 +5,24 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { LayoutDashboard, ShoppingBag, Layers, Users, Truck, Settings, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-
-const MENU_ITEMS = [
-    { name: 'Dashboard',    icon: LayoutDashboard, href: '/admin' },
-    { name: 'Productos',    icon: ShoppingBag,     href: '/admin/products' },
-    { name: 'Categorías',  icon: Layers,           href: '/admin/categories' },
-    { name: 'Usuarios',    icon: Users,            href: '/admin/users' },
-    { name: 'Rutas',       icon: Truck,            href: '/admin/routes' },
-    { name: 'Pedidos',     icon: ShoppingBag,      href: '/admin/orders' },
-    { name: 'Config.',     icon: Settings,         href: '/admin/settings' },
-];
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function AdminSidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const { signOut } = useAuth();
+    const { t } = useLanguage();
     const [collapsed, setCollapsed] = useState(false);
+
+    const MENU_ITEMS = [
+        { name: t.adminSidebar.dashboard,   icon: LayoutDashboard, href: '/admin' },
+        { name: t.adminSidebar.products,    icon: ShoppingBag,     href: '/admin/products' },
+        { name: t.adminSidebar.categories,  icon: Layers,           href: '/admin/categories' },
+        { name: t.adminSidebar.users,       icon: Users,            href: '/admin/users' },
+        { name: t.adminSidebar.routes,      icon: Truck,            href: '/admin/routes' },
+        { name: t.adminSidebar.orders,      icon: ShoppingBag,      href: '/admin/orders' },
+        { name: t.adminSidebar.settings,    icon: Settings,         href: '/admin/settings' },
+    ];
 
     const handleLogout = async () => {
         await signOut();
@@ -35,21 +37,21 @@ export default function AdminSidebar() {
                     <button
                         onClick={() => setCollapsed(true)}
                         className="text-xl font-bold text-primary flex items-center gap-2 flex-1 min-w-0 text-left hover:opacity-70 transition-opacity"
-                        title="Colapsar menú"
+                        title="Collapse menu"
                     >
                         <span className="bg-primary text-white px-2 py-1 rounded-lg text-sm shrink-0">PJ</span>
                         <span className="truncate">Admin Panel</span>
                     </button>
                 )}
                 {collapsed && (
-                    <button onClick={() => setCollapsed(false)} className="mx-auto" title="Expandir menú">
+                    <button onClick={() => setCollapsed(false)} className="mx-auto" title="Expand menu">
                         <span className="bg-primary text-white px-2 py-1 rounded-lg text-sm font-bold">PJ</span>
                     </button>
                 )}
                 <button
                     onClick={() => setCollapsed(c => !c)}
                     className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground shrink-0"
-                    title={collapsed ? 'Expandir menú' : 'Colapsar menú'}
+                    title={collapsed ? 'Expand menu' : 'Collapse menu'}
                 >
                     {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
                 </button>
@@ -78,11 +80,11 @@ export default function AdminSidebar() {
             <div className="p-3 border-t border-border">
                 <button
                     onClick={handleLogout}
-                    title={collapsed ? 'Cerrar Sesión' : undefined}
+                    title={collapsed ? t.adminSidebar.logout : undefined}
                     className={`w-full flex items-center gap-3 px-3 py-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors ${collapsed ? 'justify-center' : ''}`}
                 >
                     <LogOut size={20} className="shrink-0" />
-                    {!collapsed && <span className="text-sm font-medium">Cerrar Sesión</span>}
+                    {!collapsed && <span className="text-sm font-medium">{t.adminSidebar.logout}</span>}
                 </button>
             </div>
         </div>
