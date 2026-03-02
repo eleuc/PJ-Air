@@ -5,12 +5,154 @@ import Navbar from '@/components/layout/Navbar';
 import { useCart } from '@/context/CartContext';
 import { api } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 import {
     Search, ArrowRight, Tag, Sparkles,
     ShoppingCart, Check, Plus, Minus, Info,
     ChevronLeft, ChevronRight,
+    LogIn, UserPlus, Lock, User as UserIcon, Loader2, Eye, EyeOff,
 } from 'lucide-react';
 import Link from 'next/link';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Login Modal — shown when user is not authenticated
+// ─────────────────────────────────────────────────────────────────────────────
+function LoginModal({ onSuccess }: { onSuccess: () => void }) {
+    const { t, locale } = useLanguage();
+    const { updateLocalSession } = useAuth();
+    const router = useRouter();
+    const [identifier, setIdentifier] = useState('');
+    const [password, setPassword] = useState('');
+    const [showPw, setShowPw] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setIsLoading(true);
+        try {
+            const data = await api.post('/auth/login', {
+                email: identifier.trim(),
+                password,
+            });
+            if (data.session) {
+                updateLocalSession(data);
+                const userDetail = await api.get(`/users/${data.user.id}`);
+                const role = userDetail.role || 'client';
+                if (role === 'admin') router.push('/admin');
+                else if (role === 'produccion') router.push('/produccion');
+                else if (role === 'delivery') router.push('/delivery');
+                else onSuccess();
+            }
+        } catch (err: any) {
+            setError(err.message || (locale === 'en' ? 'Invalid credentials' : 'Credenciales incorrectas'));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        /* Full-screen overlay */
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+             style={{ background: 'rgba(15,10,5,0.65)', backdropFilter: 'blur(8px)' }}>
+
+            <div className="relative w-full max-w-md bg-white rounded-[2rem] shadow-2xl overflow-hidden animate-fade-in">
+
+                {/* Top gradient band */}
+                <div className="h-2 w-full" style={{ background: 'linear-gradient(90deg,#6B0D0D,#b45309)' }} />
+
+                <div className="p-8 sm:p-10">
+                    {/* Logo / title */}
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-[20px] mb-4 text-white"
+                             style={{ background: 'linear-gradient(135deg,#6B0D0D,#b45309)' }}>
+                            <LogIn size={28} />
+                        </div>
+                        <h1 className="text-2xl font-black tracking-tight">
+                            {locale === 'en' ? 'Welcome back' : 'Bienvenido'}
+                        </h1>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {locale === 'en'
+                                ? 'Sign in to access the catalog'
+                                : 'Inicia sesión para ver el catálogo'}
+                        </p>
+                    </div>
+
+                    {/* Error */}
+                    {error && (
+                        <div className="mb-5 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-xs font-bold text-center">
+                            {error}
+                        </div>
+                    )}
+
+                    {/* Form */}
+                    <form onSubmit={handleLogin} className="space-y-4">
+                        {/* Identifier */}
+                        <div className="relative">
+                            <UserIcon size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none" />
+                            <input
+                                required
+                                type="text"
+                                placeholder={locale === 'en' ? 'Email or username' : 'Email o usuario'}
+                                value={identifier}
+                                onChange={e => setIdentifier(e.target.value)}
+                                className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-border/60 bg-muted/30 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all"
+                            />
+                        </div>
+
+                        {/* Password */}
+                        <div className="relative">
+                            <Lock size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none" />
+                            <input
+                                required
+                                type={showPw ? 'text' : 'password'}
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                className="w-full pl-11 pr-12 py-3.5 rounded-2xl border border-border/60 bg-muted/30 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all"
+                            />
+                            <button type="button" onClick={() => setShowPw(p => !p)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors">
+                                {showPw ? <EyeOff size={17} /> : <Eye size={17} />}
+                            </button>
+                        </div>
+
+                        {/* Forgot password */}
+                        <div className="text-right">
+                            <Link href="/auth/forgot-password"
+                                className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">
+                                {locale === 'en' ? 'Forgot password?' : '¿Olvidaste tu contraseña?'}
+                            </Link>
+                        </div>
+
+                        {/* Submit */}
+                        <button type="submit" disabled={isLoading}
+                            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest transition-all active:scale-95 disabled:opacity-60"
+                            style={{ background: 'linear-gradient(135deg,#6B0D0D,#9b1c1c)' }}>
+                            {isLoading
+                                ? <Loader2 size={20} className="animate-spin" />
+                                : <><LogIn size={18} /> {locale === 'en' ? 'Sign In' : 'Ingresar'}</>}
+                        </button>
+                    </form>
+
+                    {/* Register link */}
+                    <div className="mt-6 pt-6 border-t border-border/40 text-center">
+                        <p className="text-sm text-muted-foreground mb-3">
+                            {locale === 'en' ? "Don't have an account?" : '¿No tienes cuenta aún?'}
+                        </p>
+                        <Link href="/auth/register"
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl border-2 border-primary/30 text-primary text-[11px] font-black uppercase tracking-widest hover:bg-primary hover:text-white hover:border-primary transition-all">
+                            <UserPlus size={15} />
+                            {locale === 'en' ? 'Create Account' : 'Crear mi cuenta'}
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Product card — fills 100% of its container width
@@ -230,6 +372,14 @@ function CategoryCarousel({
 export default function Home() {
     const { addToCart, cart } = useCart();
     const { t, locale } = useLanguage();
+    const { user, isLoading: authLoading } = useAuth();
+
+    // Show login modal when auth is resolved and user is NOT logged in
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    useEffect(() => {
+        if (!authLoading && !user) setShowLoginModal(true);
+        if (user) setShowLoginModal(false);
+    }, [user, authLoading]);
 
     const [products, setProducts] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -322,6 +472,11 @@ export default function Home() {
     // ── Render ─────────────────────────────────────────────────────────────
     return (
         <div className="min-h-screen" style={{ background: 'linear-gradient(180deg,#fdfcfb 0%,#f9f6f0 100%)' }}>
+            {/* Login modal — visible when not authenticated */}
+            {showLoginModal && (
+                <LoginModal onSuccess={() => setShowLoginModal(false)} />
+            )}
+
             <Navbar />
 
             <main className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-14 py-10">

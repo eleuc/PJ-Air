@@ -8,7 +8,7 @@ export class AuthService {
   constructor(private usersService: UsersService) {}
 
   async signup(body: any) {
-    const { email, password, full_name, username, phone } = body;
+    const { email, password, full_name, username, phone, company_name } = body;
 
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) throw new ConflictException('Email already registered');
@@ -26,6 +26,7 @@ export class AuthService {
       full_name,
       username,
       phone,
+      company_name,
     });
 
     // Return session for auto-login

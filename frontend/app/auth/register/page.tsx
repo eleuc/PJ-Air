@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User } from 'lucide-react';
+import { Mail, Lock, User, Phone, Building2, Loader2, ArrowRight } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { RegisterForm } from '@/components/auth/RegisterForm';
@@ -20,6 +20,7 @@ export default function RegisterPage() {
         username: '',
         email: '',
         phone: '',
+        company_name: '',
         password: '',
         confirm_password: '',
     });
@@ -53,6 +54,7 @@ export default function RegisterPage() {
                 full_name: formData.full_name,
                 username: formData.username,
                 phone: formData.phone,
+                company_name: formData.company_name,
             });
 
             // 2. Auto-login and Update context

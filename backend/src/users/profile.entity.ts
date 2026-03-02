@@ -16,6 +16,9 @@ export class Profile {
   phone: string;
 
   @Column({ nullable: true })
+  company_name: string;
+
+  @Column({ nullable: true })
   avatar_url: string;
 
   @OneToOne(() => User, (user) => user.profile)

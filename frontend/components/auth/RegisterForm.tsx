@@ -87,6 +87,24 @@ export const RegisterForm = ({
                     </div>
                 </div>
 
+                {/* Company name — full width, optional */}
+                <div className="space-y-3 md:col-span-2">
+                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1 flex items-center gap-2">
+                        Nombre de Compañía / Tienda
+                        <span className="text-[9px] normal-case font-semibold bg-muted text-muted-foreground px-2 py-0.5 rounded-full">Opcional</span>
+                    </label>
+                    <div className="relative">
+                        <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Ej: Panadería El Sol / My Bakery Shop"
+                            className="premium-input pl-12"
+                            value={formData.company_name}
+                            onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
+                        />
+                    </div>
+                </div>
+
                 <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Contraseña</label>
                     <div className="relative">
