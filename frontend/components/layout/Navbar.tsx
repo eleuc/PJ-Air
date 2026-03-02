@@ -31,8 +31,6 @@ export default function Navbar() {
 
                             <div className="hidden lg:flex items-center gap-8 ml-8">
                                 <Link href="/" className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70 hover:text-primary transition-colors">{t.nav.catalog}</Link>
-                                <Link href="/orders" className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70 hover:text-primary transition-colors">{t.nav.orders}</Link>
-                                <Link href="/map" className="text-[10px] font-black uppercase tracking-[0.2em] text-primary hover:text-primary/80 transition-colors bg-primary/5 px-3 py-1 rounded-full border border-primary/10">{t.nav.map}</Link>
                             </div>
                         </div>
 

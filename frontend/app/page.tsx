@@ -326,31 +326,10 @@ export default function Home() {
 
             <main className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-14 py-10">
 
-                {/* ── Search + Category pills — right-aligned flex row ─── */}
+                {/* ── Category pills + Search — right-aligned flex row ─── */}
                 <div className="mb-10 flex flex-wrap items-center justify-end gap-2">
 
-                    {/* Search — fixed compact width */}
-                    <div className="relative shrink-0" style={{ width: 'min(100%, 220px)' }}>
-                        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                        <input
-                            type="text"
-                            placeholder={t.catalog.searchPlaceholder}
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-8 py-2.5 rounded-full bg-white border border-border/60 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all shadow-sm placeholder:text-muted-foreground/50"
-                        />
-                        {searchQuery && (
-                            <button
-                                onClick={() => setSearchQuery('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary text-xs font-bold"
-                            >✕</button>
-                        )}
-                    </div>
-
-                    {/* Divider */}
-                    <div className="h-6 w-px bg-border/50 shrink-0 hidden sm:block" />
-
-                    {/* "All" pill */}
+                    {/* "All" pill — first */}
                     <a
                         href="#top"
                         onClick={() => setSearchQuery('')}
@@ -369,6 +348,27 @@ export default function Home() {
                             {label}
                         </a>
                     ))}
+
+                    {/* Divider */}
+                    <div className="h-6 w-px bg-border/50 shrink-0 hidden sm:block" />
+
+                    {/* Search — rightmost */}
+                    <div className="relative shrink-0" style={{ width: 'min(100%, 220px)' }}>
+                        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                        <input
+                            type="text"
+                            placeholder={t.catalog.searchPlaceholder}
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            className="w-full pl-9 pr-8 py-2.5 rounded-full bg-white border border-border/60 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all shadow-sm placeholder:text-muted-foreground/50"
+                        />
+                        {searchQuery && (
+                            <button
+                                onClick={() => setSearchQuery('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary text-xs font-bold"
+                            >✕</button>
+                        )}
+                    </div>
                 </div>
 
                 {/* ── Loading ─────────────────────────────────────────── */}
