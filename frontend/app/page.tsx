@@ -129,8 +129,8 @@ function LoginModal({ onSuccess }: { onSuccess: () => void }) {
 
                         {/* Submit */}
                         <button type="submit" disabled={isLoading}
-                            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest transition-all active:scale-95 disabled:opacity-60"
-                            style={{ background: 'linear-gradient(135deg,#6B0D0D,#9b1c1c)' }}>
+                            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest transition-all active:scale-95 disabled:opacity-60 bg-[#111] hover:bg-[#222]"
+                        >
                             {isLoading
                                 ? <Loader2 size={20} className="animate-spin" />
                                 : <><LogIn size={18} /> {locale === 'en' ? 'Sign In' : 'Ingresar'}</>}
@@ -143,7 +143,7 @@ function LoginModal({ onSuccess }: { onSuccess: () => void }) {
                             {locale === 'en' ? "Don't have an account?" : '¿No tienes cuenta aún?'}
                         </p>
                         <Link href="/auth/register"
-                            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl border-2 border-primary/30 text-primary text-[11px] font-black uppercase tracking-widest hover:bg-primary hover:text-white hover:border-primary transition-all">
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#111] text-white text-[11px] font-black uppercase tracking-widest hover:bg-[#333] transition-all">
                             <UserPlus size={15} />
                             {locale === 'en' ? 'Create Account' : 'Crear mi cuenta'}
                         </Link>
@@ -636,10 +636,10 @@ export default function Home() {
                 {/* ── Promotions ──────────────────────────────────────── */}
                 {!isLoading && !fetchError && !isSearching && promotions.length > 0 && (
                     <section className="mt-4 mb-16">
-                        {/* Banner */}
+                        {/* Banner — dark background */}
                         <div
                             className="relative overflow-hidden rounded-[2rem] mb-6 p-7 sm:p-10"
-                            style={{ background: 'linear-gradient(135deg,#6B0D0D 0%,#9b1c1c 55%,#b45309 100%)' }}
+                            style={{ background: 'linear-gradient(135deg,#0f0f0f 0%,#1a1a1a 60%,#2a2a2a 100%)' }}
                         >
                             <div className="absolute inset-0 opacity-[0.07]"
                                  style={{ backgroundImage: `url("https://www.transparenttextures.com/patterns/cubes.png")` }} />

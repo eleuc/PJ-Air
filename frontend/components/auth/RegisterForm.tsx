@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Mail, Lock, User, Phone, Loader2, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, Phone, Building2, Loader2, ArrowRight } from 'lucide-react';
 
 interface RegisterFormProps {
     formData: any;
