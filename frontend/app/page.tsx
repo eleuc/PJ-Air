@@ -193,51 +193,51 @@ export default function Home() {
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-10">
 
-                {/* ── Page Header ─────────────────────────────────────── */}
-                <div className="mb-10">
-                    <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-none mb-2">
-                        <span className="text-primary">JH</span>{' '}
-                        {locale === 'en' ? 'Bakery' : 'Panadería'}
-                    </h1>
-                    <p className="text-muted-foreground font-medium text-base mb-5">
-                        {locale === 'en'
-                            ? 'Fresh baked goods & pastries, delivered to your door'
-                            : 'Delicias frescas de panadería y repostería, a tu puerta'}
-                    </p>
+                {/* ── Search + Category pills — single flex row ─────── */}
+                <div className="mb-10 flex flex-wrap items-center gap-2">
 
-                    {/* Search */}
-                    <div className="relative max-w-lg mb-5">
-                        <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                    {/* Search — fixed small width */}
+                    <div className="relative shrink-0" style={{ width: 'min(100%, 220px)' }}>
+                        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                         <input
                             type="text"
                             placeholder={t.catalog.searchPlaceholder}
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            className="w-full pl-11 pr-10 py-3.5 rounded-2xl bg-white border border-border/60 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all shadow-sm placeholder:text-muted-foreground/50"
+                            className="w-full pl-9 pr-8 py-2.5 rounded-full bg-white border border-border/60 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all shadow-sm placeholder:text-muted-foreground/50"
                         />
                         {searchQuery && (
                             <button
                                 onClick={() => setSearchQuery('')}
-                                className="absolute right-3.5 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-primary hover:text-white transition-all text-xs font-bold"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary text-xs font-bold"
                             >✕</button>
                         )}
                     </div>
 
-                    {/* Category jump pills */}
-                    {!isLoading && catPills.length > 0 && !isSearching && (
-                        <div className="flex flex-wrap gap-2">
-                            {catPills.map(({ key, label }) => (
-                                <a
-                                    key={key}
-                                    href={`#cat-${key}`}
-                                    className="px-4 py-2 rounded-full bg-white border border-border/50 text-[11px] font-black uppercase tracking-wider text-foreground/60 hover:bg-primary hover:text-white hover:border-primary shadow-sm transition-all"
-                                >
-                                    {label}
-                                </a>
-                            ))}
-                        </div>
-                    )}
+                    {/* Divider */}
+                    <div className="h-6 w-px bg-border/50 shrink-0 hidden sm:block" />
+
+                    {/* "All" pill */}
+                    <a
+                        href="#top"
+                        onClick={() => setSearchQuery('')}
+                        className="shrink-0 px-4 py-2 rounded-full bg-primary text-white text-[11px] font-black uppercase tracking-wider shadow-sm transition-all hover:bg-primary/90"
+                    >
+                        {locale === 'en' ? 'All' : 'Todos'}
+                    </a>
+
+                    {/* Category pills */}
+                    {!isLoading && catPills.map(({ key, label }) => (
+                        <a
+                            key={key}
+                            href={`#cat-${key}`}
+                            className="shrink-0 px-4 py-2 rounded-full bg-white border border-border/50 text-[11px] font-black uppercase tracking-wider text-foreground/60 hover:bg-primary hover:text-white hover:border-primary shadow-sm transition-all"
+                        >
+                            {label}
+                        </a>
+                    ))}
                 </div>
+
 
                 {/* ── Loading ─────────────────────────────────────────── */}
                 {isLoading && (
@@ -325,13 +325,8 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* ── 3 products in responsive grid ── */}
-                        {/*
-                            • xs  ( < 480px ):  1 column  → card fills full width, never cut
-                            • sm  ( ≥ 480px ):  2 columns
-                            • md  ( ≥ 768px ):  3 columns
-                        */}
-                        <div className="grid gap-4"
+                        {/* ── 3 products in responsive grid, items centered ── */}
+                        <div className="grid gap-4 justify-items-center"
                              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 220px), 1fr))' }}>
                             {group.products.slice(0, 3).map(product => (
                                 <ProductCard
@@ -402,9 +397,10 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* Promo products — same responsive grid */}
-                        <div className="grid gap-4"
+                        {/* ── Promo products — centered grid ── */}
+                        <div className="grid gap-4 justify-items-center"
                              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 220px), 1fr))' }}>
+
                             {promotions.map(product => (
                                 <div key={`promo-${product.id}`} className="relative">
                                     <div className="absolute top-2 left-2 z-20 bg-amber-400 text-white text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full flex items-center gap-1 shadow-md">
