@@ -32,6 +32,12 @@ export class Order {
   @Column({ nullable: true, type: 'text' })
   notes: string;
 
+  @Column({ nullable: true, default: 'saved' })
+  delivery_type: string; // 'pickup' | 'saved' | 'other'
+
+  @Column({ nullable: true, type: 'text' })
+  delivery_address_text: string; // for temporary / other addresses
+
   @CreateDateColumn()
   created_at: Date;
 

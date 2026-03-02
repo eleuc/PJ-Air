@@ -15,7 +15,9 @@ export class AddressesService {
   }
 
   async findByUser(userId: string) {
-    return this.addressRepository.find({ where: { user_id: userId } });
+    return this.addressRepository.find({
+      where: { user_id: userId, is_temporary: false },
+    });
   }
 
   async create(userId: string, addressData: any) {

@@ -40,13 +40,15 @@ export class OrdersService {
   async create(userId: string, orderData: any): Promise<Order> {
     const { items, ...rest } = orderData;
     
-    const { deliveryDate, paymentDueDate, addressId, ...otherData } = rest;
+    const { deliveryDate, paymentDueDate, addressId, deliveryType, deliveryAddressText, ...otherData } = rest;
     
     const orderToCreate = this.orderRepository.create({
       ...otherData,
       delivery_date: deliveryDate,
       payment_due_date: paymentDueDate,
-      address_id: addressId,
+      address_id: addressId || null,
+      delivery_type: deliveryType || 'saved',
+      delivery_address_text: deliveryAddressText || null,
       user_id: userId,
     });
     

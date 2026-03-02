@@ -39,6 +39,9 @@ export class Address {
   @Column({ default: false })
   is_default: boolean;
 
+  @Column({ default: false })
+  is_temporary: boolean;
+
   @ManyToOne(() => User, (user) => user.addresses)
   @JoinColumn({ name: 'user_id' })
   user: User;
