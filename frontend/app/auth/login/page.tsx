@@ -72,7 +72,7 @@ export default function LoginPage() {
 
                 <div className="mt-12 pt-8 border-t border-border/40 text-center">
                     <p className="text-sm text-muted-foreground font-medium">
-                    ¿No tienes cuenta aún? <Link href="/auth/register" className="text-primary font-bold hover:underline ml-1">{t.login.registerNow}</Link>
+                        {t.login.noAccount} <Link href="/auth/register" className="text-primary font-bold hover:underline ml-1">{t.login.registerNow}</Link>
                     </p>
                 </div>
             </div>
