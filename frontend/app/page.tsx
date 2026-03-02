@@ -326,8 +326,8 @@ export default function Home() {
 
             <main className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-14 py-10">
 
-                {/* ── Search + Category pills — single flex row ─── */}
-                <div className="mb-10 flex flex-wrap items-center gap-2">
+                {/* ── Search + Category pills — right-aligned flex row ─── */}
+                <div className="mb-10 flex flex-wrap items-center justify-end gap-2">
 
                     {/* Search — fixed compact width */}
                     <div className="relative shrink-0" style={{ width: 'min(100%, 220px)' }}>
