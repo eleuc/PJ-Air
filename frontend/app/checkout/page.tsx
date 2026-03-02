@@ -14,6 +14,7 @@ export default function CheckoutPage() {
     const router = useRouter();
     const [deliveryDate, setDeliveryDate] = useState<string>('');
     const [paymentDate, setPaymentDate] = useState<string>('');
+    const [isBeforeCutoff, setIsBeforeCutoff] = useState<boolean>(true);
     const [addresses, setAddresses] = useState<any[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -37,19 +38,25 @@ export default function CheckoutPage() {
 
         fetchAddresses();
 
+        // ── Delivery date: NY timezone, before 1pm → +2 days, from 1pm → +3 days ──
         const calculateDates = () => {
-            const now = new Date();
-            const hour = now.getHours();
-            let daysToAdd = hour < 13 ? 3 : 4;
+            // Current time in New York (Eastern Time)
+            const nowNY = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+            const hourNY = nowNY.getHours();
+            const minuteNY = nowNY.getMinutes();
+            const isBeforeCutoff = hourNY < 13; // strictly before 1:00 PM
+            const daysToAdd = isBeforeCutoff ? 2 : 3;
 
-            const delDate = new Date();
-            delDate.setDate(now.getDate() + daysToAdd);
+            const delDate = new Date(nowNY);
+            delDate.setDate(nowNY.getDate() + daysToAdd);
 
             const payDate = new Date(delDate);
             payDate.setDate(delDate.getDate() + 6);
 
+            const locale = 'es-ES'; // keep date in Spanish; will bilingual below
             setDeliveryDate(delDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }));
             setPaymentDate(payDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }));
+            setIsBeforeCutoff(isBeforeCutoff);
         };
 
         calculateDates();
@@ -123,7 +130,7 @@ export default function CheckoutPage() {
                                             className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground'}`}
                                         >
                                             <p className="font-bold mb-1 underline">{addr.alias}</p>
-                                            <p className="text-sm text-muted-foreground">{addr.address}. Zona {addr.zone}.</p>
+                                            <p className="text-sm text-muted-foreground">{addr.address}</p>
                                         </div>
                                     ))
                                 ) : (
@@ -141,17 +148,33 @@ export default function CheckoutPage() {
                         </section>
 
                         {/* Delivery Time Info */}
-                        <section className="bg-primary/5 rounded-3xl border border-primary/20 p-8">
+                        <section className="bg-[#0f0f0f] rounded-3xl border border-[#222] p-8">
                             <div className="flex items-start gap-4">
-                                <div className="p-3 bg-primary text-white rounded-2xl shadow-md">
+                                <div className="p-3 bg-white/10 text-white rounded-2xl shadow-md shrink-0">
                                     <Calendar size={24} />
                                 </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-primary mb-1">Fecha de Entrega Estimada</h3>
-                                    <p className="text-2xl font-black text-foreground capitalize mb-2">{deliveryDate}</p>
-                                    <div className="flex items-center gap-2 text-xs py-1 px-3 bg-secondary text-primary rounded-full font-bold w-fit">
-                                        <Info size={14} /> Pedido recibido antes de la 1:00 PM
+                                <div className="w-full">
+                                    <h3 className="text-xl font-bold text-white mb-3">Fecha de Entrega Estimada</h3>
+
+                                    {/* Rule badge */}
+                                    <div className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full mb-3 ${
+                                        isBeforeCutoff
+                                            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                            : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                                    }`}>
+                                        <Clock size={12} />
+                                        {isBeforeCutoff
+                                            ? 'Pedido antes de la 1:00 PM hora NY → entrega en 2 días'
+                                            : 'Pedido después de la 1:00 PM hora NY → entrega en 3 días'}
                                     </div>
+
+                                    <p className="text-3xl font-black text-white capitalize">{deliveryDate}</p>
+
+                                    {/* Cutoff reminder */}
+                                    <p className="text-xs text-white/40 mt-3 leading-relaxed">
+                                        Pedidos recibidos antes de la 1:00 PM (hora Nueva York) se entregan en 2 días.<br />
+                                        Pedidos recibidos a partir de la 1:00 PM se entregan en 3 días.
+                                    </p>
                                 </div>
                             </div>
                         </section>

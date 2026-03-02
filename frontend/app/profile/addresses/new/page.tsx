@@ -9,8 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 
-const ZONES_ES = ['Norte', 'Sur', 'Este', 'Oeste', 'Centro'];
-const ZONES_EN = ['North', 'South', 'East', 'West', 'Center'];
+
 
 const mapContainerStyle = {
     width: '100%',
@@ -38,7 +37,6 @@ function NewAddressContent() {
     const [isLoading, setIsLoading] = useState(false);
     const [address, setAddress] = useState('');
     const [alias, setAlias] = useState('');
-    const [zone, setZone] = useState('');
     const [notes, setNotes] = useState('');
     const [markerPos, setMarkerPos] = useState(centerNY);
     const [geocodedPos, setGeocodedPos] = useState<{lat: number, lng: number} | null>(null);
@@ -115,7 +113,6 @@ function NewAddressContent() {
             await api.post('/addresses', {
                 userId: user.id,
                 alias,
-                zone,
                 address,
                 notes,
                 lat: geocodedPos?.lat || markerPos.lat,
@@ -134,8 +131,6 @@ function NewAddressContent() {
 
     const onLoad = useCallback((map: google.maps.Map) => { setMap(map); }, []);
     const onUnmount = useCallback(() => { setMap(null); }, []);
-
-    const ZONES = locale === 'en' ? ZONES_EN : ZONES_ES;
 
     // ── i18n strings ──────────────────────────────────────────────────────────
     const s = locale === 'en' ? {
@@ -194,8 +189,8 @@ function NewAddressContent() {
                         )}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* Alias */}
-                            <div className="space-y-3">
+                            {/* Alias — full width */}
+                            <div className="space-y-3 md:col-span-2">
                                 <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">{s.aliasLabel}</label>
                                 <input
                                     required
@@ -205,20 +200,6 @@ function NewAddressContent() {
                                     value={alias}
                                     onChange={(e) => setAlias(e.target.value)}
                                 />
-                            </div>
-
-                            {/* Zone */}
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">{s.zoneLabel}</label>
-                                <select
-                                    required
-                                    className="premium-input px-6 py-4 font-bold appearance-none"
-                                    value={zone}
-                                    onChange={(e) => setZone(e.target.value)}
-                                >
-                                    <option value="">{s.zonePlaceholder}</option>
-                                    {ZONES.map(z => <option key={z} value={z}>{z}</option>)}
-                                </select>
                             </div>
                         </div>
 
