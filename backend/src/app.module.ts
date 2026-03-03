@@ -17,6 +17,7 @@ import { Profile } from './users/profile.entity';
 import { Address } from './addresses/address.entity';
 import { Order } from './orders/order.entity';
 import { OrderItem } from './orders/order-item.entity';
+import { ProductDiscount } from './users/product-discount.entity';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { OrderItem } from './orders/order-item.entity';
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
         database: configService.get<string>('DATABASE_PATH') || '../database.sqlite',
-        entities: [Product, User, Profile, Address, Order, OrderItem],
+        entities: [Product, User, Profile, Address, Order, OrderItem, ProductDiscount],
         synchronize: configService.get<string>('NODE_ENV') !== 'production',
         logging: false,
       }),

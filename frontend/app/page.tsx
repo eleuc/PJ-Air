@@ -142,11 +142,13 @@ function LoginModal({ onSuccess }: { onSuccess: () => void }) {
                         <p className="text-sm text-muted-foreground mb-3">
                             {locale === 'en' ? "Don't have an account?" : '¿No tienes cuenta aún?'}
                         </p>
-                        <Link href="/auth/register"
-                            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#111] text-white text-[11px] font-black uppercase tracking-widest hover:bg-[#333] transition-all">
+                        <button
+                            type="button"
+                            onClick={() => router.push('/auth/register')}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#111] text-white text-[11px] font-black uppercase tracking-widest hover:bg-[#333] transition-all active:scale-95">
                             <UserPlus size={15} />
                             {locale === 'en' ? 'Create Account' : 'Crear mi cuenta'}
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -159,7 +161,7 @@ function LoginModal({ onSuccess }: { onSuccess: () => void }) {
 // ─────────────────────────────────────────────────────────────────────────────
 function ProductCard({
     product, quantity, isInCart, isJustAdded,
-    onIncrement, onDecrement, onAddToCart,
+    onIncrement, onDecrement, onQuantityChange, onAddToCart,
 }: {
     product: any;
     quantity: number;
@@ -167,6 +169,7 @@ function ProductCard({
     isJustAdded: boolean;
     onIncrement: (id: number) => void;
     onDecrement: (id: number) => void;
+    onQuantityChange: (id: number, val: string) => void;
     onAddToCart: (p: any) => void;
 }) {
     const { t } = useLanguage();
@@ -206,16 +209,34 @@ function ProductCard({
                     {product.name}
                 </h3>
                 <p className="text-lg font-black text-foreground tracking-tight">${product.price}</p>
+                {product.category_min_qty > 1 && (
+                    <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
+                        <Info size={10} strokeWidth={3} />
+                        <span className="text-[9px] font-black uppercase tracking-tight">Mínimo: {product.category_min_qty} unidades</span>
+                    </div>
+                )}
 
                 {/* Quantity */}
-                <div className="flex items-center bg-muted/60 rounded-xl border border-border/30">
+                <div className="flex items-center bg-muted/60 rounded-xl border border-border/30 overflow-hidden">
                     <button onClick={() => onDecrement(product.id)}
-                        className="px-2.5 py-2 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all rounded-l-xl">
+                        className="px-2.5 py-2 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all">
                         <Minus size={13} strokeWidth={2.5} />
                     </button>
-                    <span className="flex-1 text-center text-sm font-bold select-none">{quantity}</span>
+                    <input 
+                        type="number"
+                        min="1"
+                        value={quantity || ''}
+                        onChange={(e) => onQuantityChange(product.id, e.target.value)}
+                        onFocus={(e) => {
+                            if (quantity === 1) {
+                                onQuantityChange(product.id, '');
+                            }
+                            e.target.select();
+                        }}
+                        className="w-10 bg-transparent text-center text-sm font-bold outline-none text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:bg-primary/5"
+                    />
                     <button onClick={() => onIncrement(product.id)}
-                        className="px-2.5 py-2 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all rounded-r-xl">
+                        className="px-2.5 py-2 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all">
                         <Plus size={13} strokeWidth={2.5} />
                     </button>
                 </div>
@@ -243,7 +264,7 @@ function ProductCard({
 // ─────────────────────────────────────────────────────────────────────────────
 function CategoryCarousel({
     group, quantities, addedIds, cart,
-    onIncrement, onDecrement, onAddToCart,
+    onIncrement, onDecrement, onQuantityChange, onAddToCart,
     locale, viewAllLabel,
 }: {
     group: { key: string; label: string; products: any[] };
@@ -252,6 +273,7 @@ function CategoryCarousel({
     cart: any[];
     onIncrement: (id: number) => void;
     onDecrement: (id: number) => void;
+    onQuantityChange: (id: number, val: string) => void;
     onAddToCart: (p: any) => void;
     locale: string;
     viewAllLabel: string;
@@ -326,6 +348,7 @@ function CategoryCarousel({
                                 isJustAdded={addedIds.includes(product.id)}
                                 onIncrement={onIncrement}
                                 onDecrement={onDecrement}
+                                onQuantityChange={onQuantityChange}
                                 onAddToCart={onAddToCart}
                             />
                         </div>
@@ -399,7 +422,7 @@ export default function Home() {
                 if (!mounted) return;
                 if (Array.isArray(data) && data.length > 0) {
                     setProducts(data);
-                    setQuantities(data.reduce((a: any, p: any) => ({ ...a, [p.id]: 1 }), {}));
+                    setQuantities(data.reduce((a: any, p: any) => ({ ...a, [p.id]: Number(p.category_min_qty) || 1 }), {}));
                 } else {
                     setFetchError('empty');
                 }
@@ -413,12 +436,32 @@ export default function Home() {
     }, []);
 
     // ── Cart handlers ──────────────────────────────────────────────────────
-    const handleIncrement = (id: number) =>
-        setQuantities(p => ({ ...p, [id]: (p[id] || 1) + 1 }));
-    const handleDecrement = (id: number) =>
-        setQuantities(p => ({ ...p, [id]: Math.max(1, (p[id] || 1) - 1) }));
+    const handleIncrement = (id: number) => {
+        const prod = products.find(p => p.id === id);
+        const min = Number(prod?.category_min_qty) || 1;
+        setQuantities(p => ({ ...p, [id]: (p[id] || min) + 1 }));
+    };
+    const handleDecrement = (id: number) => {
+        const prod = products.find(p => p.id === id);
+        const min = Number(prod?.category_min_qty) || 1;
+        setQuantities(p => ({ ...p, [id]: Math.max(min, (p[id] || min) - 1) }));
+    };
+    const handleQuantityChange = (id: number, val: string) => {
+        const prod = products.find(p => p.id === id);
+        const min = Number(prod?.category_min_qty) || 1;
+        if (val === '') {
+            setQuantities(p => ({ ...p, [id]: '' as any }));
+            return;
+        }
+        const num = parseInt(val);
+        if (!isNaN(num) && num < min) return; // Ignore if below min while typing
+        setQuantities(p => ({ ...p, [id]: isNaN(num) ? min : num }));
+    };
     const handleAddToCart = (product: any) => {
-        addToCart(product, quantities[product.id] || 1);
+        let q = Number(quantities[product.id]);
+        const min = Number(product.category_min_qty) || 1;
+        if (isNaN(q) || q < min) q = min;
+        addToCart(product, q);
         setAddedIds(p => [...p, product.id]);
         setTimeout(() => setAddedIds(p => p.filter(i => i !== product.id)), 2000);
     };
@@ -582,6 +625,7 @@ export default function Home() {
                                         isJustAdded={addedIds.includes(p.id)}
                                         onIncrement={handleIncrement}
                                         onDecrement={handleDecrement}
+                                        onQuantityChange={handleQuantityChange}
                                         onAddToCart={handleAddToCart}
                                     />
                                 ))}
@@ -621,6 +665,7 @@ export default function Home() {
                             cart={cart}
                             onIncrement={handleIncrement}
                             onDecrement={handleDecrement}
+                            onQuantityChange={handleQuantityChange}
                             onAddToCart={handleAddToCart}
                             locale={locale}
                             viewAllLabel={viewAllLabel}
@@ -684,6 +729,7 @@ export default function Home() {
                                             isJustAdded={addedIds.includes(product.id)}
                                             onIncrement={handleIncrement}
                                             onDecrement={handleDecrement}
+                                            onQuantityChange={handleQuantityChange}
                                             onAddToCart={handleAddToCart}
                                         />
                                     </div>

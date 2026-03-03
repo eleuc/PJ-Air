@@ -22,4 +22,7 @@ export class Product {
 
   @Column({ nullable: true })
   image: string;
+
+  @Column({ default: 1 })
+  category_min_qty: number;
 }

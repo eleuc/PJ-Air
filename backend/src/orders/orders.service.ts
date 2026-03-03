@@ -13,6 +13,22 @@ export class OrdersService {
     private orderItemRepository: Repository<OrderItem>,
   ) {}
 
+  async findInRange(startDate: string, endDate: string, userId?: string): Promise<Order[]> {
+    const qb = this.orderRepository.createQueryBuilder('order')
+      .leftJoinAndSelect('order.items', 'items')
+      .leftJoinAndSelect('items.product', 'product')
+      .leftJoinAndSelect('order.user', 'user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .where('order.created_at >= :start', { start: startDate })
+      .andWhere('order.created_at <= :end', { end: endDate });
+
+    if (userId) {
+      qb.andWhere('order.user_id = :userId', { userId });
+    }
+
+    return qb.orderBy('order.created_at', 'DESC').getMany();
+  }
+
   async findAll(): Promise<Order[]> {
     return this.orderRepository.find({ 
       relations: ['items', 'items.product', 'user', 'user.profile', 'delivery_user', 'delivery_user.profile', 'address'],

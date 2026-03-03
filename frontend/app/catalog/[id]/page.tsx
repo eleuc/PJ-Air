@@ -8,10 +8,12 @@ import { Product } from '@/lib/products';
 import { api } from '@/lib/api';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
     const productId = parseInt(resolvedParams.id);
+    const { t } = useLanguage();
     const [product, setProduct] = useState<Product | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     
@@ -39,13 +41,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         return (
             <div className="min-h-screen bg-background flex flex-col items-center justify-center animate-pulse">
                 <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cargando detalles...</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.product.loadingDetails}</p>
             </div>
         );
     }
 
     if (!product) {
-        return <div className="min-h-screen flex items-center justify-center font-bold text-2xl text-foreground">Producto no encontrado</div>;
+        return <div className="min-h-screen flex items-center justify-center font-bold text-2xl text-foreground">{t.product.productNotFound}</div>;
     }
 
     const handleAddToCart = () => {
@@ -80,7 +82,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
             <main className="max-w-7xl mx-auto px-6 py-12 lg:px-12 animate-fade-in">
                 <Link href="/" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-12">
-                    <ArrowLeft size={14} /> Volver al Catálogo
+                    <ArrowLeft size={14} /> {t.product.backToCatalog}
                 </Link>
 
                 <div className="grid lg:grid-cols-2 gap-16 items-start">
@@ -115,7 +117,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             <div className="text-4xl font-semibold text-foreground tracking-tight">${product.price}</div>
                             <div className="h-8 w-[1px] bg-border/40" />
                             <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-tight">
-                                IVA INCLUIDO <br /> RECIÉN HORNEADO
+                                {t.product.taxIncluded} <br /> {t.product.freshlyBaked}
                             </div>
                         </div>
 
@@ -160,9 +162,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                                 className={`flex-1 premium-button h-16 text-xs uppercase tracking-[0.2em] gap-3 transition-all duration-500 ${isAdded ? 'bg-green-500 text-white' : 'jhoanes-gradient text-white'}`}
                             >
                                 {isAdded ? (
-                                    <><Check size={20} strokeWidth={3} /> ¡Agregado al Carrito!</>
+                                    <><Check size={20} strokeWidth={3} /> {t.product.addedToCart}</>
                                 ) : (
-                                    <><ShoppingCart size={20} strokeWidth={2.5} /> Añadir al Pedido</>
+                                    <><ShoppingCart size={20} strokeWidth={2.5} /> {t.product.addToOrder}</>
                                 )}
                             </button>
                         </div>
@@ -175,28 +177,28 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                                 onClick={() => router.push('/')}
                                 className="h-14 rounded-2xl border-2 border-black bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2"
                             >
-                                Seguir Comprando
+                                {t.product.continueShopping}
                             </button>
                             <button
                                 onClick={() => router.push('/checkout')}
                                 className="h-14 rounded-2xl bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
                             >
-                                Confirmar Pedido <ChevronRight size={16} />
+                                {t.product.confirmOrder} <ChevronRight size={16} />
                             </button>
                         </div>
 
                         <div className="grid grid-cols-3 gap-4 p-6 bg-secondary/20 rounded-[2rem] border border-border/40">
                             <div className="flex flex-col items-center text-center gap-2">
                                 <Clock size={20} className="text-primary" />
-                                <span className="text-[8px] font-black uppercase tracking-widest">Listo en 1h</span>
+                                <span className="text-[8px] font-black uppercase tracking-widest">{t.product.readyIn}</span>
                             </div>
                             <div className="flex flex-col items-center text-center gap-2 border-x border-border/40">
                                 <Truck size={20} className="text-primary" />
-                                <span className="text-[8px] font-black uppercase tracking-widest">Delivery Express</span>
+                                <span className="text-[8px] font-black uppercase tracking-widest">{t.product.deliveryExpress}</span>
                             </div>
                             <div className="flex flex-col items-center text-center gap-2">
                                 <ShieldCheck size={20} className="text-primary" />
-                                <span className="text-[8px] font-black uppercase tracking-widest">Garantía Jhoanes</span>
+                                <span className="text-[8px] font-black uppercase tracking-widest">{t.product.jhoanesGuarantee}</span>
                             </div>
                         </div>
                     </div>

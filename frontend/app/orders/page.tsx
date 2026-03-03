@@ -6,17 +6,21 @@ import { Package, Truck, CheckCircle2, AlertCircle, Clock, Eye, Loader2, Shoppin
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/context/LanguageContext';
 
-const CLIENT_STATUS_OPTIONS = [
-    { value: 'Pedido Enviado',  label: 'Pedido Enviado' },
-    { value: 'Pedido Recibido', label: 'Marcar como Recibido' },
+const getClientStatusOptions = (t: any) => [
+    { value: 'Pedido Enviado',  label: t.orders.orderShipped },
+    { value: 'Pedido Recibido', label: t.orders.markAsReceived },
 ];
 
 export default function ClientOrdersPage() {
     const { user } = useAuth();
     const router = useRouter();
+    const { t, locale } = useLanguage();
     const [orders, setOrders] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    
+    const CLIENT_STATUS_OPTIONS = getClientStatusOptions(t);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -63,14 +67,14 @@ export default function ClientOrdersPage() {
             <Navbar />
 
             <main className="max-w-5xl mx-auto px-4 py-12">
-                <h1 className="text-4xl font-bold font-serif text-primary mb-2">Mis Pedidos</h1>
-                <p className="text-muted-foreground mb-10">Sigue el estado de tus delicias en tiempo real</p>
+                <h1 className="text-4xl font-bold font-serif text-primary mb-2">{t.orders.title}</h1>
+                <p className="text-muted-foreground mb-10">{t.orders.subtitleTracking}</p>
 
                 <div className="space-y-6">
                     {isLoading ? (
                         <div className="py-20 flex flex-col items-center justify-center animate-pulse">
                             <Loader2 size={40} className="animate-spin text-primary/20 mb-4" />
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cargando tus pedidos...</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.common.loading}</p>
                         </div>
                     ) : orders.length > 0 ? (
                         orders.map(order => (
@@ -82,16 +86,16 @@ export default function ClientOrdersPage() {
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-2 mb-1">
-                                                <h3 className="text-xl font-bold">Orden #{order.id.slice(0, 8)}</h3>
+                                                <h3 className="text-xl font-bold">{t.orders.orderNumber} #{order.id.slice(0, 8)}</h3>
                                                 <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
                                                     (order.status || '').toLowerCase().includes('recibido') || (order.status || '').toLowerCase().includes('entregado')
                                                         ? 'bg-green-100 text-green-700'
                                                         : 'bg-primary/10 text-primary'
                                                 }`}>
-                                                    {order.status || 'Pedido Enviado'}
+                                                    {order.status === 'Pedido Recibido' ? t.orders.delivered : (order.status === 'Pedido Enviado' ? t.orders.shipping : order.status)}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-muted-foreground font-medium">Realizado el {new Date(order.created_at).toLocaleDateString()}</p>
+                                            <p className="text-sm text-muted-foreground font-medium">{t.orders.orderedOn} {new Date(order.created_at).toLocaleDateString()}</p>
                                         </div>
                                     </div>
 
@@ -135,9 +139,9 @@ export default function ClientOrdersPage() {
                                 {((order.status || '').toLowerCase().includes('recibido') || (order.status || '').toLowerCase().includes('entregado')) && order.payment_due_date && (
                                     <div className="bg-primary/5 px-8 py-4 border-t border-primary/10 flex justify-between items-center">
                                         <p className="text-xs font-bold text-primary flex items-center gap-2">
-                                            <Clock size={14} /> Este pedido deberá ser pagado antes del: <span className="underline uppercase">{order.payment_due_date}</span>
+                                            <Clock size={14} /> {t.orders.paymentDueNotice} <span className="underline uppercase">{order.payment_due_date}</span>
                                         </p>
-                                        <button className="text-[10px] font-black text-primary border border-primary px-3 py-1 rounded hover:bg-primary hover:text-white transition-all uppercase">Ver Factura</button>
+                                        <button className="text-[10px] font-black text-primary border border-primary px-3 py-1 rounded hover:bg-primary hover:text-white transition-all uppercase">{t.orders.viewInvoice}</button>
                                     </div>
                                 )}
                             </div>
@@ -145,8 +149,8 @@ export default function ClientOrdersPage() {
                     ) : (
                         <div className="py-20 text-center bg-muted/20 rounded-3xl border border-dashed border-border flex flex-col items-center">
                             <ShoppingBag className="text-muted-foreground/30 mb-4" size={48} />
-                            <p className="text-muted-foreground font-medium mb-6">Aún no has realizado ningún pedido.</p>
-                            <button onClick={() => router.push('/')} className="premium-button py-3 px-8">Empezar a comprar</button>
+                            <p className="text-muted-foreground font-medium mb-6">{t.orders.noOrdersYet}</p>
+                            <button onClick={() => router.push('/')} className="premium-button py-3 px-8">{t.orders.startShopping}</button>
                         </div>
                     )}
                 </div>

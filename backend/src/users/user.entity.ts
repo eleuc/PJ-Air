@@ -1,7 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany } from 'typeorm';
-import { Profile } from '../users/profile.entity';
 import { Address } from '../addresses/address.entity';
 import { Order } from '../orders/order.entity';
+import { ProductDiscount } from './product-discount.entity';
+import { Profile } from './profile.entity';
 
 @Entity('users')
 export class User {
@@ -25,4 +26,13 @@ export class User {
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  @Column('decimal', { precision: 5, scale: 2, default: 0 })
+  general_discount: number;
+
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  delivery_fee: number;
+
+  @OneToMany(() => ProductDiscount, (pd) => pd.user)
+  productDiscounts: ProductDiscount[];
 }

@@ -67,6 +67,9 @@ export const ProductCard = ({
                     <div className="flex flex-col">
                         <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">{t.product.price}</span>
                         <span className="text-2xl font-semibold text-foreground tracking-tight">${product.price}</span>
+                        {(product as any).category_min_qty > 1 && (
+                            <span className="text-[8px] font-black text-amber-600 uppercase tracking-tighter mt-1">Min: {(product as any).category_min_qty}</span>
+                        )}
                     </div>
 
                     <div className="h-10 w-[1px] bg-border/40 invisible sm:visible" />
@@ -77,7 +80,10 @@ export const ProductCard = ({
                         </span>
                         <div className="flex items-center bg-white border-2 border-neutral-200 rounded-2xl p-1 shadow-sm overflow-hidden focus-within:ring-4 focus-within:ring-primary/10 focus-within:border-primary/30 transition-all w-36 h-12">
                             <button 
-                                onClick={() => onDecrement(product.id)}
+                                onClick={() => {
+                                    const min = (product as any).category_min_qty || 1;
+                                    if (Number(quantity) > min) onDecrement(product.id);
+                                }}
                                 className="flex-1 h-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
                                 aria-label="Disminuir cantidad"
                             >
@@ -85,11 +91,17 @@ export const ProductCard = ({
                             </button>
                             <input 
                                 type="number" 
-                                min="1"
+                                min={(product as any).category_min_qty || 1}
                                 value={quantity} 
-                                onChange={(e) => onUpdateQuantity(product.id, e.target.value)}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    const min = (product as any).category_min_qty || 1;
+                                    if (val !== '' && Number(val) < min) return;
+                                    onUpdateQuantity(product.id, val);
+                                }}
                                 onFocus={(e) => {
-                                    if (quantity === 1 || quantity === '1') {
+                                    const min = (product as any).category_min_qty || 1;
+                                    if (quantity === min || quantity === String(min)) {
                                         onUpdateQuantity(product.id, '');
                                     }
                                     e.target.select();

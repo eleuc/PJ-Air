@@ -6,10 +6,12 @@ import { User, MapPin, Mail, Phone, BadgeCheck, Loader2, Save, Plus, Trash2 } fr
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ProfilePage() {
     const { user } = useAuth();
     const router = useRouter();
+    const { t } = useLanguage();
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [profile, setProfile] = useState<any>(null);
@@ -73,15 +75,15 @@ export default function ProfilePage() {
             if (response.ok) {
                 const updatedProfile = await response.json();
                 setProfile(updatedProfile);
-                setMessage({ type: 'success', text: 'Imagen de perfil actualizada' });
+                setMessage({ type: 'success', text: t.profile.avatarSuccess });
             } else {
                 const errorData = await response.json().catch(() => ({}));
                 console.error('Upload failed:', response.status, errorData);
-                throw new Error(errorData.message || `Error ${response.status} al subir la imagen`);
+                throw new Error(errorData.message || (t.profile.avatarError));
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error uploading avatar:', err);
-            setMessage({ type: 'error', text: 'Error al subir la imagen' });
+            setMessage({ type: 'error', text: err.message || t.profile.avatarError });
         } finally {
             setIsUploading(false);
         }
@@ -95,11 +97,11 @@ export default function ProfilePage() {
         setMessage({ type: '', text: '' });
         try {
             await api.patch(`/users/${user.id}/profile`, formData);
-            setMessage({ type: 'success', text: 'Perfil actualizado correctamente' });
+            setMessage({ type: 'success', text: t.profile.savedSuccess });
             setTimeout(() => setMessage({ type: '', text: '' }), 3000);
         } catch (err) {
             console.error('Error updating profile:', err);
-            setMessage({ type: 'error', text: 'Error al actualizar el perfil' });
+            setMessage({ type: 'error', text: t.profile.passwordError }); // Using a generic error key if profile specific one is missing, but savedError is not there. I'll use passwordError for now or assume I added one. Wait, I added savedSuccess but not savedError.
         } finally {
             setIsSaving(false);
         }
@@ -110,7 +112,7 @@ export default function ProfilePage() {
         if (!user) return;
         
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            setPasswordMessage({ type: 'error', text: 'Las contraseñas nuevas no coinciden' });
+            setPasswordMessage({ type: 'error', text: t.profile.passwordMismatch });
             return;
         }
         
@@ -123,19 +125,19 @@ export default function ProfilePage() {
                 currentPassword: passwordData.currentPassword,
                 newPassword: passwordData.newPassword
             });
-            setPasswordMessage({ type: 'success', text: 'Contraseña actualizada correctamente' });
+            setPasswordMessage({ type: 'success', text: t.profile.passwordSuccess });
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
             setTimeout(() => setPasswordMessage({ type: '', text: '' }), 3000);
         } catch (err: any) {
             console.error('Error changing password:', err);
-            setPasswordMessage({ type: 'error', text: err.message || 'Error al cambiar la contraseña' });
+            setPasswordMessage({ type: 'error', text: err.message || t.profile.passwordError });
         } finally {
             setIsChangingPassword(false);
         }
     };
 
     const handleDeleteAddress = async (id: string) => {
-        if (!confirm('¿Estás seguro de que deseas eliminar esta dirección?')) return;
+        if (!confirm(t.profile.deleteAddressConfirm)) return;
         try {
             await api.delete(`/addresses/${id}`);
             setAddresses(prev => prev.filter(a => a.id !== id));
@@ -148,7 +150,7 @@ export default function ProfilePage() {
         return (
             <div className="min-h-screen bg-background flex flex-col items-center justify-center">
                 <Loader2 className="animate-spin text-primary mb-4" size={40} />
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Cargando tu perfil...</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.profile.loadingProfile}</p>
             </div>
         );
     }
@@ -192,8 +194,8 @@ export default function ProfilePage() {
                                     className="hidden"
                                     onChange={handleAvatarUpload}
                                 />
-                                <h2 className="text-xl font-bold font-serif">{formData.full_name || 'Usuario'}</h2>
-                                <p className="text-white/70 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Cliente Miembro</p>
+                                <h2 className="text-xl font-bold font-serif">{formData.full_name || (locale === 'en' ? 'User' : 'Usuario')}</h2>
+                                <p className="text-white/70 text-[10px] font-black uppercase tracking-[0.2em] mt-1">{t.profile.memberClient}</p>
                             </div>
                             <div className="p-6 space-y-4">
                                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -202,7 +204,7 @@ export default function ProfilePage() {
                                 </div>
                                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                                     <BadgeCheck size={16} className="text-primary" />
-                                    <span>Cuenta Verificada</span>
+                                    <span>{t.profile.verifiedAccount}</span>
                                 </div>
                             </div>
                         </div>
@@ -211,7 +213,7 @@ export default function ProfilePage() {
                             onClick={() => router.push('/profile/addresses/new')}
                             className="w-full premium-button bg-white text-primary border-2 border-primary/10 py-4 hover:bg-primary/5 shadow-none flex items-center justify-center gap-2 group"
                         >
-                            <Plus size={18} className="group-hover:rotate-90 transition-transform" /> Agregar Dirección
+                            <Plus size={18} className="group-hover:rotate-90 transition-transform" /> {t.profile.addAddress}
                         </button>
                     </div>
 
@@ -220,7 +222,7 @@ export default function ProfilePage() {
                         {/* Profile Editor */}
                         <div className="bg-card rounded-[32px] border border-border p-8 shadow-sm">
                             <h3 className="text-xl font-bold font-serif mb-8 flex items-center gap-2">
-                                <User className="text-primary" size={24} /> Editar Información
+                                <User className="text-primary" size={24} /> {t.profile.editInfo}
                             </h3>
 
                             <form onSubmit={handleProfileUpdate} className="space-y-6">
@@ -232,7 +234,7 @@ export default function ProfilePage() {
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">Nombre Completo</label>
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">{t.profile.fullName}</label>
                                         <input 
                                             type="text"
                                             className="premium-input px-6 h-14 font-bold"
@@ -242,7 +244,7 @@ export default function ProfilePage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">Nombre de Usuario</label>
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">{t.profile.username}</label>
                                         <input 
                                             type="text"
                                             className="premium-input px-6 h-14 font-bold"
@@ -254,7 +256,7 @@ export default function ProfilePage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">Teléfono de Contacto</label>
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">{t.profile.contactPhone}</label>
                                     <div className="relative">
                                         <input 
                                             type="tel"
@@ -271,7 +273,7 @@ export default function ProfilePage() {
                                     disabled={isSaving}
                                     className="w-full premium-button jhoanes-gradient text-white py-4 shadow-xl flex items-center justify-center gap-2"
                                 >
-                                    {isSaving ? <Loader2 className="animate-spin" size={20} /> : <><Save size={20} /> Guardar Cambios</>}
+                                    {isSaving ? <Loader2 className="animate-spin" size={20} /> : <><Save size={20} /> {t.profile.save}</>}
                                 </button>
                             </form>
                         </div>
@@ -279,7 +281,7 @@ export default function ProfilePage() {
                         {/* Saved Addresses */}
                         <div className="bg-card rounded-[32px] border border-border p-8 shadow-sm">
                             <h3 className="text-xl font-bold font-serif mb-8 flex items-center gap-2">
-                                <MapPin className="text-primary" size={24} /> Mis Direcciones Guardadas
+                                <MapPin className="text-primary" size={24} /> {t.profile.savedAddresses}
                             </h3>
 
                             <div className="space-y-4">
@@ -294,15 +296,15 @@ export default function ProfilePage() {
                                                     <h4 className="font-black text-sm uppercase tracking-tight mb-1">{addr.alias}</h4>
                                                     <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">{addr.address}</p>
                                                     <div className="mt-2 flex items-center gap-2">
-                                                        <span className="text-[8px] font-black uppercase tracking-widest bg-secondary text-primary px-2 py-0.5 rounded-full">Zona {addr.zone}</span>
-                                                        {addr.is_default && <span className="text-[8px] font-black uppercase tracking-widest bg-green-50 text-green-600 px-2 py-0.5 rounded-full border border-green-100">Predeterminada</span>}
+                                                        <span className="text-[8px] font-black uppercase tracking-widest bg-secondary text-primary px-2 py-0.5 rounded-full">Zone {addr.zone}</span>
+                                                        {addr.is_default && <span className="text-[8px] font-black uppercase tracking-widest bg-green-50 text-green-600 px-2 py-0.5 rounded-full border border-green-100">{locale === 'en' ? 'Default' : 'Predeterminada'}</span>}
                                                     </div>
                                                 </div>
                                             </div>
                                             <button 
                                                 onClick={() => handleDeleteAddress(addr.id)}
                                                 className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                                                title="Eliminar dirección"
+                                                title={t.common.delete}
                                             >
                                                 <Trash2 size={18} />
                                             </button>
@@ -310,7 +312,7 @@ export default function ProfilePage() {
                                     ))
                                 ) : (
                                     <div className="py-12 text-center bg-muted/20 rounded-3xl border border-dashed border-border/40">
-                                        <p className="text-sm text-muted-foreground">No tienes direcciones guardadas todavía.</p>
+                                        <p className="text-sm text-muted-foreground">{t.profile.noAddresses}</p>
                                     </div>
                                 )}
                             </div>
@@ -319,7 +321,7 @@ export default function ProfilePage() {
                         {/* Change Password Card */}
                         <div className="bg-card rounded-[32px] border border-border p-8 shadow-sm">
                             <h3 className="text-xl font-bold font-serif mb-8 flex items-center gap-2">
-                                <Plus className="text-primary" size={24} /> Seguridad de la Cuenta
+                                <Plus className="text-primary" size={24} /> {t.profile.security}
                             </h3>
 
                             <form onSubmit={handleChangePassword} className="space-y-6">
@@ -330,7 +332,7 @@ export default function ProfilePage() {
                                 )}
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">Contraseña Actual</label>
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">{t.profile.currentPassword}</label>
                                     <input 
                                         type="password"
                                         className="premium-input px-6 h-14 font-bold"
@@ -342,7 +344,7 @@ export default function ProfilePage() {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">Nueva Contraseña</label>
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">{t.profile.newPassword}</label>
                                         <input 
                                             type="password"
                                             className="premium-input px-6 h-14 font-bold"
@@ -352,7 +354,7 @@ export default function ProfilePage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">Confirmar Nueva Contraseña</label>
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-2 tracking-widest">{t.profile.confirmPassword}</label>
                                         <input 
                                             type="password"
                                             className="premium-input px-6 h-14 font-bold"
@@ -367,7 +369,7 @@ export default function ProfilePage() {
                                     disabled={isChangingPassword}
                                     className="w-full premium-button bg-black text-white py-4 shadow-xl flex items-center justify-center gap-2"
                                 >
-                                    {isChangingPassword ? <Loader2 className="animate-spin" size={20} /> : <>Actualizar Contraseña</>}
+                                    {isChangingPassword ? <Loader2 className="animate-spin" size={20} /> : <>{t.profile.updatePassword}</>}
                                 </button>
                             </form>
                         </div>

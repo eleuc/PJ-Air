@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 import {
     Users, Search, Loader2, AlertCircle, Shield, User, Mail, Phone,
-    CheckCircle2, X, MapPin, ShoppingBag, ChevronRight, Package, Clock, Edit, Truck
+    CheckCircle2, X, MapPin, ShoppingBag, ChevronRight, Package, Clock, Edit, Truck, Trash2
 } from 'lucide-react';
 import { api } from '@/lib/api';
 
@@ -52,10 +52,24 @@ export default function AdminUsersPage() {
     const [savingAddr, setSavingAddr] = useState(false);
     const [deliveryUsers, setDeliveryUsers] = useState<any[]>([]);
     const [assigningOrder, setAssigningOrder] = useState<string | null>(null);
+    const [roleFilter, setRoleFilter] = useState<'all' | 'client' | 'admin' | 'delivery' | 'produccion'>('all');
+    
+    // Discount states
+    const [generalDiscount, setGeneralDiscount] = useState<number>(0);
+    const [productDiscounts, setProductDiscounts] = useState<any[]>([]);
+    const [availableProducts, setAvailableProducts] = useState<any[]>([]);
+    const [pdSearch, setPdSearch] = useState('');
+    const [selectedPdProduct, setSelectedPdProduct] = useState<any>(null);
+    const [pdPercent, setPdPercent] = useState<string>('');
+    const [pdPrice, setPdPrice] = useState<string>('');
+    const [isSavingDiscount, setIsSavingDiscount] = useState(false);
+    const [deliveryFee, setDeliveryFee] = useState<number>(0);
+    const [isSavingFee, setIsSavingFee] = useState(false);
 
     useEffect(() => { 
         fetchUsers(); 
         fetchDeliveryUsers();
+        fetchProducts();
     }, []);
 
     const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
@@ -79,13 +93,27 @@ export default function AdminUsersPage() {
         } catch (err) { console.error('Error fetching delivery users', err); }
     };
 
+    const fetchProducts = async () => {
+        try {
+            const data = await api.get('/products');
+            setAvailableProducts(Array.isArray(data) ? data : []);
+        } catch (err) { console.error('Error fetching products', err); }
+    };
+
     const openUserDetail = async (user: UserRecord) => {
         setSelectedUser(user);
+        setGeneralDiscount(Number((user as any).general_discount) || 0);
         // Reload full detail (includes orders and addresses)
         try {
             setLoadingDetail(true);
             const detail = await api.get(`/users/${user.id}`);
             setSelectedUser(detail);
+            setGeneralDiscount(Number(detail.general_discount) || 0);
+            setDeliveryFee(Number(detail.delivery_fee) || 0);
+            
+            // Get product discounts
+            const discounts = await api.get(`/users/${user.id}/product-discounts`);
+            setProductDiscounts(discounts || []);
         } catch { /* keep what we have */ }
         finally { setLoadingDetail(false); }
     };
@@ -131,11 +159,68 @@ export default function AdminUsersPage() {
         } catch (err: any) { showToast(`❌ ${err.message}`); }
     };
 
-    const filtered = users.filter(u =>
-        u.email?.toLowerCase().includes(search.toLowerCase()) ||
-        u.profile?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-        u.profile?.username?.toLowerCase().includes(search.toLowerCase())
-    );
+    const handleUpdateGeneralDiscount = async () => {
+        if (!selectedUser) return;
+        setIsSavingDiscount(true);
+        try {
+            await api.patch(`/users/${selectedUser.id}/general-discount`, { discount: generalDiscount });
+            showToast('✅ Descuento general actualizado');
+        } catch (err: any) { showToast(`❌ ${err.message}`); }
+        finally { setIsSavingDiscount(false); }
+    };
+
+    const handleUpdateDeliveryFee = async () => {
+        if (!selectedUser) return;
+        setIsSavingFee(true);
+        try {
+            await api.patch(`/users/${selectedUser.id}/delivery-fee`, { fee: deliveryFee });
+            showToast('✅ Delivery Fee actualizado');
+        } catch (err: any) { showToast(`❌ ${err.message}`); }
+        finally { setIsSavingFee(false); }
+    };
+
+    const handleAddProductDiscount = async () => {
+        if (!selectedUser || !selectedPdProduct) return;
+        setIsSavingDiscount(true);
+        try {
+            const data: any = { productId: selectedPdProduct.id };
+            if (pdPercent) data.discount_percentage = Number(pdPercent);
+            if (pdPrice) data.special_price = Number(pdPrice);
+
+            await api.post(`/users/${selectedUser.id}/product-discounts`, data);
+            showToast('✅ Descuento por producto guardado');
+            
+            // Refresh discounts
+            const discounts = await api.get(`/users/${selectedUser.id}/product-discounts`);
+            setProductDiscounts(discounts || []);
+            
+            setSelectedPdProduct(null);
+            setPdPercent('');
+            setPdPrice('');
+            setPdSearch('');
+        } catch (err: any) { showToast(`❌ ${err.message}`); }
+        finally { setIsSavingDiscount(false); }
+    };
+
+    const handleDeleteProductDiscount = async (id: string) => {
+        if (!confirm('¿Eliminar este descuento?')) return;
+        try {
+            await api.delete(`/users/product-discounts/${id}`);
+            setProductDiscounts(prev => prev.filter(d => d.id !== id));
+            showToast('✅ Descuento eliminado');
+        } catch (err: any) { showToast(`❌ ${err.message}`); }
+    };
+
+    const filtered = users.filter(u => {
+        const matchesSearch = 
+            u.email?.toLowerCase().includes(search.toLowerCase()) ||
+            u.profile?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+            u.profile?.username?.toLowerCase().includes(search.toLowerCase());
+        
+        const matchesRole = roleFilter === 'all' || u.role === roleFilter;
+        
+        return matchesSearch && matchesRole;
+    });
 
     return (
         <div className="flex min-h-screen bg-muted/30">
@@ -151,13 +236,29 @@ export default function AdminUsersPage() {
                     </div>
                 </div>
 
-                {/* Search */}
-                <div className="bg-card p-4 rounded-2xl border border-border mb-6">
-                    <div className="relative max-w-sm">
+                {/* Search & Filter */}
+                <div className="bg-card p-4 rounded-2xl border border-border mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
+                    <div className="relative w-full max-w-sm">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <input type="text" placeholder="Buscar por email, nombre o usuario..." value={search}
                             onChange={e => setSearch(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
+                            className="w-full pl-10 pr-4 py-2 border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-sm" />
+                    </div>
+
+                    <div className="flex gap-2 bg-muted/50 p-1 rounded-xl border border-border">
+                        {['all', 'client', 'delivery', 'produccion', 'admin'].map(f => (
+                            <button
+                                key={f}
+                                onClick={() => setRoleFilter(f as any)}
+                                className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                                    roleFilter === f 
+                                        ? 'bg-primary text-white shadow-sm' 
+                                        : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                                }`}
+                            >
+                                {f === 'all' ? 'Todos' : f === 'client' ? 'Clientes' : f}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
@@ -420,7 +521,175 @@ export default function AdminUsersPage() {
                                     </div>
                                 )}
                             </section>
-                        </div>
+
+                             {/* Discounts Section (Only for Clients) */}
+                             {selectedUser.role === 'client' && (
+                                <section className="pt-8 border-t border-border">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-6 flex items-center gap-2">
+                                        <AlertCircle size={16} /> Descuentos Especiales
+                                    </h3>
+
+                                    {/* General Discount */}
+                                    <div className="bg-primary/5 border border-primary/20 rounded-[2rem] p-6 mb-8">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground mb-3 block">Descuento General (%)</label>
+                                        <div className="flex gap-3">
+                                            <div className="relative flex-1">
+                                                <input 
+                                                    type="number" 
+                                                    value={generalDiscount}
+                                                    onChange={e => setGeneralDiscount(Number(e.target.value))}
+                                                    placeholder="Ej: 10"
+                                                    className="w-full pl-6 pr-10 py-3 rounded-xl border border-primary/30 outline-none focus:ring-2 focus:ring-primary/20 font-bold bg-white"
+                                                />
+                                                <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-primary">%</span>
+                                            </div>
+                                            <button 
+                                                onClick={handleUpdateGeneralDiscount}
+                                                disabled={isSavingDiscount}
+                                                className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:shadow-lg hover:shadow-primary/20 transition-all disabled:opacity-50"
+                                            >
+                                                {isSavingDiscount ? <Loader2 size={16} className="animate-spin" /> : 'Aplicar'}
+                                            </button>
+                                        </div>
+                                        <p className="text-[9px] text-muted-foreground mt-3 font-medium italic">Se aplicará a todos los productos del pedido.</p>
+                                    </div>
+
+                                    {/* Delivery Fee */}
+                                    <div className="bg-amber-50/50 border border-amber-200 rounded-[2rem] p-6 mb-8">
+                                        <label className="text-[10px] font-black uppercase text-amber-700/60 mb-3 block">Cargo por Envío (Delivery Fee)</label>
+                                        <div className="flex gap-3">
+                                            <div className="relative flex-1">
+                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-amber-600">$</span>
+                                                <input 
+                                                    type="number" 
+                                                    value={deliveryFee}
+                                                    onChange={e => setDeliveryFee(Number(e.target.value))}
+                                                    placeholder="Ej: 15.00"
+                                                    className="w-full pl-8 pr-6 py-3 rounded-xl border border-amber-300 outline-none focus:ring-2 focus:ring-amber-500/20 font-bold bg-white text-amber-900"
+                                                />
+                                            </div>
+                                            <button 
+                                                onClick={handleUpdateDeliveryFee}
+                                                disabled={isSavingFee}
+                                                className="bg-amber-600 text-white px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:shadow-lg hover:shadow-amber-500/20 transition-all disabled:opacity-50"
+                                            >
+                                                {isSavingFee ? <Loader2 size={16} className="animate-spin" /> : 'Establecer'}
+                                            </button>
+                                        </div>
+                                        <p className="text-[9px] text-amber-600/70 mt-3 font-medium italic">Este monto se sumará al total en cada pedido de este cliente.</p>
+                                    </div>
+
+                                    {/* Product Specific Discounts */}
+                                    <div className="space-y-6">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-xs font-bold text-foreground">Descuentos por Producto</h4>
+                                            <span className="text-[10px] font-black text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{productDiscounts.length}</span>
+                                        </div>
+
+                                        {/* List */}
+                                        <div className="space-y-3">
+                                            {productDiscounts.map(pd => (
+                                                <div key={pd.id} className="flex justify-between items-center p-4 bg-white border border-border rounded-xl group hover:border-primary/30 transition-all">
+                                                    <div className="flex-1 min-w-0 pr-4">
+                                                        <p className="font-bold text-xs truncate uppercase tracking-tight">{pd.product?.name || 'Producto'}</p>
+                                                        <div className="flex gap-2 mt-1">
+                                                            {pd.discount_percentage ? (
+                                                                <span className="text-[10px] font-black text-green-600 bg-green-50 px-2 py-0.5 rounded-lg border border-green-100 italic">-{pd.discount_percentage}% desc.</span>
+                                                            ) : (
+                                                                <span className="text-[10px] font-black text-primary bg-primary/5 px-2 py-0.5 rounded-lg border border-primary/10 italic">Precio: ${pd.special_price}</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => handleDeleteProductDiscount(pd.id)}
+                                                        className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            {productDiscounts.length === 0 && (
+                                                <div className="py-8 text-center bg-muted/20 border border-dashed border-border rounded-2xl">
+                                                    <p className="text-xs text-muted-foreground italic tracking-tight">Sin descuentos específicos aún.</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Add New Product Discount */}
+                                        <div className="bg-card border border-border rounded-3xl p-6 shadow-xl shadow-foreground/5 space-y-4">
+                                            <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.1em]">Nuevo Descuento Producto</p>
+                                            
+                                            {/* Search */}
+                                            <div className="relative">
+                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Buscar producto..." 
+                                                    value={pdSearch}
+                                                    onChange={e => setPdSearch(e.target.value)}
+                                                    className="w-full pl-9 pr-4 py-2.5 bg-muted/40 border border-border rounded-xl text-xs font-semibold outline-none focus:ring-2 focus:ring-primary/10 transition-all"
+                                                />
+                                                {pdSearch && (
+                                                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-border shadow-2xl rounded-2xl z-20 max-h-48 overflow-y-auto">
+                                                        {availableProducts
+                                                            .filter(p => p.name.toLowerCase().includes(pdSearch.toLowerCase()))
+                                                            .map(p => (
+                                                                <button 
+                                                                    key={p.id}
+                                                                    onClick={() => { setSelectedPdProduct(p); setPdSearch(''); }}
+                                                                    className="w-full text-left px-4 py-3 text-xs font-bold hover:bg-primary/5 border-b border-border/50 last:border-0 flex justify-between"
+                                                                >
+                                                                    <span>{p.name}</span>
+                                                                    <span className="text-primary">${p.price}</span>
+                                                                </button>
+                                                            ))
+                                                        }
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {selectedPdProduct && (
+                                                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                                    <div className="p-4 bg-primary/5 rounded-2xl border border-primary/20 mb-4 flex justify-between items-center">
+                                                        <div>
+                                                            <p className="text-[10px] font-black uppercase text-primary/60 mb-0.5">Producto Seleccionado</p>
+                                                            <p className="font-bold text-sm tracking-tight">{selectedPdProduct.name}</p>
+                                                        </div>
+                                                        <button onClick={() => setSelectedPdProduct(null)} className="p-1.5 hover:bg-primary/10 rounded-full text-primary"><X size={16} /></button>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-4 mb-4">
+                                                        <div>
+                                                            <label className="text-[9px] font-black uppercase text-muted-foreground mb-1 block px-1">Descuento (%)</label>
+                                                            <div className="relative">
+                                                                <input type="number" value={pdPercent} onChange={e => { setPdPercent(e.target.value); if(e.target.value) setPdPrice(''); }} placeholder="Ej: 15" className="w-full pl-4 pr-8 py-2.5 rounded-xl border border-border outline-none focus:ring-2 focus:ring-primary/20 text-xs font-bold bg-white" />
+                                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">%</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-end justify-center text-[10px] font-bold text-muted-foreground mb-3">ó</div>
+                                                        <div className="col-start-1 col-end-3">
+                                                            <label className="text-[9px] font-black uppercase text-muted-foreground mb-1 block px-1">Precio Especial ($)</label>
+                                                            <div className="relative">
+                                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">$</span>
+                                                                <input type="number" value={pdPrice} onChange={e => { setPdPrice(e.target.value); if(e.target.value) setPdPercent(''); }} placeholder="Ej: 45.00" className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-border outline-none focus:ring-2 focus:ring-primary/20 text-xs font-bold bg-white" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <button 
+                                                        onClick={handleAddProductDiscount}
+                                                        disabled={isSavingDiscount || (!pdPercent && !pdPrice)}
+                                                        className="w-full py-3.5 bg-black text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-neutral-800 transition-all disabled:opacity-30"
+                                                    >
+                                                        {isSavingDiscount ? <Loader2 size={16} className="animate-spin mx-auto" /> : 'Guardar Descuento Item'}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </section>
+                             )}
+                         </div>
                     </aside>
                 </div>
             )}

@@ -14,4 +14,9 @@ export class DevtoolsController {
   async seedAdmin() {
     return this.devtoolsService.seedAdmin();
   }
+
+  @Post('seed-reports')
+  async seedReports() {
+    return this.devtoolsService.seedReports();
+  }
 }

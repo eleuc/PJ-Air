@@ -12,6 +12,7 @@ interface CategorySummary {
     name: string;       // Spanish name (master key used in DB)
     name_en: string;    // English name
     count: number;
+    min_quantity: number;
 }
 
 export default function AdminCategoriesPage() {
@@ -25,6 +26,7 @@ export default function AdminCategoriesPage() {
     const [editingCategory, setEditingCategory] = useState<CategorySummary | null>(null);
     const [catName, setCatName] = useState('');
     const [catNameEn, setCatNameEn] = useState('');
+    const [minQty, setMinQty] = useState<number>(1);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
 
@@ -58,15 +60,18 @@ export default function AdminCategoriesPage() {
             setError(null);
             const products: any[] = await api.get('/products');
 
-            // Build map: category(ES) -> { name_en, count }
-            const map: Record<string, { name_en: string; count: number }> = {};
+            // Build map: category(ES) -> { name_en, count, min_quantity }
+            const map: Record<string, { name_en: string; count: number; min_quantity: number }> = {};
             products.forEach(p => {
                 if (p.category) {
-                    if (!map[p.category]) map[p.category] = { name_en: p.category_en || '', count: 0 };
+                    if (!map[p.category]) map[p.category] = { name_en: p.category_en || '', count: 0, min_quantity: Number(p.category_min_qty) || 1 };
                     map[p.category].count++;
                     // If a product already has category_en, use it
                     if (p.category_en && !map[p.category].name_en) {
                         map[p.category].name_en = p.category_en;
+                    }
+                    if (p.category_min_qty && map[p.category].min_quantity === 1) {
+                         map[p.category].min_quantity = Number(p.category_min_qty);
                     }
                 }
             });
@@ -80,7 +85,7 @@ export default function AdminCategoriesPage() {
             setCategories(
                 Object.entries(map)
                     .sort(([a], [b]) => a.localeCompare(b))
-                    .map(([name, { name_en, count }]) => ({ name, name_en, count }))
+                    .map(([name, { name_en, count, min_quantity }]) => ({ name, name_en, count, min_quantity }))
             );
         } catch (err: any) {
             setError(err.message || 'Could not load categories');
@@ -93,6 +98,7 @@ export default function AdminCategoriesPage() {
         setEditingCategory(null);
         setCatName('');
         setCatNameEn('');
+        setMinQty(1);
         setFormError(null);
         setShowModal(true);
     };
@@ -101,6 +107,7 @@ export default function AdminCategoriesPage() {
         setEditingCategory(cat);
         setCatName(cat.name);
         setCatNameEn(cat.name_en);
+        setMinQty(cat.min_quantity || 1);
         setFormError(null);
         setShowModal(true);
     };
@@ -125,18 +132,19 @@ export default function AdminCategoriesPage() {
                     oldName: editingCategory.name,
                     newName: trimmedEs,
                     newNameEn: trimmedEn,
+                    minQty: minQty
                 });
 
                 // Also update localStorage custom categories
                 const custom = getCustomCategories().map(c =>
-                    c.name === editingCategory.name ? { name: trimmedEs, name_en: trimmedEn } : c
+                    c.name === editingCategory.name ? { ...c, name: trimmedEs, name_en: trimmedEn, min_quantity: minQty } : c
                 );
                 saveCustomCategories(custom);
 
                 setCategories(prev =>
-                    prev.map(c => c.name === editingCategory.name ? { ...c, name: trimmedEs, name_en: trimmedEn } : c)
+                    prev.map(c => c.name === editingCategory.name ? { ...c, name: trimmedEs, name_en: trimmedEn, min_quantity: minQty } : c)
                 );
-                showToast(`✅ Category renamed to "${trimmedEs}" / "${trimmedEn}"`);
+                showToast(`✅ Category updated: "${trimmedEs}" (Min: ${minQty})`);
             } else {
                 // New category — store in localStorage
                 const custom = getCustomCategories();
@@ -312,10 +320,23 @@ export default function AdminCategoriesPage() {
                                     type="text"
                                     value={catNameEn}
                                     onChange={e => setCatNameEn(e.target.value)}
-                                    onKeyDown={e => e.key === 'Enter' && handleSave()}
                                     placeholder="e.g: Croissants, Desserts, Cakes..."
                                     className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 font-medium"
                                 />
+                            </div>
+
+                            {/* Min Quantity */}
+                            <div>
+                                <label className="flex items-center gap-2 text-xs font-black text-muted-foreground uppercase mb-1.5">
+                                    📦 Cantidad Mínima / Min Quantity
+                                </label>
+                                <input
+                                    type="number"
+                                    value={minQty}
+                                    onChange={e => setMinQty(Math.max(1, parseInt(e.target.value) || 1))}
+                                    className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 font-medium"
+                                />
+                                <p className="text-[10px] text-muted-foreground mt-1.5 italic">Garantiza un pedido mínimo para esta categoría.</p>
                             </div>
 
                             {editingCategory && editingCategory.count > 0 && (

@@ -10,10 +10,12 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
 function ProductCard({
-    product, quantity, isInCart, isJustAdded, onIncrement, onDecrement, onAddToCart,
+    product, quantity, isInCart, isJustAdded, onIncrement, onDecrement, onQuantityChange, onAddToCart,
 }: {
-    product: any; quantity: number; isInCart?: number; isJustAdded: boolean;
-    onIncrement: (id: number) => void; onDecrement: (id: number) => void; onAddToCart: (p: any) => void;
+    product: any; quantity: number | string; isInCart?: number; isJustAdded: boolean;
+    onIncrement: (id: number) => void; onDecrement: (id: number) => void; 
+    onQuantityChange: (id: number, val: string) => void;
+    onAddToCart: (p: any) => void;
 }) {
     const { t } = useLanguage();
     return (
@@ -31,10 +33,26 @@ function ProductCard({
             <div className="p-4 flex flex-col gap-2 flex-1">
                 <h3 className="font-bold text-sm leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2 min-h-[40px]">{product.name}</h3>
                 <p className="text-xl font-black text-foreground">${product.price}</p>
+                {product.category_min_qty > 1 && (
+                    <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
+                        <Info size={10} />
+                        <span className="text-[9px] font-black uppercase tracking-tight">Mínimo: {product.category_min_qty} unidades</span>
+                    </div>
+                )}
                 <div className="flex items-center bg-muted/60 rounded-xl overflow-hidden border border-border/30">
-                    <button onClick={() => onDecrement(product.id)} className="px-3 py-2 text-muted-foreground hover:text-primary transition-all"><Minus size={13} /></button>
-                    <span className="flex-1 text-center text-sm font-bold">{quantity}</span>
-                    <button onClick={() => onIncrement(product.id)} className="px-3 py-2 text-muted-foreground hover:text-primary transition-all"><Plus size={13} /></button>
+                    <button onClick={() => onDecrement(product.id)} className="px-3 py-2 text-muted-foreground hover:text-primary transition-all active:scale-90"><Minus size={13} /></button>
+                    <input 
+                        type="number" 
+                        value={quantity}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === '' || (Number(val) >= 1 && Number(val) <= 999)) {
+                                onQuantityChange(product.id, val);
+                            }
+                        }}
+                        className="w-10 bg-transparent text-center text-sm font-bold outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                    <button onClick={() => onIncrement(product.id)} className="px-3 py-2 text-muted-foreground hover:text-primary transition-all active:scale-90"><Plus size={13} /></button>
                 </div>
                 <button onClick={() => onAddToCart(product)}
                     className={`w-full flex items-center justify-center gap-1.5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${isJustAdded ? 'bg-green-500 text-white scale-95' : 'bg-primary text-white hover:bg-primary/90'}`}>
@@ -103,10 +121,24 @@ export default function CategoryPage() {
         return categoryProducts.filter(p => p.name.toLowerCase().includes(q));
     }, [categoryProducts, searchQuery]);
 
-    const handleIncrement = (id: number) => setQuantities(p => ({ ...p, [id]: (p[id] || 1) + 1 }));
-    const handleDecrement = (id: number) => setQuantities(p => ({ ...p, [id]: Math.max(1, (p[id] || 1) - 1) }));
+    const handleIncrement = (id: number) => setQuantities(p => ({ ...p, [id]: (Number(p[id]) || categoryProducts.find(cp => cp.id === id)?.category_min_qty || 1) + 1 }));
+    const handleDecrement = (id: number) => {
+        const prod = categoryProducts.find(p => p.id === id);
+        const min = Number(prod?.category_min_qty) || 1;
+        setQuantities(p => ({ ...p, [id]: Math.max(min, (Number(p[id]) || min) - 1) }));
+    };
+    const handleQuantityChange = (id: number, val: string) => {
+        const prod = categoryProducts.find(p => p.id === id);
+        const min = Number(prod?.category_min_qty) || 1;
+        if (val !== '' && Number(val) < min) return; // ignore lower than min if typing
+        setQuantities(p => ({ ...p, [id]: val as any }));
+    };
+
     const handleAddToCart = (product: any) => {
-        addToCart(product, quantities[product.id] || 1);
+        let q = Number(quantities[product.id]);
+        const min = Number(product.category_min_qty) || 1;
+        if (isNaN(q) || q < min) q = min; 
+        addToCart(product, q);
         setAddedIds(p => [...p, product.id]);
         setTimeout(() => setAddedIds(p => p.filter(i => i !== product.id)), 2000);
     };
@@ -199,6 +231,7 @@ export default function CategoryPage() {
                                 isJustAdded={addedIds.includes(product.id)}
                                 onIncrement={handleIncrement}
                                 onDecrement={handleDecrement}
+                                onQuantityChange={handleQuantityChange}
                                 onAddToCart={handleAddToCart}
                             />
                         ))}

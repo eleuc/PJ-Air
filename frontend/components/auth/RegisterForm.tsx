@@ -93,9 +93,9 @@ export const RegisterForm = ({
                 {/* Company name — full width, optional */}
                 <div className="space-y-3 md:col-span-2">
                     <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1 flex items-center gap-2">
-                        {locale === 'en' ? 'Company / Store Name' : 'Nombre de Compañía / Tienda'}
+                        {t.register.companyName}
                         <span className="text-[9px] normal-case font-semibold bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                            {locale === 'en' ? 'Optional' : 'Opcional'}
+                            {t.register.optional}
                         </span>
                     </label>
                     <div className="relative">

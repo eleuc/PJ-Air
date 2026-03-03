@@ -144,9 +144,6 @@ export default function Navbar() {
                     <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-muted transition-all font-bold text-sm">
                         <User size={18} className="text-primary" /> {t.nav.myProfile}
                     </Link>
-                    <Link href="/map" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-muted transition-all font-bold text-sm">
-                        <Map size={18} className="text-primary" /> {t.nav.zoneMap}
-                    </Link>
 
                     {/* Admin links */}
                     {isAdmin && (

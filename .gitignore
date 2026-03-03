@@ -33,3 +33,10 @@ yarn-error.log*
 # Git
 .agent/
 recursos/
+
+# Large / temporary files
+*.zip
+*.bak
+*.sqlite.bak
+check-users.js
+database.sqlite

@@ -29,10 +29,14 @@ export class ProductsController {
         return this.productsService.create(body);
     }
 
-    /** Batch-rename a category across all products */
+    /** Batch-update a category's settings (name, EN name, min quantity) across all its products */
     @Patch('rename-category')
-    async renameCategory(@Body() body: { oldName: string; newName: string; newNameEn: string }) {
-        return this.productsService.renameCategory(body.oldName, body.newName, body.newNameEn);
+    async updateCategory(@Body() body: { oldName: string; newName: string; newNameEn: string; minQty?: number }) {
+        return this.productsService.updateCategory(body.oldName, { 
+            newName: body.newName, 
+            newNameEn: body.newNameEn, 
+            minQty: body.minQty 
+        });
     }
 
     @Patch(':id')

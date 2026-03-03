@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Post, Param, Body, NotFoundException, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Param, Body, NotFoundException, UseInterceptors, UploadedFile, BadRequestException, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -69,5 +69,33 @@ export class UsersController {
       console.error('Database update failed:', error.message);
       throw new BadRequestException('Failed to update profile with avatar');
     }
+  }
+
+  @Patch(':id/general-discount')
+  async updateGeneralDiscount(@Param('id') id: string, @Body() body: { discount: number }) {
+    return this.usersService.updateGeneralDiscount(id, body.discount);
+  }
+
+  @Patch(':id/delivery-fee')
+  async updateDeliveryFee(@Param('id') id: string, @Body() body: { fee: number }) {
+    return this.usersService.updateDeliveryFee(id, body.fee);
+  }
+
+  @Get(':id/product-discounts')
+  async getProductDiscounts(@Param('id') id: string) {
+    return this.usersService.getProductDiscounts(id);
+  }
+
+  @Post(':id/product-discounts')
+  async setProductDiscount(@Param('id') id: string, @Body() body: { productId: string; discount_percentage?: number; special_price?: number }) {
+    return this.usersService.setProductDiscount(id, body.productId, {
+      discount_percentage: body.discount_percentage,
+      special_price: body.special_price
+    });
+  }
+
+  @Delete('product-discounts/:discountId')
+  async deleteProductDiscount(@Param('discountId') discountId: string) {
+    return this.usersService.deleteProductDiscount(discountId);
   }
 }

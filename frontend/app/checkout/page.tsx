@@ -6,12 +6,32 @@ import {
     Calendar, MapPin, CreditCard, ChevronRight, ShoppingBag,
     Loader2, Plus, Clock, Minus, Store, Truck, Home,
     ChevronDown, Check, AlertCircle, BookmarkPlus, Bookmark,
+    Map as MapIcon, RotateCcw, Search
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { api } from '@/lib/api';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+
+const MIN_ORDER_AMOUNT = 500;
+
+const mapContainerStyle = {
+    width: '100%',
+    height: '350px',
+    borderRadius: '24px'
+};
+
+const centerNY = { lat: 40.7128, lng: -74.0060 };
+
+const mapOptions = {
+    disableDefaultUI: true,
+    zoomControl: true,
+    styles: [
+        { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
+    ]
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Delivery type
@@ -25,24 +45,85 @@ function InlineAddressForm({
     onReady,
     locale,
 }: {
-    onReady: (data: { alias: string; address: string; notes: string; saveMode: 'save' | 'temporary' }) => void;
+    onReady: (data: { alias: string; address: string; notes: string; saveMode: 'save' | 'temporary'; lat: number; lng: number; refined_lat: number | null; refined_lng: number | null }) => void;
     locale: string;
 }) {
     const [alias, setAlias] = useState('');
     const [address, setAddress] = useState('');
     const [notes, setNotes] = useState('');
     const [saveMode, setSaveMode] = useState<'save' | 'temporary'>('save');
+    const [markerPos, setMarkerPos] = useState(centerNY);
+    const [geocodedPos, setGeocodedPos] = useState<{lat: number, lng: number} | null>(null);
+    const [refinedPos, setRefinedPos] = useState<{lat: number, lng: number} | null>(null);
+    const [isManualAdjustment, setIsManualAdjustment] = useState(false);
+    const [isGeocoding, setIsGeocoding] = useState(false);
+
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY || ''
+    });
+
+    const [map, setMap] = useState<google.maps.Map | null>(null);
 
     useEffect(() => {
-        onReady({ alias, address, notes, saveMode });
-    }, [alias, address, notes, saveMode]);
+        onReady({ 
+            alias, 
+            address, 
+            notes, 
+            saveMode,
+            lat: geocodedPos?.lat || markerPos.lat,
+            lng: geocodedPos?.lng || markerPos.lng,
+            refined_lat: isManualAdjustment ? refinedPos?.lat || null : null,
+            refined_lng: isManualAdjustment ? refinedPos?.lng || null : null
+        });
+    }, [alias, address, notes, saveMode, markerPos, geocodedPos, refinedPos, isManualAdjustment]);
 
     const lbl = (es: string, en: string) => locale === 'en' ? en : es;
 
+    const reverseGeocode = (pos: { lat: number, lng: number }) => {
+        if (typeof google === 'undefined') return;
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ location: pos }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+                setAddress(results[0].formatted_address);
+            }
+        });
+    };
+
+    const forwardGeocode = () => {
+        if (typeof google === 'undefined' || !address) return;
+        setIsGeocoding(true);
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: address }, (results, status) => {
+            setIsGeocoding(false);
+            if (status === 'OK' && results && results[0]) {
+                const newPos = {
+                    lat: results[0].geometry.location.lat(),
+                    lng: results[0].geometry.location.lng()
+                };
+                setMarkerPos(newPos);
+                setGeocodedPos(newPos);
+                setIsManualAdjustment(false);
+                setRefinedPos(null);
+                map?.panTo(newPos);
+            }
+        });
+    };
+
+    const handleMapClick = React.useCallback((e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+            const newPos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+            setMarkerPos(newPos);
+            setRefinedPos(newPos);
+            setIsManualAdjustment(true);
+            reverseGeocode(newPos);
+        }
+    }, []);
+
     return (
-        <div className="mt-6 bg-muted/30 rounded-2xl border border-border/60 p-6 space-y-5 animate-fade-in">
-            <h4 className="text-sm font-black uppercase tracking-widest text-foreground/60">
-                {lbl('Nueva dirección de entrega', 'New delivery address')}
+        <div className="mt-6 bg-muted/30 rounded-2xl border border-border/60 p-6 space-y-6 animate-fade-in shadow-sm">
+            <h4 className="text-sm font-black uppercase tracking-widest text-foreground/60 flex items-center gap-2">
+                <MapPin size={16} /> {lbl('Nueva dirección de entrega', 'New delivery address')}
             </h4>
 
             {/* Alias */}
@@ -53,10 +134,10 @@ function InlineAddressForm({
                 <input
                     type="text"
                     required
-                    placeholder={lbl('Ej: Oficina, Casa de Ana', 'e.g. Office, Ana's house')}
+                    placeholder={lbl('Ej: Oficina, Casa de Ana', "e.g. Office, Ana's house")}
                     value={alias}
                     onChange={e => setAlias(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-border/60 bg-white text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                    className="premium-input px-4 py-3"
                 />
             </div>
 
@@ -65,14 +146,78 @@ function InlineAddressForm({
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                     {lbl('Dirección completa', 'Full address')}
                 </label>
-                <textarea
-                    required
-                    rows={2}
-                    placeholder={lbl('Calle, número, ciudad...', 'Street, number, city...')}
-                    value={address}
-                    onChange={e => setAddress(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-border/60 bg-white text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none"
-                />
+                <div className="relative group">
+                    <textarea
+                        required
+                        rows={2}
+                        placeholder={lbl('Calle, número, ciudad...', 'Street, number, city...')}
+                        value={address}
+                        onChange={e => setAddress(e.target.value)}
+                        onBlur={() => { if (address.length > 5) forwardGeocode(); }}
+                        className="premium-input px-4 py-3 pr-24 resize-none"
+                    />
+                    <button
+                        type="button"
+                        onClick={forwardGeocode}
+                        disabled={isGeocoding}
+                        className="absolute right-3 bottom-3 px-3 py-1.5 bg-primary text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-md hover:bg-primary/90 transition-all flex items-center gap-2"
+                    >
+                        {isGeocoding ? <Loader2 size={12} className="animate-spin" /> : <Search size={12} />}
+                        {lbl('Ubicar', 'Locate')}
+                    </button>
+                </div>
+            </div>
+
+            {/* Map */}
+            <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                        <MapIcon size={14} /> {lbl('Refina la ubicación en elmMapa', 'Refine location on the map')}
+                    </label>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setMarkerPos(centerNY);
+                            map?.panTo(centerNY);
+                            reverseGeocode(centerNY);
+                        }}
+                        className="text-[9px] font-black uppercase text-primary hover:underline flex items-center gap-1"
+                    >
+                        <RotateCcw size={10} /> {lbl('Centrar en NY', 'Center on NY')}
+                    </button>
+                </div>
+
+                <div className="relative rounded-2xl overflow-hidden border border-border shadow-inner">
+                    {isLoaded ? (
+                        <GoogleMap
+                            mapContainerStyle={mapContainerStyle}
+                            center={markerPos}
+                            zoom={14}
+                            options={mapOptions}
+                            onClick={handleMapClick}
+                            onLoad={m => setMap(m)}
+                            onUnmount={() => setMap(null)}
+                        >
+                            <Marker
+                                position={markerPos}
+                                draggable={true}
+                                onDragEnd={(e) => {
+                                    if (e.latLng) {
+                                        const newPos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+                                        setMarkerPos(newPos);
+                                        setRefinedPos(newPos);
+                                        setIsManualAdjustment(true);
+                                        reverseGeocode(newPos);
+                                    }
+                                }}
+                            />
+                        </GoogleMap>
+                    ) : (
+                        <div style={mapContainerStyle} className="bg-muted animate-pulse flex items-center justify-center">
+                            <Loader2 className="animate-spin text-primary" size={30} />
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Notes */}
@@ -85,7 +230,7 @@ function InlineAddressForm({
                     placeholder={lbl('Ej: Portón azul, piso 3...', 'e.g. Blue gate, floor 3...')}
                     value={notes}
                     onChange={e => setNotes(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-border/60 bg-white text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                    className="premium-input px-4 py-3"
                 />
             </div>
 
@@ -98,36 +243,38 @@ function InlineAddressForm({
                     <button
                         type="button"
                         onClick={() => setSaveMode('save')}
-                        className={`flex items-center gap-2 p-3 rounded-xl border-2 text-[11px] font-black uppercase tracking-wider transition-all ${
+                        className={`flex items-center gap-2 p-3 rounded-xl border-2 text-[10px] font-black uppercase tracking-wider transition-all ${
                             saveMode === 'save'
-                                ? 'border-primary bg-primary/5 text-primary'
-                                : 'border-border/50 text-muted-foreground hover:border-primary/30'
+                                ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                                : 'border-border/50 text-muted-foreground hover:border-primary/20'
                         }`}
                     >
-                        <BookmarkPlus size={15} />
+                        <BookmarkPlus size={14} />
                         {lbl('Guardar dirección', 'Save address')}
                     </button>
                     <button
                         type="button"
                         onClick={() => setSaveMode('temporary')}
-                        className={`flex items-center gap-2 p-3 rounded-xl border-2 text-[11px] font-black uppercase tracking-wider transition-all ${
+                        className={`flex items-center gap-2 p-3 rounded-xl border-2 text-[10px] font-black uppercase tracking-wider transition-all ${
                             saveMode === 'temporary'
-                                ? 'border-amber-500 bg-amber-50 text-amber-700'
+                                ? 'border-amber-500 bg-amber-50 text-amber-700 shadow-sm'
                                 : 'border-border/50 text-muted-foreground hover:border-amber-300'
                         }`}
                     >
-                        <Bookmark size={15} />
+                        <Bookmark size={14} />
                         {lbl('Solo para este pedido', 'One-time only')}
                     </button>
                 </div>
                 {saveMode === 'temporary' && (
-                    <p className="text-[10px] text-amber-600 font-semibold flex items-center gap-1 mt-1">
-                        <AlertCircle size={11} />
-                        {lbl(
-                            'Esta dirección no aparecerá en tu perfil pero quedará registrada en el pedido.',
-                            'This address won\'t appear in your profile but will be stored with the order.'
-                        )}
-                    </p>
+                    <div className="p-3 bg-amber-50/50 rounded-xl border border-amber-100 mt-2">
+                        <p className="text-[9px] text-amber-600 font-bold flex items-center gap-1.5 leading-tight">
+                            <AlertCircle size={12} />
+                            {lbl(
+                                'Esta dirección no aparecerá en tu perfil pero quedará registrada en el pedido.',
+                                'This address won\'t appear in your profile but will be stored with the order.'
+                            )}
+                        </p>
+                    </div>
                 )}
             </div>
         </div>
@@ -146,6 +293,7 @@ export default function CheckoutPage() {
     const [deliveryDate, setDeliveryDate] = useState('');
     const [paymentDate, setPaymentDate] = useState('');
     const [isBeforeCutoff, setIsBeforeCutoff] = useState(true);
+    const [showMinAmountModal, setShowMinAmountModal] = useState(false);
 
     const [addresses, setAddresses] = useState<any[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
@@ -156,22 +304,74 @@ export default function CheckoutPage() {
     const [deliveryType, setDeliveryType] = useState<DeliveryType>('saved');
     const [otherAddrData, setOtherAddrData] = useState<{
         alias: string; address: string; notes: string; saveMode: 'save' | 'temporary';
-    }>({ alias: '', address: '', notes: '', saveMode: 'save' });
+        lat: number; lng: number; refined_lat: number | null; refined_lng: number | null;
+    }>({ 
+        alias: '', address: '', notes: '', saveMode: 'save',
+        lat: centerNY.lat, lng: centerNY.lng, refined_lat: null, refined_lng: null
+    });
 
     const lbl = (es: string, en: string) => locale === 'en' ? en : es;
 
-    // ── Fetch addresses ───────────────────────────────────────────────────────
+    // Discounts
+    const [userDiscounts, setUserDiscounts] = useState<any>(null);
+
+    // ── Fetch user & discounts ──────────────────────────────────────────────
     useEffect(() => {
         if (!user) return;
         setIsFetchingAddresses(true);
-        api.get(`/addresses/user/${user.id}`)
-            .then(data => {
-                setAddresses(Array.isArray(data) ? data : []);
-                if (data?.length > 0) setSelectedAddressId(data[0].id);
-            })
-            .catch(console.error)
-            .finally(() => setIsFetchingAddresses(false));
+        
+        // Parallel fetch for speed
+        Promise.all([
+            api.get(`/addresses/user/${user.id}`),
+            api.get(`/users/${user.id}`).catch(() => null) // Includes general_discount and productDiscounts
+        ]).then(([addrData, userData]) => {
+            setAddresses(Array.isArray(addrData) ? addrData : []);
+            if (addrData?.length > 0) setSelectedAddressId(addrData[0].id);
+            setUserDiscounts(userData);
+        }).finally(() => setIsFetchingAddresses(false));
     }, [user]);
+
+    // ── Calculation logic ─────────────────────────────────────────────────────
+    const getDiscountedTotals = () => {
+        let subtotal = 0;
+        let totalDiscount = 0;
+        let finalTotal = 0;
+        const generalPct = Number(userDiscounts?.general_discount) || 0;
+
+        cart.forEach(item => {
+            const originalSub = item.price * item.quantity;
+            subtotal += originalSub;
+
+            // Check product-specific
+            const pd = userDiscounts?.productDiscounts?.find((d: any) => Number(d.productId) === Number(item.id));
+            let discountedItemTotal = originalSub;
+
+            if (pd) {
+                if (pd.special_price) {
+                    discountedItemTotal = Number(pd.special_price) * item.quantity;
+                } else if (pd.discount_percentage) {
+                    discountedItemTotal = originalSub * (1 - Number(pd.discount_percentage) / 100);
+                }
+            } else if (generalPct > 0) {
+                // Apply general
+                discountedItemTotal = originalSub * (1 - generalPct / 100);
+            }
+
+            finalTotal += discountedItemTotal;
+            totalDiscount += (originalSub - discountedItemTotal);
+        });
+
+        finalTotal += Number(userDiscounts?.delivery_fee || 0);
+
+        return { 
+            subtotal, 
+            totalDiscount, 
+            finalTotal, 
+            deliveryFee: Number(userDiscounts?.delivery_fee || 0) 
+        };
+    };
+
+    const { subtotal, totalDiscount, finalTotal, deliveryFee } = getDiscountedTotals();
 
     // ── Delivery date (NY timezone) ───────────────────────────────────────────
     useEffect(() => {
@@ -190,6 +390,12 @@ export default function CheckoutPage() {
     // ── Submit ────────────────────────────────────────────────────────────────
     const handleSubmit = async () => {
         if (!user || cart.length === 0) return;
+
+        // Minimum order amount check ($500)
+        if (finalTotal < MIN_ORDER_AMOUNT) {
+            setShowMinAmountModal(true);
+            return;
+        }
 
         let finalAddressId: string | null = null;
         let deliveryAddressText: string | null = null;
@@ -213,6 +419,10 @@ export default function CheckoutPage() {
                     address: otherAddrData.address,
                     notes: otherAddrData.notes,
                     is_temporary: otherAddrData.saveMode === 'temporary',
+                    lat: otherAddrData.lat,
+                    lng: otherAddrData.lng,
+                    refined_lat: otherAddrData.refined_lat,
+                    refined_lng: otherAddrData.refined_lng,
                 });
                 finalAddressId = newAddr.id;
                 deliveryAddressText = otherAddrData.address;
@@ -230,15 +440,23 @@ export default function CheckoutPage() {
                 addressId: finalAddressId,
                 deliveryType,
                 deliveryAddressText,
-                total: getCartTotal(),
+                total: finalTotal,
                 status: 'Pedido Enviado',
                 deliveryDate,
                 paymentDueDate: paymentDate,
-                items: cart.map(item => ({
-                    productId: item.id,
-                    quantity: item.quantity,
-                    price: item.price,
-                })),
+                items: cart.map(item => {
+                    const pd = userDiscounts?.productDiscounts?.find((d: any) => Number(d.productId) === Number(item.id));
+                    let unitPrice = item.price;
+                    if (pd?.special_price) unitPrice = Number(pd.special_price);
+                    else if (pd?.discount_percentage) unitPrice = item.price * (1 - Number(pd.discount_percentage) / 100);
+                    else if (Number(userDiscounts?.general_discount) > 0) unitPrice = item.price * (1 - Number(userDiscounts.general_discount) / 100);
+
+                    return {
+                        productId: item.id,
+                        quantity: item.quantity,
+                        price: unitPrice,
+                    };
+                }),
             });
             clearCart();
             window.location.href = `/orders/${order.id}`;
@@ -544,9 +762,68 @@ export default function CheckoutPage() {
                                     </span>
                                 </div>
 
-                                <div className="border-t border-border pt-4 flex justify-between">
-                                    <span className="font-bold">{lbl('Total a Pagar', 'Total')}</span>
-                                    <span className="text-2xl font-black text-primary">${getCartTotal().toFixed(2)}</span>
+                                 <div className="border-t border-border pt-4 flex flex-col gap-1">
+                                    <div className="flex justify-between items-center text-xs mb-1">
+                                        <span className="text-muted-foreground">{lbl('Subtotal', 'Subtotal')}</span>
+                                        <span className="font-bold">${subtotal.toFixed(2)}</span>
+                                    </div>
+
+                                    {deliveryFee > 0 && (
+                                        <div className="flex justify-between items-center text-xs mb-1">
+                                            <span className="text-muted-foreground">{lbl('Cargo por Delivery', 'Delivery Fee')}</span>
+                                            <span className="font-bold text-amber-600">+${deliveryFee.toFixed(2)}</span>
+                                        </div>
+                                    )}
+
+                                    {totalDiscount > 0 && (
+                                        <div className="flex justify-between items-center text-xs mb-3 text-green-600 bg-green-50/50 p-2 rounded-xl border border-green-100/50">
+                                            <div className="flex flex-col">
+                                                <span className="font-black uppercase tracking-widest text-[9px]">{lbl('Descuento Especial', 'Special Discount')}</span>
+                                                {userDiscounts?.general_discount > 0 && !userDiscounts?.productDiscounts?.length && (
+                                                    <span className="text-[8px] italic">{lbl(`Descuento del ${userDiscounts.general_discount}% aplicado`, `${userDiscounts.general_discount}% discount applied`)}</span>
+                                                )}
+                                            </div>
+                                            <span className="font-bold">-${totalDiscount.toFixed(2)}</span>
+                                        </div>
+                                    )}
+
+                                    {finalTotal < MIN_ORDER_AMOUNT && (
+                                        <div className="p-3 bg-red-50 rounded-xl border border-red-100 mb-2">
+                                            <p className="text-[10px] text-red-600 font-black uppercase tracking-tight leading-tight">
+                                                {lbl(
+                                                    'Monto mínimo para pedido: $500.00. Te invitamos a completar tu pedido.',
+                                                    'Minimum order amount: $500.00. Please add more items to complete.'
+                                                )}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <div className="flex justify-between items-center mt-2">
+                                        <span className="font-bold text-lg">{lbl('Total a Pagar', 'Final Total')}</span>
+                                        <span className="text-3xl font-black text-primary">${finalTotal.toFixed(2)}</span>
+                                    </div>
+
+                                    {totalDiscount > 0 && (
+                                        <div className="mt-4 p-5 bg-primary/5 rounded-[2.5rem] border border-primary/20 animate-pulse-slow">
+                                            <p className="text-[10px] text-primary font-black uppercase tracking-[0.1em] text-center leading-relaxed">
+                                                {userDiscounts?.general_discount > 0 && !userDiscounts?.productDiscounts?.length ? (
+                                                    lbl(
+                                                        `✨ Descuento especial del ${userDiscounts.general_discount}%, que representa $${totalDiscount.toFixed(2)} en el total de su compra`,
+                                                        `✨ Special ${userDiscounts.general_discount}% discount, representing $${totalDiscount.toFixed(2)} in your total purchase`
+                                                    )
+                                                ) : (
+                                                    lbl(
+                                                        `🎉 ¡Has ahorrado un total de $${totalDiscount.toFixed(2)} con tus descuentos exclusivos!`,
+                                                        `🎉 You have saved a total of $${totalDiscount.toFixed(2)} with your exclusive discounts!`
+                                                    )
+                                                )}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <p className="text-[9px] text-muted-foreground font-bold mt-2 text-center">
+                                        {lbl('Monto mínimo por pedido: $500.00', 'Minimum order amount: $500.00')}
+                                    </p>
                                 </div>
                             </div>
 
@@ -585,6 +862,61 @@ export default function CheckoutPage() {
                     </div>
                 </div>
             </main>
+
+            <MinimumAmountModal 
+                isOpen={showMinAmountModal} 
+                onClose={() => setShowMinAmountModal(false)} 
+                locale={locale} 
+            />
+        </div>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Minimum Amount Modal
+// ─────────────────────────────────────────────────────────────────────────────
+function MinimumAmountModal({ isOpen, onClose, locale }: { isOpen: boolean; onClose: () => void; locale: string }) {
+    const router = useRouter();
+    if (!isOpen) return null;
+
+    const lbl = (es: string, en: string) => locale === 'en' ? en : es;
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-foreground/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative bg-card w-full max-w-md rounded-[32px] border border-border shadow-2xl p-8 text-center animate-in fade-in zoom-in duration-300">
+                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <ShoppingBag className="text-primary" size={40} />
+                </div>
+                
+                <h3 className="text-2xl font-black text-foreground mb-4">
+                    {lbl('Monto Mínimo Requerido', 'Minimum Amount Required')}
+                </h3>
+                
+                <p className="text-muted-foreground font-medium mb-8">
+                    {lbl(
+                        `Tu pedido actual es inferior a $${MIN_ORDER_AMOUNT.toFixed(2)}. Por favor, añade más productos para completar tu compra mínima.`,
+                        `Your current order is below $${MIN_ORDER_AMOUNT.toFixed(2)}. Please add more items to complete your minimum purchase.`
+                    )}
+                </p>
+
+                <div className="space-y-3">
+                    <button
+                        onClick={() => router.push('/')}
+                        className="w-full py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                    >
+                        {lbl('Volver al Catálogo', 'Back to Catalog')}
+                        <ChevronRight size={16} />
+                    </button>
+                    
+                    <button
+                        onClick={onClose}
+                        className="w-full py-3 text-xs font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        {lbl('Cerrar', 'Close')}
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

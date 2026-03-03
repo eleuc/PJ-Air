@@ -3,15 +3,19 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { LayoutDashboard, ShoppingBag, Settings, LogOut, ChevronLeft, ChevronRight, Package, Clock } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Settings, LogOut, ChevronLeft, ChevronRight, Package, Clock, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-
-const MENU_ITEMS = [
-    { name: 'Producción',    icon: Package,         href: '/produccion' },
-    { name: 'Config.',       icon: Settings,        href: '/produccion/settings' },
-];
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ProduccionSidebar() {
+    const { t } = useLanguage();
+    
+    const MENU_ITEMS = [
+        { name: 'Producción',    icon: Package,         href: '/produccion' },
+        { name: t.adminSidebar.reports, icon: BarChart3, href: '/produccion/reports' },
+        { name: 'Config.',       icon: Settings,        href: '/produccion/settings' },
+    ];
+
     const pathname = usePathname();
     const router = useRouter();
     const { signOut } = useAuth();

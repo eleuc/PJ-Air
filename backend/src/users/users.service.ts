@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { Profile } from './profile.entity';
+import { ProductDiscount } from './product-discount.entity';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +12,8 @@ export class UsersService {
     private userRepository: Repository<User>,
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
+    @InjectRepository(ProductDiscount)
+    private productDiscountRepository: Repository<ProductDiscount>,
   ) {}
 
   async findAll(): Promise<User[]> {
@@ -20,7 +23,7 @@ export class UsersService {
   async findOne(id: string): Promise<User> {
     const user = await this.userRepository.findOne({ 
       where: { id },
-      relations: ['profile', 'addresses', 'orders', 'orders.items', 'orders.items.product'] 
+      relations: ['profile', 'addresses', 'orders', 'orders.items', 'orders.items.product', 'productDiscounts', 'productDiscounts.product'] 
     });
     if (!user) throw new NotFoundException('User not found');
     return user;
@@ -98,5 +101,34 @@ export class UsersService {
 
   async updatePassword(userId: string, newPassword: string): Promise<void> {
     await this.userRepository.update(userId, { password: newPassword });
+  }
+
+  async updateGeneralDiscount(userId: string, discount: number): Promise<void> {
+    await this.userRepository.update(userId, { general_discount: discount });
+  }
+
+  async updateDeliveryFee(userId: string, fee: number): Promise<void> {
+    await this.userRepository.update(userId, { delivery_fee: fee });
+  }
+
+  async setProductDiscount(userId: string, productId: string, data: { discount_percentage?: number; special_price?: number }): Promise<ProductDiscount> {
+    let discount = await this.productDiscountRepository.findOne({ where: { user_id: userId, product_id: productId } });
+    if (discount) {
+      Object.assign(discount, data);
+    } else {
+      discount = this.productDiscountRepository.create({ user_id: userId, product_id: productId, ...data });
+    }
+    return this.productDiscountRepository.save(discount);
+  }
+
+  async deleteProductDiscount(discountId: string): Promise<void> {
+    await this.productDiscountRepository.delete(discountId);
+  }
+
+  async getProductDiscounts(userId: string): Promise<ProductDiscount[]> {
+    return this.productDiscountRepository.find({
+      where: { user_id: userId },
+      relations: ['product']
+    });
   }
 }
