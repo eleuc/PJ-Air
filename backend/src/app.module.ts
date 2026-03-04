@@ -29,7 +29,7 @@ import { ProductDiscount } from './users/product-discount.entity';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
-        database: configService.get<string>('DATABASE_PATH') || '../database.sqlite',
+        database: configService.get<string>('DATABASE_PATH') || 'C:/Users/USUARIO/Documents/Antigravity/database.sqlite',
         entities: [Product, User, Profile, Address, Order, OrderItem, ProductDiscount],
         synchronize: configService.get<string>('NODE_ENV') !== 'production',
         logging: false,

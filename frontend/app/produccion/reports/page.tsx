@@ -74,7 +74,9 @@ export default function ReportsPage() {
             const end = new Date();
             const start = new Date();
             start.setDate(end.getDate() - 31);
-            const url = `http://localhost:3001/orders/reports/range?startDate=${start.toISOString().split('T')[0]}T00:00:00.000Z&endDate=${end.toISOString().split('T')[0]}T23:59:59.999Z`;
+            const endStr = end.toISOString().split('T')[0] + ' 23:59:59';
+            const startStr = start.toISOString().split('T')[0] + ' 00:00:00';
+            const url = `http://localhost:3001/orders/reports/range?startDate=${startStr}&endDate=${endStr}`;
             const res = await fetch(url);
             const data = await res.json();
             setHistoryOrders(data);
@@ -99,7 +101,7 @@ export default function ReportsPage() {
         setLoading(true);
         setError(null);
         try {
-            let url = `http://localhost:3001/orders/reports/range?startDate=${startDate}T00:00:00.000Z&endDate=${endDate}T23:59:59.999Z`;
+            let url = `http://localhost:3001/orders/reports/range?startDate=${startDate} 00:00:00&endDate=${endDate} 23:59:59`;
             if (viewMode === 'specific-client' && selectedClientId) {
                 url += `&userId=${selectedClientId}`;
             }
