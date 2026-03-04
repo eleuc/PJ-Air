@@ -241,6 +241,7 @@ const en = {
     products: 'Products',
     categories: 'Categories',
     users: 'Users',
+    clients: 'Clients',
     routes: 'Routes',
     orders: 'Orders',
     reports: 'Reports',

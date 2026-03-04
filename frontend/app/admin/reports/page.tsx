@@ -171,35 +171,72 @@ function ReportsPageContent() {
     };
 
     const handleGenerate = () => {
-        fetchReportData(startDate, endDate, viewMode === 'specific-client' ? selectedClientId : '');
+        const e = endDate || startDate;
+        setEndDate(e);
+        fetchReportData(startDate, e, viewMode === 'specific-client' ? selectedClientId : '');
     };
 
-    const reportData = useMemo((): { categories: CategoryBlock[]; clients: ClientInfo[] } => {
-        if (!orders.length) return { categories: [], clients: [] };
+    const reportData = useMemo(() => {
+        if (!orders.length) return { categories: [], columns: [] };
 
-        const clientKeyMap: Record<string, ClientInfo> = {};
-        const clientKeyOrder: string[] = [];
+        const isSpecific = viewMode === 'specific-client';
+        const columnMap: Record<string, any> = {};
+        const columnOrder: string[] = [];
 
         orders.forEach(order => {
-            const cid = order.user_id;
-            const name = order.user?.profile?.full_name || order.user?.profile?.username || order.user?.email || 'Unknown';
-            const dType = order.delivery_type || 'pickup';
-            const addressLabel = order.address?.alias || order.delivery_address_text || '';
-            const key = `${cid}__${dType}__${addressLabel}`;
-            if (!clientKeyMap[key]) {
-                clientKeyMap[key] = { id: cid, name, deliveryType: dType, deliveryAddress: order.delivery_address_text || order.address?.address || '', addressAlias: addressLabel };
-                clientKeyOrder.push(key);
+            let key = '';
+            let label = '';
+            let subLabel = '';
+            let typeLabel = '';
+
+            if (isSpecific) {
+                // For specific client, columns are dates or periods
+                const datePart = (order.delivery_date || order.created_at || '').split('T')[0];
+                if (reportType === 'monthly') {
+                    key = 'period_monthly';
+                    label = t.adminSettings.spanish; // Placeholder or month name? User said "indicando el mes"
+                    const d = new Date(startDate + 'T12:00:00');
+                    label = d.toLocaleDateString('es', { month: 'long', year: 'numeric' });
+                } else if (reportType === 'weekly') {
+                    key = 'period_weekly';
+                    label = `${startDate} - ${endDate}`;
+                } else {
+                    key = datePart;
+                    label = datePart;
+                }
+            } else {
+                const cid = order.user_id;
+                const name = order.user?.profile?.full_name || order.user?.profile?.username || order.user?.email || 'Unknown';
+                const dType = order.delivery_type || 'pickup';
+                const addressLabel = order.address?.alias || order.delivery_address_text || '';
+                key = `${cid}__${dType}__${addressLabel}`;
+                label = name;
+                subLabel = addressLabel;
+                typeLabel = dType;
+            }
+
+            if (!columnMap[key]) {
+                columnMap[key] = { id: key, name: label, addressAlias: subLabel, deliveryType: typeLabel };
+                columnOrder.push(key);
             }
         });
 
-        const clientList = clientKeyOrder.map(k => clientKeyMap[k]);
+        const columns = columnOrder.map(k => columnMap[k]);
         const catMap: Record<string, CategoryBlock> = {};
 
         orders.forEach(order => {
-            const cid = order.user_id;
-            const dType = order.delivery_type || 'pickup';
-            const addressLabel = order.address?.alias || order.delivery_address_text || '';
-            const colKey = `${cid}__${dType}__${addressLabel}`;
+            const datePart = (order.delivery_date || order.created_at || '').split('T')[0];
+            let colKey = '';
+            if (isSpecific) {
+                if (reportType === 'monthly') colKey = 'period_monthly';
+                else if (reportType === 'weekly') colKey = 'period_weekly';
+                else colKey = datePart;
+            } else {
+                const cid = order.user_id;
+                const dType = order.delivery_type || 'pickup';
+                const addressLabel = order.address?.alias || order.delivery_address_text || '';
+                colKey = `${cid}__${dType}__${addressLabel}`;
+            }
 
             (order.items || []).forEach((item: any) => {
                 const cat = item.product?.category || 'Sin Categoría';
@@ -220,8 +257,8 @@ function ReportsPageContent() {
             });
         });
 
-        return { categories: Object.values(catMap), clients: clientList };
-    }, [orders]);
+        return { categories: Object.values(catMap), columns };
+    }, [orders, viewMode, reportType, startDate, endDate]);
 
     const historyTable = useMemo(() => {
         const days: Record<string, Record<string, number>> = {};
@@ -291,14 +328,14 @@ function ReportsPageContent() {
 
     // ─── CHUNKING FOR PRINT (horizontal split) ──────────────────────────────────
     // Split clients into groups of 80 for maximum density (at 9px per col, many fit)
-    const clientGroups = useMemo(() => {
+    const columnGroups = useMemo(() => {
         const groups = [];
         const chunkSize = 80; 
-        for (let i = 0; i < reportData.clients.length; i += chunkSize) {
-            groups.push(reportData.clients.slice(i, i + chunkSize));
+        for (let i = 0; i < reportData.columns.length; i += chunkSize) {
+            groups.push(reportData.columns.slice(i, i + chunkSize));
         }
         return groups.length > 0 ? groups : [[]];
-    }, [reportData.clients]);
+    }, [reportData.columns]);
 
     return (
         <main className="flex-1 overflow-x-hidden p-4 sm:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 print:p-4 print:m-0 print:max-w-none print:space-y-4">
@@ -432,7 +469,7 @@ function ReportsPageContent() {
                                     {reportMeta.start === reportMeta.end ? formatDate(reportMeta.start) : `${reportMeta.start} — ${reportMeta.end}`}
                                 </h2>
                                 <p className="text-sm text-muted-foreground mt-1">
-                                    {orders.length} pedidos · {reportData.clients.length} columnas de clientes · {reportData.categories.reduce((a, c) => a + c.products.length, 0)} productos
+                                    {orders.length} pedidos · {reportData.columns.length} {viewMode === 'specific-client' ? 'períodos' : 'clientes'} · {reportData.categories.reduce((a, c) => a + c.products.length, 0)} productos
                                 </p>
                             </div>
                             {orders.length > 0 && (
@@ -456,19 +493,18 @@ function ReportsPageContent() {
                                     <span className="ml-auto font-black text-sm">{cat.grandTotal} uds. totales</span>
                                 </div>
                                 <div className="overflow-x-auto border border-border rounded-b-[2rem] shadow-sm">
-                                    <table className="w-full border-collapse text-left" style={{ minWidth: `${200 + reportData.clients.length * 90}px` }}>
+                                    <table className="w-full border-collapse text-left" style={{ minWidth: `${200 + reportData.columns.length * 90}px` }}>
                                         <thead>
                                             <tr className="bg-muted/30">
                                                 <th className="py-3 px-4 font-black text-xs uppercase tracking-wider text-muted-foreground border-b border-r border-border sticky left-0 bg-muted/30 z-10 min-w-[160px]">Producto</th>
-                                                {reportData.clients.map((client, ci) => (
+                                                {reportData.columns.map((column, ci) => (
                                                     <th key={ci} className="py-3 px-3 border-b border-r border-border text-center min-w-[80px]">
                                                         <div className="flex flex-col items-center gap-1">
-                                                            <button onClick={() => setActiveTooltip(activeTooltip === `${catIdx}-${ci}` ? null : `${catIdx}-${ci}`)}
-                                                                className="font-black text-[10px] uppercase leading-tight hover:text-primary transition-colors relative group">
-                                                                {client.name}
-                                                                {client.addressAlias && <span className="block text-[8px] text-muted-foreground font-bold normal-case">{client.addressAlias}</span>}
+                                                            <button className="font-black text-[10px] uppercase leading-tight hover:text-primary transition-colors relative group">
+                                                                {column.name}
+                                                                {column.addressAlias && <span className="block text-[8px] text-muted-foreground font-bold normal-case">{column.addressAlias}</span>}
                                                             </button>
-                                                            <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase leading-none ${deliveryColor(client.deliveryType)}`}>{deliveryLabel(client.deliveryType)}</span>
+                                                            {column.deliveryType && <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase leading-none ${deliveryColor(column.deliveryType)}`}>{deliveryLabel(column.deliveryType)}</span>}
                                                         </div>
                                                     </th>
                                                 ))}
@@ -479,8 +515,8 @@ function ReportsPageContent() {
                                             {cat.products.map((prod, pi) => (
                                                 <tr key={pi} className="hover:bg-muted/20 transition-colors">
                                                     <td className="py-3 px-4 font-semibold text-sm border-r border-border sticky left-0 bg-white z-10 leading-tight">{prod.name}</td>
-                                                    {reportData.clients.map((client, ci) => {
-                                                        const colKey = `${client.id}__${client.deliveryType}__${client.addressAlias || ''}`;
+                                                    {reportData.columns.map((column, ci) => {
+                                                        const colKey = column.id;
                                                         return <td key={ci} className="py-3 px-3 text-center text-sm border-r border-border font-bold text-muted-foreground">{prod.clientQtys[colKey] || '—'}</td>;
                                                     })}
                                                     <td className="py-3 px-4 text-right font-black text-sm bg-yellow-50/80 text-yellow-800">{prod.total}</td>
@@ -493,63 +529,67 @@ function ReportsPageContent() {
 
                             {/* Print View (Chunking to fit Carta page) */}
                             <div className="hidden print:block">
-                                {clientGroups.map((groupClients, groupIdx) => (
+                                {columnGroups.map((groupCols, groupIdx) => (
                                     <div key={groupIdx} className={`mb-8 ${groupIdx > 0 ? 'page-break-before-auto mt-6' : ''}`}>
                                         <div className="bg-yellow-300 px-3 py-1.5 flex items-center gap-2 border border-black border-b-0">
-                                            <span className="font-black text-[11pt] uppercase">Categoría: {cat.name} {clientGroups.length > 1 ? `(Pág ${groupIdx + 1}/${clientGroups.length})` : ''}</span>
-                                            <span className="ml-auto font-black text-[11pt]">Pedido General · {reportMeta?.start === reportMeta?.end ? formatDate(reportMeta.start) : 'Reporte'}</span>
+                                            <span className="font-black text-[11pt] uppercase">Categoría: {cat.name} {columnGroups.length > 1 ? `(Pág ${groupIdx + 1}/${columnGroups.length})` : ''}</span>
+                                            <span className="ml-auto font-black text-[11pt]">Pedido {viewMode === 'specific-client' ? 'Individual' : 'General'} · {reportMeta?.start === reportMeta?.end ? formatDate(reportMeta.start) : 'Reporte'}</span>
                                         </div>
                                         <div className="border border-black overflow-hidden">
                                             <table className="w-full border-collapse text-left">
                                                 <thead>
                                                     <tr className="bg-gray-100">
-                                                        <th className="py-1 px-0.5 font-black text-[5.5pt] uppercase border-b border-r border-black min-w-[35px] max-w-[35px] overflow-hidden">Prod</th>
-                                                        {groupClients.map((client, ci) => (
-                                                            <th key={ci} className="vertical-header-th border-b border-r border-black text-center min-w-[9px] max-w-[9px]">
-                                                                <div className="vertical-header-content">
-                                                                    <div className="vertical-client-name">{client.name}</div>
-                                                                </div>
-                                                            </th>
-                                                        ))}
-                                                        {groupIdx === clientGroups.length - 1 && (
-                                                            <th className="py-1 px-0.5 border-b border-black text-right font-black text-[5pt] bg-yellow-100 min-w-[13px] max-w-[13px]">T</th>
+                                                        <th className="py-1 px-0.5 font-black text-[5.5pt] uppercase border-b border-r border-black min-w-[30px] max-w-[30px] overflow-hidden">Prod</th>
+                                                        {groupCols.map((col, ci) => {
+                                                            const isPeriod = col.id.startsWith('period_');
+                                                            return (
+                                                                <th key={ci} className={`${isPeriod ? 'period-header-th' : 'vertical-header-th'} border-b border-r border-black text-center ${isPeriod ? 'min-w-[50px] max-w-[50px]' : 'min-w-[9px] max-w-[9px]'}`}>
+                                                                    <div className={isPeriod ? 'period-header-content' : 'vertical-header-content'}>
+                                                                        <div className={isPeriod ? 'period-name' : 'vertical-client-name'}>{col.name}</div>
+                                                                    </div>
+                                                                </th>
+                                                            );
+                                                        })}
+                                                        {groupIdx === columnGroups.length - 1 && (
+                                                            <th className="py-1 px-0.5 border-b border-black text-right font-black text-[5pt] bg-yellow-100 min-w-[30px] max-w-[30px]">T</th>
                                                         )}
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-black">
                                                     {cat.products.map((prod, pi) => (
                                                         <tr key={pi} className={pi % 2 === 1 ? 'bg-gray-50' : 'bg-white'}>
-                                                            <td className="py-0 px-0.5 font-normal text-[6pt] border-r border-black leading-tight truncate min-w-[35px] max-w-[35px] overflow-hidden" title={prod.name}>
+                                                            <td className="py-0 px-0.5 font-normal text-[6pt] border-r border-black leading-tight truncate min-w-[30px] max-w-[30px] overflow-hidden" title={prod.name}>
                                                                 {prod.name.length > 7 ? prod.name.substring(0, 6) + '…' : prod.name}
                                                             </td>
-                                                            {groupClients.map((client, ci) => {
-                                                                const colKey = `${client.id}__${client.deliveryType}__${client.addressAlias || ''}`;
+                                                            {groupCols.map((col, ci) => {
+                                                                const colKey = col.id;
                                                                 const qty = prod.clientQtys[colKey] || 0;
+                                                                const isPeriod = col.id.startsWith('period_');
                                                                 return (
-                                                                    <td key={ci} className="py-0 px-0.5 text-center text-[8.5pt] border-r border-black font-bold">
+                                                                    <td key={ci} className={`py-0 px-0.5 text-center text-[8.5pt] border-r border-black font-bold ${isPeriod ? 'min-w-[50px] max-w-[50px]' : ''}`}>
                                                                         {qty > 0 ? qty : '.'}
                                                                     </td>
                                                                 );
                                                             })}
-                                                            {groupIdx === clientGroups.length - 1 && (
-                                                                <td className="py-0 px-0.1 text-right font-black text-[6.5pt] bg-yellow-100 min-w-[13px] max-w-[13px] overflow-hidden">{prod.total}</td>
+                                                            {groupIdx === columnGroups.length - 1 && (
+                                                                <td className="py-0 px-0.1 text-right font-black text-[6.5pt] bg-yellow-100 min-w-[30px] max-w-[30px] overflow-hidden">{prod.total}</td>
                                                             )}
                                                         </tr>
                                                     ))}
                                                 </tbody>
                                                 <tfoot>
                                                     <tr className="bg-yellow-300 font-black border-t-2 border-black">
-                                                        <td className="py-1 px-0.5 font-black text-[6pt] border-r border-black min-w-[35px] max-w-[35px] overflow-hidden truncate">T.</td>
-                                                        {groupClients.map((client, ci) => {
-                                                            const colKey = `${client.id}__${client.deliveryType}__${client.addressAlias || ''}`;
+                                                        <td className="py-1 px-0.5 font-black text-[6pt] border-r border-black min-w-[30px] max-w-[30px] overflow-hidden truncate">T.</td>
+                                                        {groupCols.map((col, ci) => {
+                                                            const colKey = col.id;
                                                             return (
-                                                                <td key={ci} className="py-0 px-0.5 text-center font-black text-[8.5pt] border-r border-black">
+                                                                <td key={ci} className={`py-0 px-0.5 text-center font-black text-[8.5pt] border-r border-black ${col.id.startsWith('period_') ? 'min-w-[50px] max-w-[50px]' : ''}`}>
                                                                     {cat.clientTotals[colKey] || 0}
                                                                 </td>
                                                             );
                                                         })}
-                                                        {groupIdx === clientGroups.length - 1 && (
-                                                            <td className="py-0 px-0.1 text-right font-black text-[6.5pt] min-w-[13px] max-w-[13px] bg-yellow-300 overflow-hidden">{cat.grandTotal}</td>
+                                                        {groupIdx === columnGroups.length - 1 && (
+                                                            <td className="py-0 px-0.1 text-right font-black text-[6.5pt] min-w-[30px] max-w-[30px] bg-yellow-300 overflow-hidden">{cat.grandTotal}</td>
                                                         )}
                                                     </tr>
                                                 </tfoot>
@@ -660,10 +700,9 @@ function ReportsPageContent() {
 
                     table { border-collapse: collapse !important; width: 100% !important; font-size: 8pt !important; table-layout: fixed !important; }
                     th, td { border: 1px solid black !important; padding: 1px 2px !important; line-height: 1 !important; overflow: hidden; }
-                    
-                    /* FORCE FIXED WIDTHS FOR FIRST AND LAST COLUMNS */
-                    th:first-child, td:first-child { width: 35px !important; min-width: 35px !important; max-width: 35px !important; }
-                    th:last-child, td:last-child { width: 13px !important; min-width: 13px !important; max-width: 13px !important; }
+                                        /* FORCE FIXED WIDTHS FOR FIRST AND LAST COLUMNS */
+                    th:first-child, td:first-child { width: 30px !important; min-width: 30px !important; max-width: 30px !important; }
+                    th:last-child, td:last-child { width: 30px !important; min-width: 30px !important; max-width: 30px !important; }
                     
                     th { font-weight: bold !important; font-size: 6pt !important; }
                     td { font-size: 6.5pt !important; }
@@ -672,11 +711,23 @@ function ReportsPageContent() {
                     thead { display: table-header-group; }
                     .sticky { position: static !important; }
 
-                    .vertical-header-th {
+                     .vertical-header-th {
                         height: 60px;
                         width: 9px !important;
+                        min-width: 9px !important;
+                        max-width: 9px !important;
                         vertical-align: bottom;
                         padding: 0 !important;
+                    }
+
+                    .period-header-th {
+                        height: 25px;
+                        width: 50px !important;
+                        min-width: 50px !important;
+                        max-width: 50px !important;
+                        vertical-align: middle;
+                        text-align: center;
+                        padding: 1px !important;
                     }
                     
                     .vertical-header-content {
@@ -692,10 +743,25 @@ function ReportsPageContent() {
                         padding-top: 1px;
                     }
 
-                    .vertical-client-name {
+                     .vertical-client-name {
                         text-transform: uppercase;
                         font-weight: 900;
                     }
+
+                    .period-header-content {
+                        font-weight: 900;
+                        font-size: 5pt;
+                        text-align: center;
+                        width: 50px;
+                    }
+
+                    .period-name {
+                        text-transform: uppercase;
+                        font-weight: 900;
+                        white-space: normal;
+                        line-height: 1.1;
+                    }
+
                     .vertical-delivery-label {
                         font-size: 7pt;
                         font-weight: 900;

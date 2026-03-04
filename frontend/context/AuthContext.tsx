@@ -32,14 +32,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchUserProfile = async (userId: string, fallbackMeta?: any) => {
         try {
             const data = await api.get(`/users/${userId}`);
-            // Merge user_metadata with real backend data (role comes from backend)
+            // Store full user data as 'profile' plus explicit role and offers
             setProfile({
                 ...(fallbackMeta || {}),
                 ...data?.profile,
                 role: data?.role || fallbackMeta?.role || 'client',
+                general_discount: data?.general_discount || 0,
+                delivery_fee: data?.delivery_fee || 0,
+                productDiscounts: data?.productDiscounts || [],
             });
         } catch {
-            // If backend call fails, fall back to metadata
             if (fallbackMeta) setProfile(fallbackMeta);
         }
     };

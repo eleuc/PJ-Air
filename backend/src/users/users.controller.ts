@@ -87,7 +87,7 @@ export class UsersController {
   }
 
   @Post(':id/product-discounts')
-  async setProductDiscount(@Param('id') id: string, @Body() body: { productId: string; discount_percentage?: number; special_price?: number }) {
+  async setProductDiscount(@Param('id') id: string, @Body() body: { productId: number; discount_percentage?: number; special_price?: number }) {
     return this.usersService.setProductDiscount(id, body.productId, {
       discount_percentage: body.discount_percentage,
       special_price: body.special_price

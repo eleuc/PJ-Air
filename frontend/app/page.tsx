@@ -161,7 +161,7 @@ function LoginModal({ onSuccess }: { onSuccess: () => void }) {
 // ─────────────────────────────────────────────────────────────────────────────
 function ProductCard({
     product, quantity, isInCart, isJustAdded,
-    onIncrement, onDecrement, onQuantityChange, onAddToCart,
+    onIncrement, onDecrement, onQuantityChange, onAddToCart, profile,
 }: {
     product: any;
     quantity: number;
@@ -171,8 +171,29 @@ function ProductCard({
     onDecrement: (id: number) => void;
     onQuantityChange: (id: number, val: string) => void;
     onAddToCart: (p: any) => void;
+    profile?: any;
 }) {
     const { t } = useLanguage();
+
+    // Calculate dynamic price
+    let originalPrice = product.price;
+    let finalPrice = product.price;
+    let hasDiscount = false;
+
+    if (profile?.productDiscounts) {
+        const pd = profile.productDiscounts.find((d: any) => Number(d.product_id) === Number(product.id));
+        if (pd) {
+            hasDiscount = true;
+            if (pd.special_price) finalPrice = Number(pd.special_price);
+            else if (pd.discount_percentage) finalPrice = originalPrice * (1 - Number(pd.discount_percentage) / 100);
+        }
+    }
+    
+    // Also consider general discount if no product-specific one
+    if (!hasDiscount && profile?.general_discount > 0) {
+        hasDiscount = true;
+        finalPrice = originalPrice * (1 - Number(profile.general_discount) / 100);
+    }
 
     return (
         <div className="group bg-white rounded-3xl border border-border/50 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col overflow-hidden w-full h-full">
@@ -208,7 +229,12 @@ function ProductCard({
                 <h3 className="font-bold text-sm leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2 min-h-[36px]">
                     {product.name}
                 </h3>
-                <p className="text-lg font-black text-foreground tracking-tight">${product.price}</p>
+                <div className="flex flex-wrap items-baseline gap-2">
+                    <p className="text-lg font-black text-foreground tracking-tight">${finalPrice.toFixed(2)}</p>
+                    {hasDiscount && (
+                        <p className="text-[10px] font-bold text-muted-foreground/60 line-through decoration-primary/40 decoration-2">${originalPrice.toFixed(2)}</p>
+                    )}
+                </div>
                 {product.category_min_qty > 1 && (
                     <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
                         <Info size={10} strokeWidth={3} />
@@ -265,7 +291,7 @@ function ProductCard({
 function CategoryCarousel({
     group, quantities, addedIds, cart,
     onIncrement, onDecrement, onQuantityChange, onAddToCart,
-    locale, viewAllLabel,
+    locale, viewAllLabel, profile,
 }: {
     group: { key: string; label: string; products: any[] };
     quantities: Record<number, number>;
@@ -277,6 +303,7 @@ function CategoryCarousel({
     onAddToCart: (p: any) => void;
     locale: string;
     viewAllLabel: string;
+    profile?: any;
 }) {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -350,6 +377,7 @@ function CategoryCarousel({
                                 onDecrement={onDecrement}
                                 onQuantityChange={onQuantityChange}
                                 onAddToCart={onAddToCart}
+                                profile={profile}
                             />
                         </div>
                     ))}
@@ -395,7 +423,7 @@ function CategoryCarousel({
 export default function Home() {
     const { addToCart, cart } = useCart();
     const { t, locale } = useLanguage();
-    const { user, isLoading: authLoading } = useAuth();
+    const { user, profile, isLoading: authLoading } = useAuth();
 
     // Show login modal when auth is resolved and user is NOT logged in
     const [showLoginModal, setShowLoginModal] = useState(false);
@@ -627,6 +655,7 @@ export default function Home() {
                                         onDecrement={handleDecrement}
                                         onQuantityChange={handleQuantityChange}
                                         onAddToCart={handleAddToCart}
+                                        profile={profile}
                                     />
                                 ))}
                             </div>
@@ -669,6 +698,7 @@ export default function Home() {
                             onAddToCart={handleAddToCart}
                             locale={locale}
                             viewAllLabel={viewAllLabel}
+                            profile={profile}
                         />
 
                         {/* Divider */}
@@ -731,6 +761,7 @@ export default function Home() {
                                             onDecrement={handleDecrement}
                                             onQuantityChange={handleQuantityChange}
                                             onAddToCart={handleAddToCart}
+                                            profile={profile}
                                         />
                                     </div>
                                 ))}

@@ -1,5 +1,22 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
+async function handleResponse(response: Response) {
+  const text = await response.text();
+  let data = {};
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      console.error('Error parsing JSON response', e);
+    }
+  }
+
+  if (!response.ok) {
+    throw new Error((data as any).message || 'Error en la petición');
+  }
+  return data;
+}
+
 export const api = {
   async post(path: string, body: any) {
     const response = await fetch(`${API_URL}${path}`, {
@@ -9,12 +26,7 @@ export const api = {
       },
       body: JSON.stringify(body),
     });
-    
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || 'Error en la petición');
-    }
-    return data;
+    return handleResponse(response);
   },
 
   async patch(path: string, body: any) {
@@ -25,21 +37,12 @@ export const api = {
       },
       body: JSON.stringify(body),
     });
-    
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || 'Error en la petición');
-    }
-    return data;
+    return handleResponse(response);
   },
 
   async get(path: string) {
     const response = await fetch(`${API_URL}${path}`);
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || 'Error en la petición');
-    }
-    return data;
+    return handleResponse(response);
   },
 
   async delete(path: string) {
@@ -48,7 +51,11 @@ export const api = {
     });
     
     if (!response.ok) {
-      const data = await response.json();
+      const text = await response.text();
+      let data = { message: '' };
+      try {
+        data = text ? JSON.parse(text) : { message: '' };
+      } catch (e) {}
       throw new Error(data.message || 'Error en la petición');
     }
     return true;

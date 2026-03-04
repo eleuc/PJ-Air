@@ -6,7 +6,8 @@ import { useAuth } from './AuthContext';
 export interface CartItem {
     id: number;
     name: string;
-    price: number;
+    price: number; // This will be the dynamic final price
+    originalPrice: number; // Fixed base price from catalog
     quantity: number;
     image: string;
     description: string;
@@ -20,16 +21,19 @@ interface CartContextType {
     clearCart: () => void;
     getCartTotal: () => number;
     getCartCount: () => number;
+    getRawSubtotal: () => number;
+    getDiscountedSubtotal: () => number;
+    getFinalTotal: () => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-    const { user } = useAuth();
+    const { profile } = useAuth();
     const [cart, setCart] = useState<CartItem[]>([]);
     
     // Key depends on user ID to isolate carts
-    const cartKey = user ? `jhoanes-cart-${user.id}` : 'jhoanes-cart-guest';
+    const cartKey = profile?.id ? `jhoanes-cart-${profile.id}` : 'jhoanes-cart-guest';
 
     // Load from localStorage when user changes or component mounts
     useEffect(() => {
@@ -69,6 +73,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 id: product.id, 
                 name: product.name, 
                 price: product.price, 
+                originalPrice: product.price,
                 image: product.image,
                 description: product.description,
                 quantity: quantity 
@@ -95,8 +100,40 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setCart([]);
     };
 
-    const getCartTotal = () => {
-        return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const getRawSubtotal = () => {
+        return cart.reduce((total, item) => {
+            let itemPrice = item.originalPrice || item.price;
+            
+            // Apply product-specific discount (Step 1)
+            if (profile?.productDiscounts) {
+                const pd = profile.productDiscounts.find((d: any) => Number(d.product_id) === Number(item.id));
+                if (pd) {
+                    if (pd.special_price) {
+                        itemPrice = Number(pd.special_price);
+                    } else if (pd.discount_percentage) {
+                        itemPrice = itemPrice * (1 - Number(pd.discount_percentage) / 100);
+                    }
+                }
+            }
+            
+            return total + (itemPrice * item.quantity);
+        }, 0);
+    };
+
+    const getCartTotal = () => getRawSubtotal();
+
+    const getDiscountedSubtotal = () => {
+        const sub = getRawSubtotal();
+        // Applying general discount (Step 2)
+        const genDisc = profile?.general_discount || 0;
+        return sub * (1 - Number(genDisc) / 100);
+    };
+
+    const getFinalTotal = () => {
+        const afterDisc = getDiscountedSubtotal();
+        // Adding delivery fee (Step 3)
+        const fee = profile?.delivery_fee || 0;
+        return afterDisc + Number(fee);
     };
 
     const getCartCount = () => {
@@ -111,7 +148,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             updateQuantity,
             clearCart, 
             getCartTotal, 
-            getCartCount 
+            getCartCount,
+            getRawSubtotal,
+            getDiscountedSubtotal,
+            getFinalTotal
         }}>
             {children}
         </CartContext.Provider>

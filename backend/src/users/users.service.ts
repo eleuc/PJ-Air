@@ -111,7 +111,7 @@ export class UsersService {
     await this.userRepository.update(userId, { delivery_fee: fee });
   }
 
-  async setProductDiscount(userId: string, productId: string, data: { discount_percentage?: number; special_price?: number }): Promise<ProductDiscount> {
+  async setProductDiscount(userId: string, productId: number, data: { discount_percentage?: number; special_price?: number }): Promise<ProductDiscount> {
     let discount = await this.productDiscountRepository.findOne({ where: { user_id: userId, product_id: productId } });
     if (discount) {
       Object.assign(discount, data);

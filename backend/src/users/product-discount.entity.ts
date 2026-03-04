@@ -11,7 +11,7 @@ export class ProductDiscount {
   user_id: string;
 
   @Column()
-  product_id: string;
+  product_id: number;
 
   @Column('decimal', { precision: 5, scale: 2, nullable: true })
   discount_percentage: number;

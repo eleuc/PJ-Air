@@ -50,7 +50,10 @@ export class AuthService {
     };
   }
 
-  async login(identifier: string, password: string) {
+  async login(identifierInput: string, password: string) {
+    const identifier = identifierInput.trim().toLowerCase();
+    
+    // Search by email or find by username
     const user = await this.usersService.findByEmailWithRole(identifier) ||
                  await this.usersService.findByIdentifier(identifier);
     

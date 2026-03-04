@@ -285,8 +285,8 @@ function InlineAddressForm({
 // Main checkout page
 // ─────────────────────────────────────────────────────────────────────────────
 export default function CheckoutPage() {
-    const { cart, getCartTotal, clearCart, updateQuantity } = useCart();
-    const { user } = useAuth();
+    const { cart, clearCart, updateQuantity, getRawSubtotal, getDiscountedSubtotal, getFinalTotal } = useCart();
+    const { user, profile } = useAuth();
     const { locale } = useLanguage();
     const router = useRouter();
 
@@ -332,46 +332,12 @@ export default function CheckoutPage() {
     }, [user]);
 
     // ── Calculation logic ─────────────────────────────────────────────────────
-    const getDiscountedTotals = () => {
-        let subtotal = 0;
-        let totalDiscount = 0;
-        let finalTotal = 0;
-        const generalPct = Number(userDiscounts?.general_discount) || 0;
-
-        cart.forEach(item => {
-            const originalSub = item.price * item.quantity;
-            subtotal += originalSub;
-
-            // Check product-specific
-            const pd = userDiscounts?.productDiscounts?.find((d: any) => Number(d.productId) === Number(item.id));
-            let discountedItemTotal = originalSub;
-
-            if (pd) {
-                if (pd.special_price) {
-                    discountedItemTotal = Number(pd.special_price) * item.quantity;
-                } else if (pd.discount_percentage) {
-                    discountedItemTotal = originalSub * (1 - Number(pd.discount_percentage) / 100);
-                }
-            } else if (generalPct > 0) {
-                // Apply general
-                discountedItemTotal = originalSub * (1 - generalPct / 100);
-            }
-
-            finalTotal += discountedItemTotal;
-            totalDiscount += (originalSub - discountedItemTotal);
-        });
-
-        finalTotal += Number(userDiscounts?.delivery_fee || 0);
-
-        return { 
-            subtotal, 
-            totalDiscount, 
-            finalTotal, 
-            deliveryFee: Number(userDiscounts?.delivery_fee || 0) 
-        };
-    };
-
-    const { subtotal, totalDiscount, finalTotal, deliveryFee } = getDiscountedTotals();
+    const rawSubtotal = getRawSubtotal();
+    const discountedSubtotal = getDiscountedSubtotal();
+    const finalTotal = getFinalTotal();
+    const totalDiscount = rawSubtotal - discountedSubtotal;
+    const deliveryFee = profile?.delivery_fee || 0;
+    const subtotal = rawSubtotal;
 
     // ── Delivery date (NY timezone) ───────────────────────────────────────────
     useEffect(() => {
@@ -445,16 +411,24 @@ export default function CheckoutPage() {
                 deliveryDate,
                 paymentDueDate: paymentDate,
                 items: cart.map(item => {
-                    const pd = userDiscounts?.productDiscounts?.find((d: any) => Number(d.productId) === Number(item.id));
-                    let unitPrice = item.price;
-                    if (pd?.special_price) unitPrice = Number(pd.special_price);
-                    else if (pd?.discount_percentage) unitPrice = item.price * (1 - Number(pd.discount_percentage) / 100);
-                    else if (Number(userDiscounts?.general_discount) > 0) unitPrice = item.price * (1 - Number(userDiscounts.general_discount) / 100);
+                    let unitPrice = item.originalPrice || item.price;
+                    
+                    // 1. Product-specific
+                    const pd = profile?.productDiscounts?.find((d: any) => Number(d.product_id) === Number(item.id));
+                    if (pd) {
+                        if (pd.special_price) unitPrice = Number(pd.special_price);
+                        else if (pd.discount_percentage) unitPrice = unitPrice * (1 - Number(pd.discount_percentage) / 100);
+                    }
+                    
+                    // 2. General discount
+                    if (profile?.general_discount > 0) {
+                        unitPrice = unitPrice * (1 - Number(profile.general_discount) / 100);
+                    }
 
                     return {
                         productId: item.id,
                         quantity: item.quantity,
-                        price: unitPrice,
+                        price: Number(unitPrice.toFixed(2)),
                     };
                 }),
             });
@@ -714,34 +688,50 @@ export default function CheckoutPage() {
                             </h2>
 
                             <div className="space-y-4 mb-8">
-                                {cart.map(item => (
-                                    <div key={item.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-2xl border border-border/40 gap-4">
-                                        <div className="flex flex-col min-w-0">
-                                            <span className="text-xs font-bold text-foreground truncate">{item.name}</span>
-                                            <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest">${item.price} c/u</span>
-                                        </div>
-                                        <div className="flex items-center gap-4 shrink-0">
-                                            <div className="flex items-center gap-2 bg-white rounded-xl border border-border/60 p-1 shadow-sm">
-                                                <button
-                                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                    className="w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
-                                                >
-                                                    <Minus size={12} />
-                                                </button>
-                                                <span className="text-xs font-black min-w-[1rem] text-center">{item.quantity}</span>
-                                                <button
-                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                    className="w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
-                                                >
-                                                    <Plus size={12} />
-                                                </button>
+                                {cart.map(item => {
+                                    let unitPrice = item.originalPrice || item.price;
+                                    let hasPd = false;
+                                    const pd = profile?.productDiscounts?.find((d: any) => Number(d.product_id) === Number(item.id));
+                                    if (pd) {
+                                        hasPd = true;
+                                        if (pd.special_price) unitPrice = Number(pd.special_price);
+                                        else if (pd.discount_percentage) unitPrice = unitPrice * (1 - Number(pd.discount_percentage) / 100);
+                                    }
+
+                                    return (
+                                        <div key={item.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-2xl border border-border/40 gap-4">
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-xs font-bold text-foreground truncate">{item.name}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[9px] text-primary font-black uppercase tracking-widest">${unitPrice.toFixed(2)} c/u</span>
+                                                    {hasPd && (
+                                                        <span className="text-[8px] text-muted-foreground line-through">${(item.originalPrice || item.price).toFixed(2)}</span>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <span className="text-xs font-black text-primary min-w-[50px] text-right">
-                                                ${(item.price * item.quantity).toFixed(2)}
-                                            </span>
+                                            <div className="flex items-center gap-4 shrink-0">
+                                                <div className="flex items-center gap-2 bg-white rounded-xl border border-border/60 p-1 shadow-sm">
+                                                    <button
+                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                        className="w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                                                    >
+                                                        <Minus size={12} />
+                                                    </button>
+                                                    <span className="text-xs font-black min-w-[1rem] text-center">{item.quantity}</span>
+                                                    <button
+                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                        className="w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                                                    >
+                                                        <Plus size={12} />
+                                                    </button>
+                                                </div>
+                                                <span className="text-xs font-black text-primary min-w-[50px] text-right">
+                                                    ${(unitPrice * item.quantity).toFixed(2)}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
 
                                 {cart.length === 0 && (
                                     <p className="text-sm text-center text-muted-foreground py-4 italic">
@@ -778,10 +768,8 @@ export default function CheckoutPage() {
                                     {totalDiscount > 0 && (
                                         <div className="flex justify-between items-center text-xs mb-3 text-green-600 bg-green-50/50 p-2 rounded-xl border border-green-100/50">
                                             <div className="flex flex-col">
-                                                <span className="font-black uppercase tracking-widest text-[9px]">{lbl('Descuento Especial', 'Special Discount')}</span>
-                                                {userDiscounts?.general_discount > 0 && !userDiscounts?.productDiscounts?.length && (
-                                                    <span className="text-[8px] italic">{lbl(`Descuento del ${userDiscounts.general_discount}% aplicado`, `${userDiscounts.general_discount}% discount applied`)}</span>
-                                                )}
+                                                <span className="font-black uppercase tracking-widest text-[9px]">{lbl('Descuento General', 'General Discount')}</span>
+                                                <span className="text-[8px] italic">{lbl(`-${profile?.general_discount}% aplicado al subtotal`, `-${profile?.general_discount}% applied to subtotal`)}</span>
                                             </div>
                                             <span className="font-bold">-${totalDiscount.toFixed(2)}</span>
                                         </div>
