@@ -141,7 +141,7 @@ export class AuthService {
       }
 
       const info = await transporter.sendMail({
-        from: process.env.SMTP_USER ? `"JH Panes Bakery" <${process.env.SMTP_USER}>` : '"JH Panes Bakery" <noresponder@jhpanesbakery.com>',
+        from: process.env.SMTP_USER ? `"Jhoanes Bakery, Order System" <${process.env.SMTP_USER}>` : '"Jhoanes Bakery, Order System" <noresponder@jhpanesbakery.com>',
         to: user.email,
         subject: "Password Recovery",
         text: `Estimado cliente, su contraseña es: ${user.password}\n\nIr a la tienda: ${siteUrl}/auth/login`,
