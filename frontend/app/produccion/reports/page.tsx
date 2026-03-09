@@ -49,6 +49,20 @@ interface CategoryBlock {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
+const getProductionDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    const nyDate = new Date(d.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    if (nyDate.getHours() >= 13) {
+        nyDate.setDate(nyDate.getDate() + 1);
+    }
+    const yr = nyDate.getFullYear();
+    const mo = String(nyDate.getMonth() + 1).padStart(2, '0');
+    const da = String(nyDate.getDate()).padStart(2, '0');
+    return `${yr}-${mo}-${da}`;
+};
+
 function ReportsPageContent() {
     const { t } = useLanguage();
     const searchParams = useSearchParams();
@@ -130,14 +144,26 @@ function ReportsPageContent() {
         setError(null);
         setOrders([]);
         try {
-            const startParam = encodeURIComponent(s + ' 00:00:00');
-            const endParam = encodeURIComponent(e + ' 23:59:59');
+            const startD = new Date(s + 'T12:00:00');
+            startD.setDate(startD.getDate() - 2); 
+            const endD = new Date(e + 'T12:00:00');
+            endD.setDate(endD.getDate() + 2);
+            
+            const startParam = encodeURIComponent(startD.toISOString().split('T')[0] + ' 00:00:00');
+            const endParam = encodeURIComponent(endD.toISOString().split('T')[0] + ' 23:59:59');
+
             let url = `${API_URL}/orders/reports/range?startDate=${startParam}&endDate=${endParam}`;
             if (viewMode === 'specific-client' && cid) url += `&userId=${cid}`;
             const res = await fetch(url);
             if (!res.ok) throw new Error('Error al obtener datos del reporte');
-            const data = await res.json();
-            setOrders(Array.isArray(data) ? data : []);
+            const rawData = await res.json();
+            
+            const validOrders = (Array.isArray(rawData) ? rawData : []).filter(order => {
+                const prodDate = getProductionDate(order.created_at || order.delivery_date || '');
+                return prodDate >= s && prodDate <= e;
+            });
+            
+            setOrders(validOrders);
             setReportMeta({ start: s, end: e });
             setTimeout(() => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -201,7 +227,7 @@ function ReportsPageContent() {
 
             if (isSpecific) {
                 // For specific client, columns are dates or periods
-                const datePart = (order.delivery_date || order.created_at || '').split('T')[0];
+                const datePart = getProductionDate(order.created_at || order.delivery_date || '');
                 if (reportType === 'monthly') {
                     key = 'period_monthly';
                     label = t.adminSettings.spanish; // Placeholder or month name? User said "indicando el mes"
@@ -235,7 +261,7 @@ function ReportsPageContent() {
         const catMap: Record<string, CategoryBlock> = {};
 
         orders.forEach(order => {
-            const datePart = (order.delivery_date || order.created_at || '').split('T')[0];
+            const datePart = getProductionDate(order.created_at || order.delivery_date || '');
             let colKey = '';
             if (isSpecific) {
                 if (reportType === 'monthly') colKey = 'period_monthly';
@@ -273,22 +299,7 @@ function ReportsPageContent() {
     const historyTable = useMemo(() => {
         const days: Record<string, Record<string, number>> = {};
         historyOrders.forEach(order => {
-            // FIX: Normalize date key to YYYY-MM-DD. Priority: delivery_date if standard, else created_at
-            let dateKey = '';
-            const delDate = order.delivery_date || '';
-            const creDate = order.created_at || '';
-            
-            if (/\d{4}-\d{2}-\d{2}/.test(delDate)) {
-                dateKey = delDate.match(/\d{4}-\d{2}-\d{2}/)![0];
-            } else if (/\d{4}-\d{2}-\d{2}/.test(creDate)) {
-                dateKey = creDate.match(/\d{4}-\d{2}-\d{2}/)![0];
-            } else {
-                const d = new Date(delDate || creDate);
-                if (!isNaN(d.getTime())) {
-                    dateKey = d.toISOString().split('T')[0];
-                }
-            }
-
+            const dateKey = getProductionDate(order.created_at || order.delivery_date || '');
             if (!dateKey) return;
             if (!days[dateKey]) days[dateKey] = { total: 0 };
             (order.items || []).forEach((item: any) => {
@@ -313,10 +324,9 @@ function ReportsPageContent() {
     const weeklyHistory = useMemo(() => {
         const weeks: Record<string, { start: string; end: string; data: Record<string, number> }> = {};
         historyOrders.forEach(order => {
-            const delDate = order.delivery_date || order.created_at || '';
-            const match = delDate.match(/\d{4}-\d{2}-\d{2}/);
-            if (!match) return;
-            const dateObj = new Date(match[0] + 'T12:00:00');
+            const dateKey = getProductionDate(order.created_at || order.delivery_date || '');
+            if (!dateKey) return;
+            const dateObj = new Date(dateKey + 'T12:00:00');
             if (isNaN(dateObj.getTime())) return;
             const monday = getMonday(dateObj);
             const sunday = new Date(monday);
@@ -344,10 +354,9 @@ function ReportsPageContent() {
     const monthlyHistory = useMemo(() => {
         const months: Record<string, { start: string; end: string; label: string; data: Record<string, number> }> = {};
         historyOrders.forEach(order => {
-            const delDate = order.delivery_date || order.created_at || '';
-            const match = delDate.match(/\d{4}-\d{2}-\d{2}/);
-            if (!match) return;
-            const dateObj = new Date(match[0] + 'T12:00:00');
+            const dateKey = getProductionDate(order.created_at || order.delivery_date || '');
+            if (!dateKey) return;
+            const dateObj = new Date(dateKey + 'T12:00:00');
             if (isNaN(dateObj.getTime())) return;
             const monthKey = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
             if (!months[monthKey]) {
