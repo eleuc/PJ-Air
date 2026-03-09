@@ -12,7 +12,7 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3001,
         DATABASE_PATH: '../database.sqlite',
-        FRONTEND_URL: 'http://203.161.50.109'
+        FRONTEND_URL: 'http://app.jhoanes.com'
       }
     },
     {
@@ -27,7 +27,7 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
         PORT: 3000,
-        NEXT_PUBLIC_API_URL: 'http://203.161.50.109:3001'
+        NEXT_PUBLIC_API_URL: 'http://app.jhoanes.com:3001'
       }
     }
   ]
