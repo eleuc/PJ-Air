@@ -8,6 +8,8 @@ import { ShoppingBag, Layers, Users, TrendingUp, ArrowRight, Loader2, FileText, 
 import { api } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 export default function AdminDashboardPage() {
     const { t } = useLanguage();
     const router = useRouter();
@@ -23,11 +25,11 @@ export default function AdminDashboardPage() {
         const fetchStats = async () => {
             try {
                 const [products, users, orders] = await Promise.all([
-                    api.get('/products'),
-                    api.get('/users'),
-                    api.get('/orders')
+                    api.get('/products') as Promise<any[]>,
+                    api.get('/users') as Promise<any[]>,
+                    api.get('/orders') as Promise<any[]>
                 ]);
-                const categories = products ? Array.from(new Set(products.map((p: any) => p.category))).length : 0;
+                const categories = Array.isArray(products) ? Array.from(new Set(products.map((p: any) => p.category))).length : 0;
                 setStatsData({
                     products: products?.length || 0,
                     categories,
@@ -48,7 +50,7 @@ export default function AdminDashboardPage() {
                 const start = new Date();
                 const endStr = end.toISOString().split('T')[0] + ' 23:59:59';
                 const startStr = start.toISOString().split('T')[0] + ' 00:00:00';
-                const url = `http://localhost:3001/orders/reports/range?startDate=${startStr}&endDate=${endStr}`;
+                const url = `${API_URL}/orders/reports/range?startDate=${startStr}&endDate=${endStr}`;
                 const res = await fetch(url);
                 if (!res.ok) throw new Error();
                 const data = await res.json();

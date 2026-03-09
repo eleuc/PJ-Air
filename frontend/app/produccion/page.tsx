@@ -81,7 +81,7 @@ export default function ProduccionPage() {
     const handleUpdateStatus = async (orderId: string, newStatus: string) => {
         setUpdating(orderId);
         try {
-            const updated = await api.patch(`/orders/${orderId}`, { status: newStatus });
+            const updated = await api.patch(`/orders/${orderId}`, { status: newStatus }) as any;
             setOrders(prev => prev.map(o => o.id === orderId ? updated : o));
             if (selectedOrder?.id === orderId) setSelectedOrder(updated);
             showToast(`✅ Pedido actualizado a: ${newStatus}`);

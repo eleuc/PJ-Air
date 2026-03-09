@@ -5,7 +5,7 @@ import Navbar from '@/components/layout/Navbar';
 import { useCart } from '@/context/CartContext';
 import { api } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
-import { ArrowLeft, Tag, Search, ShoppingCart, Check, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, Tag, Search, ShoppingCart, Check, Plus, Minus, Info } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -17,7 +17,7 @@ function ProductCard({
     onQuantityChange: (id: number, val: string) => void;
     onAddToCart: (p: any) => void;
 }) {
-    const { t } = useLanguage();
+    const { t, locale } = useLanguage();
     return (
         <div className="group bg-white rounded-3xl border border-border/50 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col overflow-hidden">
             <Link href={`/catalog/${product.id}`} className="relative w-full aspect-square overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 block">
@@ -36,7 +36,7 @@ function ProductCard({
                 {product.category_min_qty > 1 && (
                     <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
                         <Info size={10} />
-                        <span className="text-[9px] font-black uppercase tracking-tight">Mínimo: {product.category_min_qty} unidades</span>
+                        <span className="text-[9px] font-black uppercase tracking-tight">{locale === 'en' ? `Min: ${product.category_min_qty} units` : `Mínimo: ${product.category_min_qty} unidades`}</span>
                     </div>
                 )}
                 <div className="flex items-center bg-muted/60 rounded-xl overflow-hidden border border-border/30">
@@ -81,7 +81,7 @@ export default function CategoryPage() {
         (async () => {
             setIsLoading(true);
             try {
-                const data = await api.get('/products');
+                const data = await api.get('/products') as any[];
                 if (!mounted) return;
                 setProducts(Array.isArray(data) ? data : []);
                 setQuantities((data || []).reduce((acc: any, p: any) => ({ ...acc, [p.id]: 1 }), {}));

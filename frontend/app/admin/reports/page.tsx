@@ -13,6 +13,8 @@ import {
     Loader2,
     X,
     ChevronDown,
+    ChevronLeft,
+    ChevronRight,
     MapPin,
     Package,
     ChevronUp
@@ -45,6 +47,8 @@ interface CategoryBlock {
 
 // ─── Inner Component (needs Suspense because of useSearchParams) ─────────────
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 function ReportsPageContent() {
     const { t } = useLanguage();
     const searchParams = useSearchParams();
@@ -65,6 +69,12 @@ function ReportsPageContent() {
     const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
     const [reportMeta, setReportMeta] = useState<{ start: string; end: string } | null>(null);
     const resultsRef = useRef<HTMLDivElement>(null);
+
+    // Pagination state
+    const [dailyPage, setDailyPage] = useState(0);
+    const [weeklyPage, setWeeklyPage] = useState(0);
+    const [monthlyPage, setMonthlyPage] = useState(0);
+    const PAGE_SIZE = 10;
 
     // --- Fetch Initial Data ---
     useEffect(() => {
@@ -89,10 +99,10 @@ function ReportsPageContent() {
         try {
             const end = new Date();
             const start = new Date();
-            start.setDate(end.getDate() - 31);
+            start.setFullYear(end.getFullYear() - 1);
             const endStr = end.toISOString().split('T')[0] + ' 23:59:59';
             const startStr = start.toISOString().split('T')[0] + ' 00:00:00';
-            const url = `http://localhost:3001/orders/reports/range?startDate=${encodeURIComponent(startStr)}&endDate=${encodeURIComponent(endStr)}`;
+            const url = `${API_URL}/orders/reports/range?startDate=${encodeURIComponent(startStr)}&endDate=${encodeURIComponent(endStr)}`;
             const res = await fetch(url);
             if (!res.ok) throw new Error();
             const data = await res.json();
@@ -103,7 +113,7 @@ function ReportsPageContent() {
 
     const fetchClients = async () => {
         try {
-            const res = await fetch('http://localhost:3001/users');
+            const res = await fetch(`${API_URL}/users`);
             if (!res.ok) throw new Error();
             const data = await res.json();
             setClients(data.filter((u: any) => u.role === 'client'));
@@ -122,7 +132,7 @@ function ReportsPageContent() {
         try {
             const startParam = encodeURIComponent(s + ' 00:00:00');
             const endParam = encodeURIComponent(e + ' 23:59:59');
-            let url = `http://localhost:3001/orders/reports/range?startDate=${startParam}&endDate=${endParam}`;
+            let url = `${API_URL}/orders/reports/range?startDate=${startParam}&endDate=${endParam}`;
             if (viewMode === 'specific-client' && cid) url += `&userId=${cid}`;
             const res = await fetch(url);
             if (!res.ok) throw new Error('Error al obtener datos del reporte');
@@ -288,8 +298,96 @@ function ReportsPageContent() {
                 days[dateKey].total += qty;
             });
         });
-        return Object.entries(days).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 10);
+        return Object.entries(days).sort((a, b) => b[0].localeCompare(a[0]));
     }, [historyOrders]);
+
+    // ─── WEEKLY HISTORY ──────────────────────────────────────────────────────
+    const getMonday = (d: Date) => {
+        const date = new Date(d);
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+        date.setDate(diff);
+        return date;
+    };
+
+    const weeklyHistory = useMemo(() => {
+        const weeks: Record<string, { start: string; end: string; data: Record<string, number> }> = {};
+        historyOrders.forEach(order => {
+            const delDate = order.delivery_date || order.created_at || '';
+            const match = delDate.match(/\d{4}-\d{2}-\d{2}/);
+            if (!match) return;
+            const dateObj = new Date(match[0] + 'T12:00:00');
+            if (isNaN(dateObj.getTime())) return;
+            const monday = getMonday(dateObj);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            const weekKey = monday.toISOString().split('T')[0];
+            if (!weeks[weekKey]) {
+                weeks[weekKey] = {
+                    start: monday.toISOString().split('T')[0],
+                    end: sunday.toISOString().split('T')[0],
+                    data: { total: 0 }
+                };
+            }
+            (order.items || []).forEach((item: any) => {
+                const cat = item.product?.category || 'Otros';
+                const qty = Number(item.quantity) || 0;
+                weeks[weekKey].data[cat] = (weeks[weekKey].data[cat] || 0) + qty;
+                weeks[weekKey].data.total += qty;
+            });
+        });
+        return Object.entries(weeks)
+            .sort((a, b) => b[0].localeCompare(a[0]));
+    }, [historyOrders]);
+
+    // ─── MONTHLY HISTORY ─────────────────────────────────────────────────────
+    const monthlyHistory = useMemo(() => {
+        const months: Record<string, { start: string; end: string; label: string; data: Record<string, number> }> = {};
+        historyOrders.forEach(order => {
+            const delDate = order.delivery_date || order.created_at || '';
+            const match = delDate.match(/\d{4}-\d{2}-\d{2}/);
+            if (!match) return;
+            const dateObj = new Date(match[0] + 'T12:00:00');
+            if (isNaN(dateObj.getTime())) return;
+            const monthKey = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+            if (!months[monthKey]) {
+                const firstDay = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
+                const lastDay = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0);
+                months[monthKey] = {
+                    start: firstDay.toISOString().split('T')[0],
+                    end: lastDay.toISOString().split('T')[0],
+                    label: firstDay.toLocaleDateString('es', { month: 'long', year: 'numeric' }),
+                    data: { total: 0 }
+                };
+            }
+            (order.items || []).forEach((item: any) => {
+                const cat = item.product?.category || 'Otros';
+                const qty = Number(item.quantity) || 0;
+                months[monthKey].data[cat] = (months[monthKey].data[cat] || 0) + qty;
+                months[monthKey].data.total += qty;
+            });
+        });
+        return Object.entries(months)
+            .sort((a, b) => b[0].localeCompare(a[0]));
+    }, [historyOrders]);
+
+    const handleViewWeekDetail = (start: string, end: string) => {
+        setReportType('weekly');
+        setViewMode('general');
+        setStartDate(start);
+        setEndDate(end);
+        setSelectedClientId('');
+        fetchReportData(start, end, '');
+    };
+
+    const handleViewMonthDetail = (start: string, end: string) => {
+        setReportType('monthly');
+        setViewMode('general');
+        setStartDate(start);
+        setEndDate(end);
+        setSelectedClientId('');
+        fetchReportData(start, end, '');
+    };
 
     const filteredClients = clients.filter(c =>
         (c.profile?.full_name || '').toLowerCase().includes(clientSearch.toLowerCase()) ||
@@ -311,15 +409,20 @@ function ReportsPageContent() {
 
     const formatDate = (d: string) => {
         if (!d) return '—';
-        // Clean possible 'T' or strange suffix for safety
         const cleanD = d.includes(' ') ? d.split(' ')[0] : d.split('T')[0];
-        // If it looks like a normalized date YYYY-MM-DD
         if (/\d{4}-\d{2}-\d{2}/.test(cleanD)) {
             const date = new Date(cleanD + 'T12:00:00');
             if (isNaN(date.getTime())) return d;
             return date.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         }
         return d;
+    };
+
+    const formatShortDate = (d: string) => {
+        if (!d) return '—';
+        const date = new Date(d + 'T12:00:00');
+        if (isNaN(date.getTime())) return d;
+        return date.toLocaleDateString('es', { day: 'numeric', month: 'short' });
     };
 
     const allCategories = useMemo(() => {
@@ -349,7 +452,7 @@ function ReportsPageContent() {
                 {orders.length > 0 && (
                     <button
                         onClick={() => window.print()}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 group"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 group print:hidden"
                     >
                         <Printer size={16} className="group-hover:scale-110 transition-transform" />
                         Imprimir Reporte
@@ -471,12 +574,12 @@ function ReportsPageContent() {
                                 <p className="text-sm text-muted-foreground mt-1">
                                     {orders.length} pedidos · {reportData.columns.length} {viewMode === 'specific-client' ? 'períodos' : 'clientes'} · {reportData.categories.reduce((a, c) => a + c.products.length, 0)} productos
                                 </p>
-                            </div>
+                        </div>
                             {orders.length > 0 && (
                                 <button onClick={() => window.print()}
-                                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20 group">
-                                    <Printer size={16} className="group-hover:scale-110 transition-transform print:hidden" />
-                                    <span className="print:hidden">Imprimir</span>
+                                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20 group print:hidden">
+                                    <Printer size={16} className="group-hover:scale-110 transition-transform" />
+                                    Imprimir
                                 </button>
                             )}
                         </div>
@@ -617,14 +720,15 @@ function ReportsPageContent() {
                 </div>
             )}
 
-            {/* ─── HISTORY TABLE ──────────────────────────────────────────── */}
+            {/* ─── HISTORY TABLE (DAILY) ──────────────────────────────────── */}
+            {(reportType === 'daily' || reportType === 'custom') && (
             <div className="bg-card border border-border rounded-[2.5rem] shadow-xl shadow-foreground/5 overflow-hidden print:hidden">
                 <div className="p-8 border-b border-border flex items-center gap-4">
                     <div className="p-3 bg-muted rounded-2xl">
                         <FileText className="text-muted-foreground" size={22} />
                     </div>
                     <div>
-                        <h2 className="text-lg font-black uppercase tracking-tight">Historial — Últimos 10 Días</h2>
+                        <h2 className="text-lg font-black uppercase tracking-tight">Historial Diario</h2>
                         <p className="text-xs text-muted-foreground italic">Unidades totales por categoría · Haz click en "Ver Detalle" para generar el reporte</p>
                     </div>
                 </div>
@@ -643,7 +747,7 @@ function ReportsPageContent() {
                             {loadingHistory && (
                                 <tr><td colSpan={allCategories.length + 3} className="py-16 text-center"><Loader2 size={28} className="animate-spin mx-auto text-primary/30" /></td></tr>
                             )}
-                            {historyTable.map(([date, data]) => (
+                            {historyTable.slice(dailyPage * PAGE_SIZE, (dailyPage + 1) * PAGE_SIZE).map(([date, data]) => (
                                 <tr key={date} className="hover:bg-muted/20 transition-colors">
                                     <td className="py-4 px-6 font-black text-sm">{formatDate(date)}</td>
                                     {allCategories.map(cat => (
@@ -671,7 +775,163 @@ function ReportsPageContent() {
                         </tbody>
                     </table>
                 </div>
+                {historyTable.length > PAGE_SIZE && (
+                    <div className="p-4 border-t border-border flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground font-bold">Página {dailyPage + 1} de {Math.ceil(historyTable.length / PAGE_SIZE)} · {historyTable.length} días</p>
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => setDailyPage(p => Math.max(0, p - 1))} disabled={dailyPage === 0}
+                                className="p-2 rounded-xl border border-border hover:bg-muted disabled:opacity-30 transition-all"><ChevronLeft size={16} /></button>
+                            <button onClick={() => setDailyPage(p => Math.min(Math.ceil(historyTable.length / PAGE_SIZE) - 1, p + 1))} disabled={(dailyPage + 1) * PAGE_SIZE >= historyTable.length}
+                                className="p-2 rounded-xl border border-border hover:bg-muted disabled:opacity-30 transition-all"><ChevronRight size={16} /></button>
+                        </div>
+                    </div>
+                )}
             </div>
+            )}
+
+            {/* ─── WEEKLY HISTORY TABLE ─────────────────────────────────────── */}
+            {reportType === 'weekly' && (
+            <div className="bg-card border border-border rounded-[2.5rem] shadow-xl shadow-foreground/5 overflow-hidden print:hidden">
+                <div className="p-8 border-b border-border flex items-center gap-4">
+                    <div className="p-3 bg-blue-50 rounded-2xl">
+                        <CalendarIcon className="text-blue-600" size={22} />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-black uppercase tracking-tight">Historial Semanal</h2>
+                        <p className="text-xs text-muted-foreground italic">De lunes a domingo · Haz click en "Ver Detalle" para generar el reporte semanal</p>
+                    </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-muted/20 border-b border-border">
+                            <tr>
+                                <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Semana</th>
+                                {allCategories.map(cat => <th key={cat} className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{cat}</th>)}
+                                <th className="py-4 px-6 text-right text-[10px] font-black uppercase tracking-widest text-muted-foreground">Total Uds.</th>
+                                <th className="py-4 px-6 text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground">Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                            {loadingHistory && (
+                                <tr><td colSpan={allCategories.length + 3} className="py-16 text-center"><Loader2 size={28} className="animate-spin mx-auto text-primary/30" /></td></tr>
+                            )}
+                            {weeklyHistory.slice(weeklyPage * PAGE_SIZE, (weeklyPage + 1) * PAGE_SIZE).map(([weekKey, week]) => (
+                                <tr key={weekKey} className="hover:bg-muted/20 transition-colors">
+                                    <td className="py-4 px-6 font-black text-sm">
+                                        <span className="text-primary">{formatShortDate(week.start)}</span>
+                                        <span className="text-muted-foreground mx-1">→</span>
+                                        <span className="text-primary">{formatShortDate(week.end)}</span>
+                                    </td>
+                                    {allCategories.map(cat => (
+                                        <td key={cat} className="py-4 px-6 font-bold text-muted-foreground text-sm">
+                                            {(week.data[cat] || 0).toLocaleString()} <span className="text-[10px] opacity-50">uds</span>
+                                        </td>
+                                    ))}
+                                    <td className="py-4 px-6 text-right font-black text-primary">
+                                        {(week.data.total || 0).toLocaleString()} <span className="text-[10px] font-bold opacity-60">uds</span>
+                                    </td>
+                                    <td className="py-4 px-6">
+                                        <div className="flex justify-center">
+                                            <button onClick={() => handleViewWeekDetail(week.start, week.end)}
+                                                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl text-[10px] font-black uppercase hover:bg-blue-600 hover:text-white transition-all group">
+                                                Ver Detalle
+                                                <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {!loadingHistory && weeklyHistory.length === 0 && (
+                                <tr><td colSpan={allCategories.length + 3} className="py-16 text-center text-muted-foreground italic text-sm">Sin datos semanales recientes.</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+                {weeklyHistory.length > PAGE_SIZE && (
+                    <div className="p-4 border-t border-border flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground font-bold">Página {weeklyPage + 1} de {Math.ceil(weeklyHistory.length / PAGE_SIZE)} · {weeklyHistory.length} semanas</p>
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => setWeeklyPage(p => Math.max(0, p - 1))} disabled={weeklyPage === 0}
+                                className="p-2 rounded-xl border border-border hover:bg-muted disabled:opacity-30 transition-all"><ChevronLeft size={16} /></button>
+                            <button onClick={() => setWeeklyPage(p => Math.min(Math.ceil(weeklyHistory.length / PAGE_SIZE) - 1, p + 1))} disabled={(weeklyPage + 1) * PAGE_SIZE >= weeklyHistory.length}
+                                className="p-2 rounded-xl border border-border hover:bg-muted disabled:opacity-30 transition-all"><ChevronRight size={16} /></button>
+                        </div>
+                    </div>
+                )}
+            </div>
+            )}
+
+            {/* ─── MONTHLY HISTORY TABLE ────────────────────────────────────── */}
+            {reportType === 'monthly' && (
+            <div className="bg-card border border-border rounded-[2.5rem] shadow-xl shadow-foreground/5 overflow-hidden print:hidden">
+                <div className="p-8 border-b border-border flex items-center gap-4">
+                    <div className="p-3 bg-emerald-50 rounded-2xl">
+                        <CalendarIcon className="text-emerald-600" size={22} />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-black uppercase tracking-tight">Historial Mensual</h2>
+                        <p className="text-xs text-muted-foreground italic">Del primer al último día del mes · Haz click en "Ver Detalle" para generar el reporte mensual</p>
+                    </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-muted/20 border-b border-border">
+                            <tr>
+                                <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Mes</th>
+                                {allCategories.map(cat => <th key={cat} className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{cat}</th>)}
+                                <th className="py-4 px-6 text-right text-[10px] font-black uppercase tracking-widest text-muted-foreground">Total Uds.</th>
+                                <th className="py-4 px-6 text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground">Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                            {loadingHistory && (
+                                <tr><td colSpan={allCategories.length + 3} className="py-16 text-center"><Loader2 size={28} className="animate-spin mx-auto text-primary/30" /></td></tr>
+                            )}
+                            {monthlyHistory.slice(monthlyPage * PAGE_SIZE, (monthlyPage + 1) * PAGE_SIZE).map(([monthKey, month]) => (
+                                <tr key={monthKey} className="hover:bg-muted/20 transition-colors">
+                                    <td className="py-4 px-6 font-black text-sm capitalize">
+                                        {month.label}
+                                    </td>
+                                    {allCategories.map(cat => (
+                                        <td key={cat} className="py-4 px-6 font-bold text-muted-foreground text-sm">
+                                            {(month.data[cat] || 0).toLocaleString()} <span className="text-[10px] opacity-50">uds</span>
+                                        </td>
+                                    ))}
+                                    <td className="py-4 px-6 text-right font-black text-primary">
+                                        {(month.data.total || 0).toLocaleString()} <span className="text-[10px] font-bold opacity-60">uds</span>
+                                    </td>
+                                    <td className="py-4 px-6">
+                                        <div className="flex justify-center">
+                                            <button onClick={() => handleViewMonthDetail(month.start, month.end)}
+                                                className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-xl text-[10px] font-black uppercase hover:bg-emerald-600 hover:text-white transition-all group">
+                                                Ver Detalle
+                                                <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {!loadingHistory && monthlyHistory.length === 0 && (
+                                <tr><td colSpan={allCategories.length + 3} className="py-16 text-center text-muted-foreground italic text-sm">Sin datos mensuales recientes.</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+                {monthlyHistory.length > PAGE_SIZE && (
+                    <div className="p-4 border-t border-border flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground font-bold">Página {monthlyPage + 1} de {Math.ceil(monthlyHistory.length / PAGE_SIZE)} · {monthlyHistory.length} meses</p>
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => setMonthlyPage(p => Math.max(0, p - 1))} disabled={monthlyPage === 0}
+                                className="p-2 rounded-xl border border-border hover:bg-muted disabled:opacity-30 transition-all"><ChevronLeft size={16} /></button>
+                            <button onClick={() => setMonthlyPage(p => Math.min(Math.ceil(monthlyHistory.length / PAGE_SIZE) - 1, p + 1))} disabled={(monthlyPage + 1) * PAGE_SIZE >= monthlyHistory.length}
+                                className="p-2 rounded-xl border border-border hover:bg-muted disabled:opacity-30 transition-all"><ChevronRight size={16} /></button>
+                        </div>
+                    </div>
+                )}
+            </div>
+            )}
 
             {/* Print Styles */}
             <style jsx global>{`
@@ -685,7 +945,8 @@ function ReportsPageContent() {
                         width: 0 !important;
                         height: 0 !important;
                         visibility: hidden !important;
-                    }.flex, div[class*="min-h-screen"] { 
+                    }
+                    .flex, div[class*="min-h-screen"] { 
                         display: block !important; 
                         padding: 0 !important; 
                         margin: 0 !important; 

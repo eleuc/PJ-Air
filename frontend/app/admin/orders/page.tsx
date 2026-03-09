@@ -165,7 +165,8 @@ export default function AdminOrdersPage() {
                 updates.motivo = motivo;
             }
 
-            const updated = await api.patch(`/orders/${selectedOrder.id}`, updates);
+            await api.patch(`/orders/${selectedOrder.id}`, updates);
+            const updated = await api.get(`/orders/${selectedOrder.id}`) as Order;
             
             // Actualizar lista local
             setOrders(prev => prev.map(o => o.id === selectedOrder.id ? updated : o));
@@ -184,7 +185,7 @@ export default function AdminOrdersPage() {
         if (!selectedOrder) return;
         try {
             setSaving(true);
-            const updated = await api.patch(`/orders/${selectedOrder.id}`, { status });
+            const updated = await api.patch(`/orders/${selectedOrder.id}`, { status }) as Order;
             setOrders(prev => prev.map(o => o.id === selectedOrder.id ? updated : o));
             setSelectedOrder(updated);
             showToast(`✅ Estado cambiado a: ${status}`);
@@ -203,7 +204,7 @@ export default function AdminOrdersPage() {
             const optimisticOrder = { ...selectedOrder, delivery_user_id: deliveryId };
             setSelectedOrder(optimisticOrder);
 
-            const updated = await api.patch(`/orders/${selectedOrder.id}/assign`, { deliveryUserId: deliveryId });
+            const updated = await api.patch(`/orders/${selectedOrder.id}/assign`, { deliveryUserId: deliveryId }) as Order;
             
             // Sync with final server state
             setOrders(prev => prev.map(o => o.id === selectedOrder.id ? updated : o));
@@ -211,7 +212,7 @@ export default function AdminOrdersPage() {
             showToast('✅ Delivery asignado');
         } catch (err) {
             // Revert on error
-            const original = await api.get(`/orders/${selectedOrder.id}`);
+            const original = await api.get(`/orders/${selectedOrder.id}`) as Order;
             setSelectedOrder(original);
             showToast('❌ Error al asignar delivery', 'error');
         } finally {

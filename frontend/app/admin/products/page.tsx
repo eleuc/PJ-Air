@@ -80,7 +80,7 @@ export default function AdminProductsPage() {
         try {
             setLoading(true);
             setError(null);
-            const data = await api.get('/products');
+            const data = await api.get('/products') as Product[];
             const list = data || [];
             setProducts(list);
             setCategories(getDynamicCategories(list));
@@ -158,11 +158,11 @@ export default function AdminProductsPage() {
             };
 
             if (editingProduct) {
-                const updated = await api.patch(`/products/${editingProduct.id}`, payload);
+                const updated = await api.patch(`/products/${editingProduct.id}`, payload) as Product;
                 setProducts(prev => prev.map(p => p.id === editingProduct.id ? { ...p, ...updated } : p));
                 showToast('✅ Producto actualizado correctamente');
             } else {
-                const created = await api.post('/products', payload);
+                const created = await api.post('/products', payload) as Product;
                 setProducts(prev => [...prev, created]);
                 showToast('✅ Producto creado correctamente');
             }

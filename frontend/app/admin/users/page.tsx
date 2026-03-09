@@ -106,13 +106,13 @@ export default function AdminUsersPage() {
         // Reload full detail (includes orders and addresses)
         try {
             setLoadingDetail(true);
-            const detail = await api.get(`/users/${user.id}`);
+            const detail = await api.get(`/users/${user.id}`) as any;
             setSelectedUser(detail);
             setGeneralDiscount(Number(detail.general_discount) || 0);
             setDeliveryFee(Number(detail.delivery_fee) || 0);
             
             // Get product discounts
-            const discounts = await api.get(`/users/${user.id}/product-discounts`);
+            const discounts = await api.get(`/users/${user.id}/product-discounts`) as any[];
             setProductDiscounts(discounts || []);
         } catch { /* keep what we have */ }
         finally { setLoadingDetail(false); }
@@ -135,7 +135,7 @@ export default function AdminUsersPage() {
         if (!editingAddress) return;
         setSavingAddr(true);
         try {
-            const updated = await api.patch(`/addresses/${editingAddress.id}`, editingAddress);
+            const updated = await api.patch(`/addresses/${editingAddress.id}`, editingAddress) as Address;
             setSelectedUser(prev => {
                 if (!prev) return null;
                 return {
@@ -191,7 +191,7 @@ export default function AdminUsersPage() {
             showToast('✅ Descuento por producto guardado');
             
             // Refresh discounts
-            const discounts = await api.get(`/users/${selectedUser.id}/product-discounts`);
+            const discounts = await api.get(`/users/${selectedUser.id}/product-discounts`) as any[];
             setProductDiscounts(discounts || []);
             
             setSelectedPdProduct(null);

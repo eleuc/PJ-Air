@@ -17,7 +17,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
         const fetchOrderDetails = async () => {
             setIsLoading(true);
             try {
-                const orderData = await api.get(`/orders/${orderId}`);
+                const orderData = await api.get(`/orders/${orderId}`) as any;
                 setOrder(orderData);
                 setItems(orderData.items || []);
             } catch (err) {

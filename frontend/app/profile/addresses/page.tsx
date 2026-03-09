@@ -44,7 +44,7 @@ export default function AddressesPage() {
         try {
             setLoading(true);
             setError(null);
-            const data = await api.get(`/addresses/user/${user!.id}`);
+            const data = await api.get(`/addresses/user/${user!.id}`) as any[];
             setAddresses(data || []);
         } catch (err: any) {
             setError(err.message || 'Error al cargar las direcciones');
@@ -70,10 +70,10 @@ export default function AddressesPage() {
         setSaving(true);
         try {
             if (editingId) {
-                const updated = await api.patch(`/addresses/${editingId}`, form);
+                const updated = await api.patch(`/addresses/${editingId}`, form) as any;
                 setAddresses(prev => prev.map(a => a.id === editingId ? updated : a));
             } else {
-                const created = await api.post('/addresses', { userId: user!.id, ...form });
+                const created = await api.post('/addresses', { userId: user!.id, ...form }) as any;
                 setAddresses(prev => [...prev, created]);
             }
             setShowModal(false);

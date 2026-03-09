@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
         setMessage({ type: '', text: '' });
 
         try {
-            const data = await api.post('/auth/recover-password', { identifier: identifier.trim() });
+            const data = await api.post('/auth/recover-password', { identifier: identifier.trim() }) as any;
             setMessage({ 
                 type: 'success', 
                 text: data.message || `Gracias, su contraseña se ha enviado al correo ${data.email || ''}`

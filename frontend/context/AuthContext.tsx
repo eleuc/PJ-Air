@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Fetch full user profile including role from the backend
     const fetchUserProfile = async (userId: string, fallbackMeta?: any) => {
         try {
-            const data = await api.get(`/users/${userId}`);
+            const data = await api.get(`/users/${userId}`) as any;
             // Store full user data as 'profile' plus explicit role and offers
             setProfile({
                 ...(fallbackMeta || {}),

@@ -58,7 +58,7 @@ export default function AdminCategoriesPage() {
         try {
             setLoading(true);
             setError(null);
-            const products: any[] = await api.get('/products');
+            const products = await api.get('/products') as any[];
 
             // Build map: category(ES) -> { name_en, count, min_quantity }
             const map: Record<string, { name_en: string; count: number; min_quantity: number }> = {};
@@ -79,7 +79,7 @@ export default function AdminCategoriesPage() {
             // Merge with locally-stored custom categories (those with 0 products)
             const customCats = getCustomCategories();
             customCats.forEach(c => {
-                if (!(c.name in map)) map[c.name] = { name_en: c.name_en || '', count: 0 };
+                if (!(c.name in map)) map[c.name] = { name_en: c.name_en || '', count: 0, min_quantity: c.min_quantity || 1 };
             });
 
             setCategories(
@@ -148,7 +148,7 @@ export default function AdminCategoriesPage() {
             } else {
                 // New category — store in localStorage
                 const custom = getCustomCategories();
-                const newCat: CategorySummary = { name: trimmedEs, name_en: trimmedEn, count: 0 };
+                const newCat: CategorySummary = { name: trimmedEs, name_en: trimmedEn, count: 0, min_quantity: minQty };
                 if (!custom.find(c => c.name === trimmedEs)) {
                     saveCustomCategories([...custom, newCat]);
                 }
@@ -167,7 +167,7 @@ export default function AdminCategoriesPage() {
         if (!deleteConfirm) return;
         setDeleting(true);
         try {
-            const products: any[] = await api.get('/products');
+            const products = await api.get('/products') as any[];
             const affected = products.filter(p => p.category === deleteConfirm.name);
             if (affected.length > 0) {
                 await Promise.all(affected.map(p =>
@@ -202,7 +202,7 @@ export default function AdminCategoriesPage() {
                             </p>
                         </div>
                         <button onClick={openCreate} className="btn-premium bg-primary text-white flex items-center gap-2">
-                            <Plus size={20} /> {t.locale === 'en' ? 'New Category' : 'Nueva Categoría'}
+                            <Plus size={20} /> {locale === 'en' ? 'New Category' : 'Nueva Categoría'}
                         </button>
                     </header>
 

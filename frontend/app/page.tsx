@@ -36,10 +36,10 @@ function LoginModal({ onSuccess }: { onSuccess: () => void }) {
             const data = await api.post('/auth/login', {
                 email: identifier.trim(),
                 password,
-            });
+            }) as any;
             if (data.session) {
                 updateLocalSession(data);
-                const userDetail = await api.get(`/users/${data.user.id}`);
+                const userDetail = await api.get(`/users/${data.user.id}`) as any;
                 const role = userDetail.role || 'client';
                 if (role === 'admin') router.push('/admin');
                 else if (role === 'produccion') router.push('/produccion');
@@ -173,7 +173,7 @@ function ProductCard({
     onAddToCart: (p: any) => void;
     profile?: any;
 }) {
-    const { t } = useLanguage();
+    const { t, locale } = useLanguage();
 
     // Calculate dynamic price
     let originalPrice = product.price;
@@ -238,7 +238,7 @@ function ProductCard({
                 {product.category_min_qty > 1 && (
                     <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
                         <Info size={10} strokeWidth={3} />
-                        <span className="text-[9px] font-black uppercase tracking-tight">Mínimo: {product.category_min_qty} unidades</span>
+                        <span className="text-[9px] font-black uppercase tracking-tight">{locale === 'en' ? `Min: ${product.category_min_qty} units` : `Mínimo: ${product.category_min_qty} unidades`}</span>
                     </div>
                 )}
 
@@ -566,13 +566,13 @@ export default function Home() {
 
                     {/* Category pills */}
                     {!isLoading && catPills.map(({ key, label }) => (
-                        <a
+                        <Link
                             key={key}
-                            href={`#cat-${key}`}
+                            href={`/catalog/category/${encodeURIComponent(key)}`}
                             className="shrink-0 px-4 py-2 rounded-full bg-white border border-border/50 text-[11px] font-black uppercase tracking-wider text-foreground/60 hover:bg-primary hover:text-white hover:border-primary shadow-sm transition-all"
                         >
                             {label}
-                        </a>
+                        </Link>
                     ))}
 
                     {/* Divider */}

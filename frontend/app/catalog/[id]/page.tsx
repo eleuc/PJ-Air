@@ -26,7 +26,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     React.useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const data = await api.get(`/products/${productId}`);
+                const data = await api.get(`/products/${productId}`) as Product;
                 setProduct(data);
             } catch (err) {
                 console.error('Error fetching product:', err);

@@ -24,13 +24,13 @@ export default function LoginPage() {
             const data = await api.post('/auth/login', {
                 email: identifier.trim(),
                 password: password,
-            });
+            }) as any;
 
             if (data.session) {
                 updateLocalSession(data);
                 
                 // Get role for redirection
-                const userDetail = await api.get(`/users/${data.user.id}`);
+                const userDetail = await api.get(`/users/${data.user.id}`) as any;
                 const role = userDetail.role || 'client';
 
                 if (role === 'admin') router.push('/admin');

@@ -65,7 +65,7 @@ export default function DeliveryPage() {
 
     const handleUpdateStatus = async (orderId: string, newStatus: string) => {
         try {
-            const updated = await api.patch(`/orders/${orderId}/status`, { status: newStatus });
+            const updated = await api.patch(`/orders/${orderId}/status`, { status: newStatus }) as any;
             if (newStatus === 'En camino') {
                 setActiveDelivery(updated);
                 showToast('🚀 El pedido está ahora En Camino');

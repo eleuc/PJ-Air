@@ -55,7 +55,7 @@ export default function RegisterPage() {
                 username: formData.username,
                 phone: formData.phone,
                 company_name: formData.company_name,
-            });
+            }) as any;
 
             // 2. Auto-login and Update context
             if (data.session) {

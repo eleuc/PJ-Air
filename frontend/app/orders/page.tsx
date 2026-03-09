@@ -27,7 +27,7 @@ export default function ClientOrdersPage() {
             if (!user) return;
             setIsLoading(true);
             try {
-                const data = await api.get(`/orders/user/${user.id}`);
+                const data = await api.get(`/orders/user/${user.id}`) as any[];
                 setOrders(data || []);
             } catch (err) {
                 console.error('Error fetching orders:', err);

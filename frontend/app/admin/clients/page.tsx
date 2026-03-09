@@ -91,13 +91,13 @@ export default function AdminClientsPage() {
         
         try {
             setLoadingDetail(true);
-            const detail = await api.get(`/users/${user.id}`);
+            const detail = await api.get(`/users/${user.id}`) as any;
             setSelectedUser(detail);
             setGeneralDiscount(Number(detail.general_discount) || 0);
             setDeliveryFee(Number(detail.delivery_fee) || 0);
             
             // Get product discounts
-            const discounts = await api.get(`/users/${user.id}/product-discounts`);
+            const discounts = await api.get(`/users/${user.id}/product-discounts`) as any[];
             setProductDiscounts(discounts || []);
         } catch (err) {
             console.error("Error loading user details", err);
@@ -140,7 +140,7 @@ export default function AdminClientsPage() {
             
             // Refresh selected user data
             if (selectedUser) {
-                const refreshed = await api.get(`/users/${selectedUser.id}`);
+                const refreshed = await api.get(`/users/${selectedUser.id}`) as any;
                 setSelectedUser(refreshed);
             }
             setEditingAddress(null);
@@ -160,7 +160,7 @@ export default function AdminClientsPage() {
             showToast('✅ Descuento por producto guardado');
             
             // Refresh discounts
-            const discounts = await api.get(`/users/${selectedUser.id}/product-discounts`);
+            const discounts = await api.get(`/users/${selectedUser.id}/product-discounts`) as any[];
             setProductDiscounts(discounts || []);
             
             setSelectedPdProduct(null);

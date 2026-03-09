@@ -11,7 +11,7 @@ import { useLanguage } from '@/context/LanguageContext';
 export default function ProfilePage() {
     const { user } = useAuth();
     const router = useRouter();
-    const { t } = useLanguage();
+    const { t, locale } = useLanguage();
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [profile, setProfile] = useState<any>(null);
@@ -40,7 +40,7 @@ export default function ProfilePage() {
 
         const fetchUserData = async () => {
             try {
-                const userData = await api.get(`/users/${user.id}`);
+                const userData = await api.get(`/users/${user.id}`) as any;
                 setProfile(userData.profile);
                 setAddresses(userData.addresses || []);
                 setFormData({

@@ -27,7 +27,7 @@ export default function ProduccionSidebar() {
     };
 
     return (
-        <div className={`${collapsed ? 'w-20' : 'w-64'} bg-card border-r border-border flex flex-col h-screen sticky top-0 transition-all duration-300 ease-in-out z-10`}>
+        <div className={`AdminSidebar ${collapsed ? 'w-20' : 'w-64'} bg-card border-r border-border flex flex-col h-screen sticky top-0 transition-all duration-300 ease-in-out z-10`}>
             {/* Header */}
             <div className="p-4 border-b border-border flex items-center justify-between gap-2 min-h-[72px]">
                 {!collapsed && (

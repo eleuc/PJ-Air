@@ -322,7 +322,7 @@ export default function CheckoutPage() {
         
         // Parallel fetch for speed
         Promise.all([
-            api.get(`/addresses/user/${user.id}`),
+            api.get(`/addresses/user/${user.id}`) as Promise<any[]>,
             api.get(`/users/${user.id}`).catch(() => null) // Includes general_discount and productDiscounts
         ]).then(([addrData, userData]) => {
             setAddresses(Array.isArray(addrData) ? addrData : []);
@@ -389,7 +389,7 @@ export default function CheckoutPage() {
                     lng: otherAddrData.lng,
                     refined_lat: otherAddrData.refined_lat,
                     refined_lng: otherAddrData.refined_lng,
-                });
+                }) as any;
                 finalAddressId = newAddr.id;
                 deliveryAddressText = otherAddrData.address;
             } catch (e) {
@@ -431,7 +431,7 @@ export default function CheckoutPage() {
                         price: Number(unitPrice.toFixed(2)),
                     };
                 }),
-            });
+            }) as any;
             clearCart();
             window.location.href = `/orders/${order.id}`;
         } catch (error) {
