@@ -6,7 +6,7 @@ import {
     ShoppingBag, Search, Filter, Edit, Truck, Clock, 
     CheckCircle2, X, User, ChevronRight, Loader2, Save,
     AlertCircle, MapPin, Phone, MessageSquare, History,
-    Plus, Minus, Trash2
+    Plus, Minus, Trash2, CalendarDays, Printer
 } from 'lucide-react';
 import { api } from '@/lib/api';
 
@@ -15,7 +15,7 @@ interface OrderItem {
     quantity: number;
     price_at_time: number;
     product_id?: string;
-    product?: { name: string; image?: string; };
+    product?: { name: string; category?: string; image?: string; };
 }
 
 interface Order {
@@ -29,6 +29,7 @@ interface Order {
     delivery_user_id?: string;
     delivery_user?: { id: string; profile?: { full_name?: string; }; };
     address?: { address: string; city: string; };
+    delivery_type?: string;
     items?: OrderItem[];
 }
 
@@ -59,6 +60,8 @@ export default function AdminOrdersPage() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('Todos');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     
     // Modal state
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -221,14 +224,78 @@ export default function AdminOrdersPage() {
     };
 
     const filteredOrders = orders.filter(o => {
-        const matchesSearch = o.id.includes(search) || 
-                             o.user?.email.toLowerCase().includes(search.toLowerCase()) ||
-                             o.user?.profile?.full_name?.toLowerCase().includes(search.toLowerCase());
+        const q = search.toLowerCase();
+        const matchesSearch = !q ||
+            o.id.toLowerCase().includes(q) ||
+            o.user?.email.toLowerCase().includes(q) ||
+            o.user?.profile?.full_name?.toLowerCase().includes(q) ||
+            o.items?.some(item => item.product?.name?.toLowerCase().includes(q)) ||
+            o.items?.some(item => item.product?.category?.toLowerCase().includes(q));
         const matchesStatus = statusFilter === 'Todos' || o.status === statusFilter;
-        return matchesSearch && matchesStatus;
+        const orderDate = new Date(o.created_at).toISOString().split('T')[0];
+        const matchesStart = !startDate || orderDate >= startDate;
+        const matchesEnd = !endDate || orderDate <= endDate;
+        return matchesSearch && matchesStatus && matchesStart && matchesEnd;
     });
 
     const isModified = (order: Order) => order.notes && order.notes.includes('modificado');
+
+    const handlePrintOrder = (order: Order) => {
+        const items = order.items || [];
+        const grouped: Record<string, OrderItem[]> = {};
+        items.forEach(item => {
+            const cat = item.product?.category || 'Sin categoría';
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push(item);
+        });
+        const categoryRows = Object.entries(grouped).map(([cat, catItems]) => {
+            const rows = catItems.map(item =>
+                `<tr><td>${item.product?.name || 'Producto'}</td><td>${item.quantity}</td><td>$${Number(item.price_at_time).toFixed(2)}</td><td>$${(item.quantity * Number(item.price_at_time)).toFixed(2)}</td></tr>`
+            ).join('');
+            return `<tr class="cat"><td colspan="4">${cat}</td></tr>${rows}`;
+        }).join('');
+        const fecha = new Date(order.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const clientName = order.user?.profile?.full_name || 'Anónimo';
+        const clientPhone = order.user?.profile?.phone || '';
+        const addr = order.address?.address || '';
+        const deliveryLabel = order.delivery_type === 'pickup' ? 'Retiro en local' : order.delivery_type === 'other' ? 'Otra dirección' : 'Dirección guardada';
+        const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pedido #${order.id.slice(0,8)}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;padding:8px;max-width:260px;margin:0 auto;font-size:9px}
+@media print{@page{size:letter;margin:15mm}body{max-width:260px;margin:0 auto}}
+.hd{text-align:center;border-bottom:2px double #333;padding-bottom:6px;margin-bottom:6px}
+.hd h1{font-size:13px;font-weight:900;letter-spacing:1px}
+.hd p{font-size:8px;color:#666;margin-top:1px}
+.info{font-size:8px;margin-bottom:5px;padding:3px 0;border-bottom:1px dashed #ccc}
+.info div{display:flex;justify-content:space-between;padding:1px 0}
+.info .lb{font-weight:700;color:#555}
+table{width:100%;border-collapse:collapse;margin-bottom:5px}
+th{font-size:7px;text-transform:uppercase;color:#999;border-bottom:1px solid #333;padding:2px 3px;text-align:left}
+th:nth-child(2){text-align:center}th:nth-child(3),th:nth-child(4){text-align:right}
+td{padding:1px 3px;font-size:8px;border-bottom:1px dotted #eee}
+td:nth-child(2){text-align:center}td:nth-child(3),td:nth-child(4){text-align:right}
+.cat td{font-size:7px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:#555;background:#f0f0f0;border-top:1px solid #333;padding:3px}
+.tot{border-top:2px double #333;padding-top:4px;display:flex;justify-content:space-between;font-size:11px;font-weight:900}
+.ft{text-align:center;margin-top:5px;padding-top:3px;border-top:1px dashed #ccc;font-size:7px;color:#999}
+</style></head><body>
+<div class="hd"><h1>JHOANES BAKERY</h1><p>Sistema de Pedidos</p><p>PEDIDO #${order.id.slice(0,8).toUpperCase()}</p><p>${fecha}</p></div>
+<div class="info">
+<div><span class="lb">Cliente:</span><span>${clientName}</span></div>
+${clientPhone ? `<div><span class="lb">Tel:</span><span>${clientPhone}</span></div>` : ''}
+<div><span class="lb">Entrega:</span><span>${deliveryLabel}</span></div>
+${order.delivery_type !== 'pickup' && addr ? `<div><span class="lb">Dir:</span><span>${addr}</span></div>` : ''}
+<div><span class="lb">Estado:</span><span>${order.status}</span></div>
+</div>
+<table><thead><tr><th>Producto</th><th>Cant</th><th>P.U</th><th>Subt</th></tr></thead><tbody>${categoryRows}</tbody></table>
+<div class="tot"><span>TOTAL</span><span>$${Number(order.total || 0).toFixed(2)}</span></div>
+${order.notes ? `<div class="ft"><b>Notas:</b> ${order.notes.replace(/\n/g, ' | ')}</div>` : ''}
+<div class="ft">Gracias por tu compra</div>
+<script>window.onload=function(){window.print();}<\/script>
+</body></html>`;
+        const w = window.open('', '_blank', 'width=900,height=700');
+        if (w) { w.document.write(html); w.document.close(); }
+    };
 
     return (
         <div className="flex min-h-screen bg-muted/30 font-sans">
@@ -241,27 +308,46 @@ export default function AdminOrdersPage() {
                     </div>
                 </header>
 
-                <div className="bg-white p-6 rounded-3xl border border-border shadow-sm mb-8 flex flex-col md:flex-row gap-4 items-center">
-                    <div className="relative flex-1 w-full group">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={18} />
-                        <input 
-                            type="text" 
-                            placeholder="Encontrar por ID, cliente o email..." 
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 bg-muted/30 border border-border rounded-xl outline-none focus:ring-4 focus:ring-primary/10 transition-all font-medium"
-                        />
+                <div className="bg-white p-6 rounded-3xl border border-border shadow-sm mb-8 flex flex-col gap-4">
+                    <div className="flex flex-col md:flex-row gap-4 items-center">
+                        <div className="relative flex-1 w-full group">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={18} />
+                            <input 
+                                type="text" 
+                                placeholder="Buscar por cliente, email, producto o categoría..." 
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2.5 bg-muted/30 border border-border rounded-xl outline-none focus:ring-4 focus:ring-primary/10 transition-all font-medium"
+                            />
+                        </div>
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                            <Filter size={18} className="text-muted-foreground" />
+                            <select 
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="flex-1 md:w-52 px-4 py-2.5 bg-muted/30 border border-border rounded-xl outline-none font-bold text-slate-700 cursor-pointer"
+                            >
+                                <option>Todos</option>
+                                {STATUS_OPTIONS.map(s => <option key={s}>{s}</option>)}
+                            </select>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-3 w-full md:w-auto">
-                        <Filter size={18} className="text-muted-foreground" />
-                        <select 
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="flex-1 md:w-52 px-4 py-2.5 bg-muted/30 border border-border rounded-xl outline-none font-bold text-slate-700 cursor-pointer"
-                        >
-                            <option>Todos</option>
-                            {STATUS_OPTIONS.map(s => <option key={s}>{s}</option>)}
-                        </select>
+                    <div className="flex flex-wrap items-center gap-3">
+                        <CalendarDays size={18} className="text-muted-foreground" />
+                        <div className="flex items-center gap-2 bg-muted/30 border border-border rounded-xl px-3 py-1.5">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">Desde</span>
+                            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="bg-transparent outline-none text-xs font-bold text-slate-700 py-1" />
+                        </div>
+                        <span className="text-slate-300 font-bold">→</span>
+                        <div className="flex items-center gap-2 bg-muted/30 border border-border rounded-xl px-3 py-1.5">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">Hasta</span>
+                            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="bg-transparent outline-none text-xs font-bold text-slate-700 py-1" />
+                        </div>
+                        {(startDate || endDate) && (
+                            <button onClick={() => { setStartDate(''); setEndDate(''); }} className="px-3 py-1.5 bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1">
+                                <X size={12} /> Limpiar
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -368,9 +454,9 @@ export default function AdminOrdersPage() {
 
             {/* Order Detail Side Panel */}
             {selectedOrder && (
-                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-end overflow-hidden animate-in fade-in duration-300">
+                <div onClick={() => setSelectedOrder(null)} className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-end overflow-hidden animate-in fade-in duration-300 cursor-pointer">
                     <div 
-                        className="bg-white w-full max-w-2xl h-screen shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 relative"
+                        className="bg-white w-full max-w-2xl h-screen shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 relative cursor-default"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <header className="p-8 border-b border-border flex items-center justify-between shrink-0 bg-slate-50/50">
@@ -381,9 +467,17 @@ export default function AdminOrdersPage() {
                                 </div>
                                 <p className="font-mono text-xs text-slate-400 font-bold tracking-widest">TRANSMISIÓN: #{selectedOrder.id}</p>
                             </div>
-                            <button onClick={() => setSelectedOrder(null)} className="w-12 h-12 flex items-center justify-center hover:bg-red-50 hover:text-red-500 rounded-2xl transition-all text-slate-400 group">
-                                <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
-                            </button>
+                            <div className="flex items-center gap-3">
+                                <button onClick={() => handlePrintOrder(selectedOrder)} className="px-4 py-2 bg-slate-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-black transition-all flex items-center gap-2">
+                                    <Printer size={14} /> Imprimir
+                                </button>
+                                <button 
+                                    onClick={(e) => { e.stopPropagation(); setSelectedOrder(null); }} 
+                                    className="w-12 h-12 flex items-center justify-center hover:bg-red-50 hover:text-red-500 rounded-2xl transition-all text-slate-400 group z-10 pointer-events-auto"
+                                >
+                                    <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
+                                </button>
+                            </div>
                         </header>
 
                         <div className="flex-1 overflow-y-auto p-10 space-y-12">

@@ -17,12 +17,12 @@ export default function AdminSidebar() {
     const MENU_ITEMS = [
         { name: t.adminSidebar.dashboard,   icon: LayoutDashboard, href: '/admin' },
         { name: t.adminSidebar.reports,     icon: BarChart3,        href: '/admin/reports' },
+        { name: t.adminSidebar.orders,      icon: ShoppingBag,      href: '/admin/orders' },
         { name: t.adminSidebar.products,    icon: ShoppingBag,     href: '/admin/products' },
         { name: t.adminSidebar.categories,  icon: Layers,           href: '/admin/categories' },
         { name: t.adminSidebar.users,       icon: Users,            href: '/admin/users' },
         { name: t.adminSidebar.clients,     icon: Users,            href: '/admin/clients' },
         { name: t.adminSidebar.routes,      icon: Truck,            href: '/admin/routes' },
-        { name: t.adminSidebar.orders,      icon: ShoppingBag,      href: '/admin/orders' },
         { name: t.adminSidebar.settings,    icon: Settings,         href: '/admin/settings' },
     ];
 

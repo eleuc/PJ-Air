@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit, Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -27,13 +27,19 @@ import { ProductDiscount } from './users/product-discount.entity';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'sqlite',
-        database: configService.get<string>('DATABASE_PATH') || require('path').join(process.cwd(), 'database.sqlite'),
-        entities: [Product, User, Profile, Address, Order, OrderItem, ProductDiscount],
-        synchronize: configService.get<string>('NODE_ENV') !== 'production',
-        logging: false,
-      }),
+      useFactory: (configService: ConfigService) => {
+        const dbPath = configService.get<string>('DATABASE_PATH') || require('path').join(process.cwd(), 'database.sqlite');
+        const logger = new Logger('DatabaseModule');
+        logger.log(`Using SQLite database at: ${require('path').resolve(dbPath)}`);
+        
+        return {
+          type: 'sqlite',
+          database: dbPath,
+          entities: [Product, User, Profile, Address, Order, OrderItem, ProductDiscount],
+          synchronize: configService.get<string>('NODE_ENV') !== 'production',
+          logging: false,
+        };
+      },
     }),
     UsersModule,
     ProductsModule,
@@ -45,4 +51,10 @@ import { ProductDiscount } from './users/product-discount.entity';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule implements OnModuleInit {
+  private readonly logger = new Logger(AppModule.name);
+
+  onModuleInit() {
+    this.logger.log('Application initialized');
+  }
+}

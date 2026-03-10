@@ -194,6 +194,8 @@ function ReportsPageContent() {
 
     const handleReportTypeChange = (val: string) => {
         setReportType(val as any);
+        setOrders([]);
+        setReportMeta(null);
         if (val !== 'custom') setDatesForType(val);
     };
 
@@ -442,11 +444,18 @@ function ReportsPageContent() {
     // Split clients into groups of 80 for maximum density (at 9px per col, many fit)
     const columnGroups = useMemo(() => {
         const groups = [];
-        const chunkSize = 80; 
+        if (reportData.columns.length === 0) return [[]];
+        
+        // Dynamic chunkSize: 
+        // - 12 columns for periods (dates) which are wider (50px each)
+        // - 30 columns for clients which are narrower (15px each)
+        const isPeriod = reportData.columns[0]?.id.startsWith('period_');
+        const chunkSize = isPeriod ? 12 : 25;
+
         for (let i = 0; i < reportData.columns.length; i += chunkSize) {
             groups.push(reportData.columns.slice(i, i + chunkSize));
         }
-        return groups.length > 0 ? groups : [[]];
+        return groups;
     }, [reportData.columns]);
 
     return (
@@ -456,17 +465,7 @@ function ReportsPageContent() {
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 print:hidden">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-black text-foreground tracking-tight">Reportes Generales</h1>
-                    <p className="text-muted-foreground text-sm">Panel de reportes avanzados con desglose por cliente</p>
                 </div>
-                {orders.length > 0 && (
-                    <button
-                        onClick={() => window.print()}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 group print:hidden"
-                    >
-                        <Printer size={16} className="group-hover:scale-110 transition-transform" />
-                        Imprimir Reporte
-                    </button>
-                )}
             </header>
 
             {/* Filter Panel */}
@@ -596,7 +595,7 @@ function ReportsPageContent() {
 
                     {/* Category Tables (Print chunked version) */}
                     {reportData.categories.map((cat, catIdx) => (
-                        <div key={cat.name} className={`${catIdx > 0 ? 'mt-8 print:mt-12' : ''} report-category`}>
+                        <div key={cat.name} className={`${catIdx > 0 ? 'mt-8 print:mt-1' : ''} report-category`}>
                             {/* Screen View (Normal scrollable table) */}
                             <div className="print:hidden">
                                 <div className="bg-yellow-400 text-black px-6 py-3 flex items-center gap-3 rounded-t-[2rem]">
@@ -642,67 +641,68 @@ function ReportsPageContent() {
                             {/* Print View (Chunking to fit Carta page) */}
                             <div className="hidden print:block">
                                 {columnGroups.map((groupCols, groupIdx) => (
-                                    <div key={groupIdx} className={`mb-8 ${groupIdx > 0 ? 'page-break-before-auto mt-6' : ''}`}>
+                                    <div key={groupIdx} className={`mb-[4px] w-full print:w-fit print:inline-block ${groupIdx > 0 ? 'page-break-before-auto' : ''}`}>
                                         <div className="bg-yellow-300 px-3 py-1.5 flex items-center gap-2 border border-black border-b-0">
-                                            <span className="font-black text-[11pt] uppercase">Categoría: {cat.name} {columnGroups.length > 1 ? `(Pág ${groupIdx + 1}/${columnGroups.length})` : ''}</span>
-                                            <span className="ml-auto font-black text-[11pt]">Pedido {viewMode === 'specific-client' ? 'Individual' : 'General'} · {reportMeta?.start === reportMeta?.end ? formatDate(reportMeta.start) : 'Reporte'}</span>
+                                            <span className="font-black text-[9pt] uppercase">Cat: {cat.name} {columnGroups.length > 1 ? `(${groupIdx + 1}/${columnGroups.length})` : ''}</span>
+                                            <span className="ml-auto font-black text-[9pt]">Pedido · {reportMeta?.start === reportMeta?.end ? formatDate(reportMeta.start) : 'Reporte'}</span>
                                         </div>
                                         <div className="border border-black overflow-hidden">
                                             <table className="w-full border-collapse text-left">
                                                 <thead>
                                                     <tr className="bg-gray-100">
-                                                        <th className="py-1 px-0.5 font-black text-[5.5pt] uppercase border-b border-r border-black min-w-[30px] max-w-[30px] overflow-hidden">Prod</th>
+                                                        <th className="py-1 px-0.5 font-black text-[5pt] uppercase border-b border-r border-black w-auto whitespace-nowrap">Producto</th>
                                                         {groupCols.map((col, ci) => {
                                                             const isPeriod = col.id.startsWith('period_');
                                                             return (
-                                                                <th key={ci} className={`${isPeriod ? 'period-header-th' : 'vertical-header-th'} border-b border-r border-black text-center ${isPeriod ? 'min-w-[50px] max-w-[50px]' : 'min-w-[9px] max-w-[9px]'}`}>
+                                                                <th key={ci} className={`${isPeriod ? 'period-header-th' : 'vertical-header-th'} border-b border-r border-black text-center ${isPeriod ? 'min-w-[50px] max-w-[50px]' : 'min-w-[25px] max-w-[25px]'}`}>
                                                                     <div className={isPeriod ? 'period-header-content' : 'vertical-header-content'}>
-                                                                        <div className={isPeriod ? 'period-name' : 'vertical-client-name'}>{col.name}</div>
+                                                                        <div className={isPeriod ? 'period-name' : 'vertical-client-name text-[4.5pt]'}>{col.name}</div>
                                                                     </div>
                                                                 </th>
                                                             );
                                                         })}
                                                         {groupIdx === columnGroups.length - 1 && (
-                                                            <th className="py-1 px-0.5 border-b border-black text-right font-black text-[5pt] bg-yellow-100 min-w-[30px] max-w-[30px]">T</th>
+                                                            <th className="py-1 px-0.5 border-b border-black text-right font-black text-[5pt] bg-yellow-100 min-w-[35px] max-w-[35px]">T</th>
                                                         )}
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-black">
                                                     {cat.products.map((prod, pi) => (
                                                         <tr key={pi} className={pi % 2 === 1 ? 'bg-gray-50' : 'bg-white'}>
-                                                            <td className="py-0 px-0.5 font-normal text-[6pt] border-r border-black leading-tight truncate min-w-[30px] max-w-[30px] overflow-hidden" title={prod.name}>
-                                                                {prod.name.length > 7 ? prod.name.substring(0, 6) + '…' : prod.name}
+                                                            <td className="py-0 px-0.5 font-normal text-[9pt] border-r border-black leading-tight whitespace-nowrap w-auto" title={prod.name}>
+                                                                {prod.name}
                                                             </td>
                                                             {groupCols.map((col, ci) => {
                                                                 const colKey = col.id;
                                                                 const qty = prod.clientQtys[colKey] || 0;
                                                                 const isPeriod = col.id.startsWith('period_');
                                                                 return (
-                                                                    <td key={ci} className={`py-0 px-0.5 text-center text-[8.5pt] border-r border-black font-bold ${isPeriod ? 'min-w-[50px] max-w-[50px]' : ''}`}>
+                                                                    <td key={ci} className={`py-0 px-0.5 text-center text-[9pt] border-r border-black font-bold ${isPeriod ? 'min-w-[50px] max-w-[50px]' : 'min-w-[25px] max-w-[25px]'}`}>
                                                                         {qty > 0 ? qty : '.'}
                                                                     </td>
                                                                 );
                                                             })}
                                                             {groupIdx === columnGroups.length - 1 && (
-                                                                <td className="py-0 px-0.1 text-right font-black text-[6.5pt] bg-yellow-100 min-w-[30px] max-w-[30px] overflow-hidden">{prod.total}</td>
+                                                                <td className="py-0 px-0.1 text-right font-black text-[6.5pt] bg-yellow-100 min-w-[35px] max-w-[35px] overflow-hidden">{prod.total}</td>
                                                             )}
                                                         </tr>
                                                     ))}
                                                 </tbody>
                                                 <tfoot>
                                                     <tr className="bg-yellow-300 font-black border-t-2 border-black">
-                                                        <td className="py-1 px-0.5 font-black text-[6pt] border-r border-black min-w-[30px] max-w-[30px] overflow-hidden truncate">T.</td>
+                                                        <td className="py-1 px-0.5 font-black text-[6pt] border-r border-black w-auto whitespace-nowrap overflow-hidden truncate">TOTAL CAT.</td>
                                                         {groupCols.map((col, ci) => {
                                                             const colKey = col.id;
+                                                            const isPeriod = col.id.startsWith('period_');
                                                             return (
-                                                                <td key={ci} className={`py-0 px-0.5 text-center font-black text-[8.5pt] border-r border-black ${col.id.startsWith('period_') ? 'min-w-[50px] max-w-[50px]' : ''}`}>
+                                                                <td key={ci} className={`py-0 px-0.5 text-center font-black text-[9pt] border-r border-black ${isPeriod ? 'min-w-[50px] max-w-[50px]' : 'min-w-[25px] max-w-[25px]'}`}>
                                                                     {cat.clientTotals[colKey] || 0}
                                                                 </td>
                                                             );
                                                         })}
-                                                        {groupIdx === columnGroups.length - 1 && (
-                                                            <td className="py-0 px-0.1 text-right font-black text-[6.5pt] min-w-[30px] max-w-[30px] bg-yellow-300 overflow-hidden">{cat.grandTotal}</td>
-                                                        )}
+                                                            {groupIdx === columnGroups.length - 1 && (
+                                                                <td className="py-0 px-0.1 text-right font-black text-[6.5pt] min-w-[35px] max-w-[35px] bg-yellow-300 overflow-hidden">{cat.grandTotal}</td>
+                                                            )}
                                                     </tr>
                                                 </tfoot>
                                             </table>
@@ -945,7 +945,7 @@ function ReportsPageContent() {
             {/* Print Styles */}
             <style jsx global>{`
                 @media print {
-                    @page { size: letter landscape; margin: 0.5cm; }
+                    @page { size: letter portrait; margin: 0.5cm; }
                     body { background: white !important; color: black !important; font-size: 10pt !important; }
                     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                     
@@ -968,11 +968,11 @@ function ReportsPageContent() {
                         width: 100% !important; 
                     }
 
-                    table { border-collapse: collapse !important; width: 100% !important; font-size: 8pt !important; table-layout: fixed !important; }
-                    th, td { border: 1px solid black !important; padding: 1px 2px !important; line-height: 1 !important; overflow: hidden; }
-                                        /* FORCE FIXED WIDTHS FOR FIRST AND LAST COLUMNS */
-                    th:first-child, td:first-child { width: 30px !important; min-width: 30px !important; max-width: 30px !important; }
-                    th:last-child, td:last-child { width: 30px !important; min-width: 30px !important; max-width: 30px !important; }
+                    table { border-collapse: collapse !important; width: auto !important; font-size: 8pt !important; table-layout: auto !important; margin-bottom: 5px !important; }
+                    th, td { border: 1px solid black !important; padding: 1px 4px !important; line-height: 1 !important; }
+                                        /* FORCE WIDTHS: Product = Shrink-to-fit, Total = 20px */
+                    th:first-child, td:first-child { width: auto !important; white-space: nowrap !important; }
+                    th:last-child, td:last-child { width: 20px !important; min-width: 20px !important; max-width: 20px !important; text-align: right !important; }
                     
                     th { font-weight: bold !important; font-size: 6pt !important; }
                     td { font-size: 6.5pt !important; }
@@ -982,10 +982,10 @@ function ReportsPageContent() {
                     .sticky { position: static !important; }
 
                      .vertical-header-th {
-                        height: 60px;
-                        width: 9px !important;
-                        min-width: 9px !important;
-                        max-width: 9px !important;
+                        height: 45px;
+                        width: 25px !important;
+                        min-width: 25px !important;
+                        max-width: 25px !important;
                         vertical-align: bottom;
                         padding: 0 !important;
                     }
@@ -1009,7 +1009,7 @@ function ReportsPageContent() {
                         font-size: 5pt;
                         display: flex;
                         justify-content: flex-start;
-                        width: 9px;
+                        width: 25px;
                         padding-top: 1px;
                     }
 
