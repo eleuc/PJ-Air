@@ -285,13 +285,14 @@ td:nth-child(2){text-align:center}td:nth-child(3),td:nth-child(4){text-align:rig
 ${clientPhone ? `<div><span class="lb">Tel:</span><span>${clientPhone}</span></div>` : ''}
 <div><span class="lb">Entrega:</span><span>${deliveryLabel}</span></div>
 ${order.delivery_type !== 'pickup' && addr ? `<div><span class="lb">Dir:</span><span>${addr}</span></div>` : ''}
+${order.delivery_type === 'pickup' && addr ? `<div><span class="lb">Dir Local:</span><span>${addr}</span></div>` : ''}
 <div><span class="lb">Estado:</span><span>${order.status}</span></div>
 </div>
 <table><thead><tr><th>Producto</th><th>Cant</th><th>P.U</th><th>Subt</th></tr></thead><tbody>${categoryRows}</tbody></table>
 <div class="tot"><span>TOTAL</span><span>$${Number(order.total || 0).toFixed(2)}</span></div>
 ${order.notes ? `<div class="ft"><b>Notas:</b> ${order.notes.replace(/\n/g, ' | ')}</div>` : ''}
 <div class="ft">Gracias por tu compra</div>
-<script>window.onload=function(){window.print();}<\/script>
+<script>window.onload=function(){window.print();window.onafterprint=function(){window.close();}}<\/script>
 </body></html>`;
         const w = window.open('', '_blank', 'width=900,height=700');
         if (w) { w.document.write(html); w.document.close(); }
@@ -454,10 +455,10 @@ ${order.notes ? `<div class="ft"><b>Notas:</b> ${order.notes.replace(/\n/g, ' | 
 
             {/* Order Detail Side Panel */}
             {selectedOrder && (
-                <div onClick={() => setSelectedOrder(null)} className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-end overflow-hidden animate-in fade-in duration-300 cursor-pointer">
+                <div className="fixed inset-0 z-50 flex items-center justify-end overflow-hidden animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setSelectedOrder(null)} />
                     <div 
-                        className="bg-white w-full max-w-2xl h-screen shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 relative cursor-default"
-                        onClick={(e) => e.stopPropagation()}
+                        className="bg-white w-full max-w-2xl h-screen shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 relative z-10 cursor-default"
                     >
                         <header className="p-8 border-b border-border flex items-center justify-between shrink-0 bg-slate-50/50">
                             <div className="flex flex-col gap-1">
@@ -472,8 +473,8 @@ ${order.notes ? `<div class="ft"><b>Notas:</b> ${order.notes.replace(/\n/g, ' | 
                                     <Printer size={14} /> Imprimir
                                 </button>
                                 <button 
-                                    onClick={(e) => { e.stopPropagation(); setSelectedOrder(null); }} 
-                                    className="w-12 h-12 flex items-center justify-center hover:bg-red-50 hover:text-red-500 rounded-2xl transition-all text-slate-400 group z-10 pointer-events-auto"
+                                    onClick={() => setSelectedOrder(null)} 
+                                    className="w-12 h-12 flex items-center justify-center hover:bg-red-50 hover:text-red-500 rounded-2xl transition-all text-slate-400 group"
                                 >
                                     <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
                                 </button>
