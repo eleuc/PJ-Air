@@ -13,8 +13,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JH Panes Bakery - Order System",
-  description: "Modular order management system for bakery and pastry",
+  title: "Jhoanes Bakery",
+  description: "Order System",
+  openGraph: {
+    title: "Jhoanes Bakery",
+    description: "Order System",
+    url: "https://jhoanesbakery.com", // Reemplazar con la URL real si es distinta
+    siteName: "Jhoanes Bakery",
+    images: [
+      {
+        url: "/logo-whatsapp.png",
+        width: 800,
+        height: 800,
+        alt: "Jhoanes Bakery Logo",
+      },
+    ],
+    type: "website",
+  },
 };
 
 import { CartProvider } from '@/context/CartContext';
