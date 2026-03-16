@@ -214,6 +214,28 @@ export default function AdminProductsPage() {
         p.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Componente interno para renderizado robusto de imágenes
+    const ProductImage = ({ src, alt, className }: { src?: string, alt: string, className?: string }) => {
+        const fallback = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800';
+        return (
+            <div className={`relative overflow-hidden bg-muted/30 flex items-center justify-center ${className}`}>
+                {src ? (
+                    <img 
+                        src={src} 
+                        alt={alt} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            if (target.src !== fallback) target.src = fallback;
+                        }} 
+                    />
+                ) : (
+                    <Package size={className?.includes('w-12') ? 20 : 40} className="text-muted-foreground/30" />
+                )}
+            </div>
+        );
+    };
+
     return (
         <div className="flex min-h-screen bg-muted/30">
             <AdminSidebar />
@@ -267,15 +289,11 @@ export default function AdminProductsPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {filtered.map(product => (
                             <div key={product.id} className="bg-card rounded-2xl border border-border overflow-hidden hover:shadow-lg transition-all group">
-                                <div className="h-40 overflow-hidden relative bg-muted/30">
-                                    {product.image ? (
-                                        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-muted-foreground/30"><Package size={40} /></div>
-                                    )}
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                <div className="h-40 relative">
+                                    <ProductImage src={product.image} alt={product.name} className="w-full h-full" />
+                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-10">
                                         <button onClick={() => openEdit(product)} className="p-2.5 bg-white rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-lg"><Edit2 size={16} /></button>
-                                        <button onClick={() => setDeleteConfirm(product)} className="p-2.5 bg-white rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-lg"><Trash2 size={16} /></button>
+                                        <button onClick={() => setDeleteConfirm(product)} className="p-2.5 bg-white rounded-full text-red-500 hover:bg-red-50 hover:text-white transition-all shadow-lg"><Trash2 size={16} /></button>
                                     </div>
                                 </div>
                                 <div className="p-4">
@@ -312,11 +330,7 @@ export default function AdminProductsPage() {
                                 {filtered.map(product => (
                                     <tr key={product.id} className="hover:bg-muted/40 transition-colors">
                                         <td className="px-6 py-4">
-                                            {product.image ? (
-                                                <img src={product.image} className="w-12 h-12 rounded-xl object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                                            ) : (
-                                                <div className="w-12 h-12 rounded-xl bg-muted/30 flex items-center justify-center text-muted-foreground/30"><Package size={20} /></div>
-                                            )}
+                                            <ProductImage src={product.image} alt={product.name} className="w-12 h-12 rounded-xl" />
                                         </td>
                                         <td className="px-6 py-4">
                                             <p className="font-semibold">{product.name}</p>

@@ -36,7 +36,9 @@ export const ProductCardCompact = ({
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=400';
+                        const target = e.target as HTMLImageElement;
+                        const fallback = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800';
+                        if (target.src !== fallback) target.src = fallback;
                     }}
                 />
                 {isInCart ? (

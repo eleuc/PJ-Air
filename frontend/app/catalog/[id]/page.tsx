@@ -95,7 +95,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                                     alt={product.name} 
                                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                                     onError={(e) => {
-                                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800';
+                                        const target = e.target as HTMLImageElement;
+                                        const fallback = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800';
+                                        if (target.src !== fallback) target.src = fallback;
                                     }}
                                 />
                             </div>

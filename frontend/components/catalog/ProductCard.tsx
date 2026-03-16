@@ -45,7 +45,9 @@ export const ProductCard = ({
                     alt={product.name}
                     className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                     onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800';
+                        const target = e.target as HTMLImageElement;
+                        const fallback = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800';
+                        if (target.src !== fallback) target.src = fallback;
                     }}
                 />
                 <div className="absolute top-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
