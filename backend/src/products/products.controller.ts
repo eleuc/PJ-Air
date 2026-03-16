@@ -4,10 +4,14 @@ import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import * as fs from 'fs';
 import { ProductsService } from './products.service';
+import { ImageProcessingService } from '../common/services/image-processing.service';
 
 @Controller('products')
 export class ProductsController {
-    constructor(private readonly productsService: ProductsService) { }
+    constructor(
+        private readonly productsService: ProductsService,
+        private readonly imageProcessingService: ImageProcessingService
+    ) { }
 
     @Get()
     async findAll() {
@@ -50,24 +54,11 @@ export class ProductsController {
     }
 
     @Post('upload-image')
-    @UseInterceptors(FileInterceptor('file', {
-        storage: diskStorage({
-            destination: (req, file, cb) => {
-                const uploadPath = join(__dirname, '..', '..', '..', 'frontend', 'public', 'images', 'products');
-                if (!fs.existsSync(uploadPath)) {
-                    fs.mkdirSync(uploadPath, { recursive: true });
-                }
-                cb(null, uploadPath);
-            },
-            filename: (req, file, cb) => {
-                const randomName = Array(24).fill(null).map(() => Math.round(Math.random() * 16).toString(16)).join('');
-                cb(null, `${randomName}${extname(file.originalname)}`);
-            },
-        }),
-    }))
+    @UseInterceptors(FileInterceptor('file'))
     async uploadImage(@UploadedFile() file: Express.Multer.File) {
         if (!file) throw new Error('No file uploaded');
-        return { url: `/images/products/${file.filename}` };
+        const url = await this.imageProcessingService.processAndSave(file, 'products');
+        return { url };
     }
 
     @Post('upload')
