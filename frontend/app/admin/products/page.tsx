@@ -113,6 +113,10 @@ export default function AdminProductsPage() {
 
     // Image upload via file input
     const handleImageUpload = async (file: File) => {
+        // Create a local object URL for instant preview
+        const objectUrl = URL.createObjectURL(file);
+        setForm(f => ({ ...f, image: objectUrl }));
+        
         setUploadingImage(true);
         try {
             const formData = new FormData();
@@ -125,14 +129,26 @@ export default function AdminProductsPage() {
 
             if (!res.ok) throw new Error('Error al subir imagen');
             const data = await res.json();
+            
+            // Reemplazar el blob con la URL final del servidor
             setForm(f => ({ ...f, image: data.url }));
+            
+            // Retrasar un poco la liberación para asegurar que el navegador cargue la nueva URL
+            setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
         } catch (err: any) {
-            // Fallback: use a local object URL preview
-            const objectUrl = URL.createObjectURL(file);
-            setForm(f => ({ ...f, image: objectUrl }));
+            console.error('Upload error:', err);
+            showToast('⚠️ Error al subir al servidor, se usa preview local', 'error');
         } finally {
             setUploadingImage(false);
         }
+    };
+
+    const closeModal = () => {
+        // Limpiar cualquier object URL si el formulario tiene un blob
+        if (form.image.startsWith('blob:')) {
+            URL.revokeObjectURL(form.image);
+        }
+        setShowModal(false);
     };
 
     const handleSave = async () => {
@@ -166,7 +182,7 @@ export default function AdminProductsPage() {
                 setProducts(prev => [...prev, created]);
                 showToast('✅ Producto creado correctamente');
             }
-            setShowModal(false);
+            closeModal();
         } catch (err: any) {
             setFormError(err.message || 'Error al guardar el producto');
         } finally {
@@ -343,7 +359,7 @@ export default function AdminProductsPage() {
                                 <h2 className="text-2xl font-bold">{editingProduct ? 'Editar Producto' : 'Nuevo Producto'}</h2>
                                 <p className="text-sm text-muted-foreground">{editingProduct ? `ID: ${editingProduct.id}` : 'Completa los datos del producto'}</p>
                             </div>
-                            <button onClick={() => setShowModal(false)} className="p-2 hover:bg-muted rounded-full transition-all"><X size={20} /></button>
+                            <button onClick={closeModal} className="p-2 hover:bg-muted rounded-full transition-all"><X size={20} /></button>
                         </div>
 
                         <div className="p-8 space-y-5 max-h-[65vh] overflow-y-auto">
@@ -381,7 +397,18 @@ export default function AdminProductsPage() {
                                     {/* Image preview */}
                                     {form.image && (
                                         <div className="mb-3 w-full h-40 rounded-xl overflow-hidden border border-border bg-muted/30 relative">
-                                            <img src={form.image} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                            <img 
+                                                key={form.image}
+                                                src={form.image} 
+                                                alt="Preview" 
+                                                className="w-full h-full object-cover" 
+                                                onError={(e) => { 
+                                                    const target = e.target as HTMLImageElement;
+                                                    if (!form.image.startsWith('blob:')) {
+                                                        target.src = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800'; 
+                                                    }
+                                                }} 
+                                            />
                                         </div>
                                     )}
 
@@ -419,10 +446,10 @@ export default function AdminProductsPage() {
                         </div>
 
                         <div className="px-8 py-6 bg-muted/10 flex gap-4 border-t border-border">
-                            <button onClick={() => setShowModal(false)} className="flex-1 py-3.5 font-bold text-muted-foreground hover:bg-muted rounded-2xl transition-all">Cancelar</button>
-                            <button onClick={handleSave} disabled={saving} className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-primary text-white font-bold rounded-2xl shadow-xl hover:bg-black transition-all disabled:opacity-60">
-                                {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-                                {saving ? 'Guardando...' : editingProduct ? 'Actualizar Producto' : 'Crear Producto'}
+                            <button onClick={closeModal} className="flex-1 py-3.5 font-bold text-muted-foreground hover:bg-muted rounded-2xl transition-all">Cancelar</button>
+                            <button onClick={handleSave} disabled={saving || uploadingImage} className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-primary text-white font-bold rounded-2xl shadow-xl hover:bg-black transition-all disabled:opacity-60">
+                                {uploadingImage ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                                {uploadingImage ? 'Subiendo...' : saving ? 'Guardando...' : editingProduct ? 'Actualizar Producto' : 'Crear Producto'}
                             </button>
                         </div>
                     </div>
