@@ -57,6 +57,7 @@ export default function AdminProductsPage() {
     const [form, setForm] = useState<ProductForm>(emptyForm);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string>('');
 
     // Image upload
     const [uploadingImage, setUploadingImage] = useState(false);
@@ -94,28 +95,31 @@ export default function AdminProductsPage() {
     const openCreate = () => {
         setEditingProduct(null);
         setForm(emptyForm);
+        setPreviewUrl('');
         setFormError(null);
         setShowModal(true);
     };
 
     const openEdit = (p: Product) => {
         setEditingProduct(p);
+        const initialImage = p.image || '';
         setForm({
             name: p.name,
             category: p.category,
             price: String(p.price),
             description: p.description || '',
-            image: p.image || '',
+            image: initialImage,
         });
+        setPreviewUrl(initialImage);
         setFormError(null);
         setShowModal(true);
     };
 
     // Image upload via file input
     const handleImageUpload = async (file: File) => {
-        // Create a local object URL for instant preview
+        // Create a local object URL for instant preview and show it in UI
         const objectUrl = URL.createObjectURL(file);
-        setForm(f => ({ ...f, image: objectUrl }));
+        setPreviewUrl(objectUrl);
         
         setUploadingImage(true);
         try {
@@ -130,11 +134,11 @@ export default function AdminProductsPage() {
             if (!res.ok) throw new Error('Error al subir imagen');
             const data = await res.json();
             
-            // Reemplazar el blob con la URL final del servidor
+            // Actualizar el formulario con la URL final del servidor (esto es lo que se guardará)
             setForm(f => ({ ...f, image: data.url }));
             
-            // Retrasar un poco la liberación para asegurar que el navegador cargue la nueva URL
-            setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+            // NO cambiamos previewUrl ni revocamos objectUrl todavía. 
+            // Mantendremos el blob para evitar el glitch de 404 mientras Next.js se sincroniza.
         } catch (err: any) {
             console.error('Upload error:', err);
             showToast('⚠️ Error al subir al servidor, se usa preview local', 'error');
@@ -144,9 +148,9 @@ export default function AdminProductsPage() {
     };
 
     const closeModal = () => {
-        // Limpiar cualquier object URL si el formulario tiene un blob
-        if (form.image.startsWith('blob:')) {
-            URL.revokeObjectURL(form.image);
+        // Limpiar cualquier object URL si el preview es un blob
+        if (previewUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(previewUrl);
         }
         setShowModal(false);
     };
@@ -395,16 +399,16 @@ export default function AdminProductsPage() {
                                     <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Imagen del Producto</label>
 
                                     {/* Image preview */}
-                                    {form.image && (
+                                    {previewUrl && (
                                         <div className="mb-3 w-full h-40 rounded-xl overflow-hidden border border-border bg-muted/30 relative">
                                             <img 
-                                                key={form.image}
-                                                src={form.image} 
+                                                key={previewUrl}
+                                                src={previewUrl} 
                                                 alt="Preview" 
                                                 className="w-full h-full object-cover" 
                                                 onError={(e) => { 
                                                     const target = e.target as HTMLImageElement;
-                                                    if (!form.image.startsWith('blob:')) {
+                                                    if (!previewUrl.startsWith('blob:')) {
                                                         target.src = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800'; 
                                                     }
                                                 }} 
@@ -436,7 +440,11 @@ export default function AdminProductsPage() {
                                         <input
                                             type="text"
                                             value={form.image}
-                                            onChange={e => setForm(f => ({ ...f, image: e.target.value }))}
+                                            onChange={e => {
+                                                const val = e.target.value;
+                                                setForm(f => ({ ...f, image: val }));
+                                                setPreviewUrl(val);
+                                            }}
                                             placeholder="O pega una URL de imagen..."
                                             className="flex-1 px-4 py-2.5 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
                                         />
