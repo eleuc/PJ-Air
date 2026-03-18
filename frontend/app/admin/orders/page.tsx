@@ -25,7 +25,7 @@ interface Order {
     created_at: string;
     delivery_date?: string;
     notes?: string;
-    user?: { email: string; profile?: { full_name?: string; phone?: string; }; };
+    user?: { email: string; profile?: { full_name?: string; phone?: string; company_name?: string; }; };
     delivery_user_id?: string;
     delivery_user?: { id: string; profile?: { full_name?: string; }; };
     address?: { address: string; city: string; };
@@ -250,15 +250,25 @@ export default function AdminOrdersPage() {
         });
         const categoryRows = Object.entries(grouped).map(([cat, catItems]) => {
             const rows = catItems.map(item =>
-                `<tr><td>${item.product?.name || 'Producto'}</td><td>${item.quantity}</td><td>$${Number(item.price_at_time).toFixed(2)}</td><td>$${(item.quantity * Number(item.price_at_time)).toFixed(2)}</td></tr>`
+                `<tr><td>${item.product?.name || 'Producto'}</td><td>${item.quantity}</td></tr>`
             ).join('');
-            return `<tr class="cat"><td colspan="4">${cat}</td></tr>${rows}`;
+            return `<tr class="cat"><td colspan="2">${cat}</td></tr>${rows}`;
         }).join('');
         const fecha = new Date(order.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
         const clientName = order.user?.profile?.full_name || 'Anónimo';
+        const companyName = order.user?.profile?.company_name || '';
         const clientPhone = order.user?.profile?.phone || '';
         const addr = order.address?.address || '';
-        const deliveryLabel = order.delivery_type === 'pickup' ? 'Retiro en local' : order.delivery_type === 'other' ? 'Otra dirección' : 'Dirección guardada';
+        
+        let deliveryLabel = '';
+        if (order.delivery_type === 'pickup') {
+            deliveryLabel = 'Pick up';
+        } else if (order.delivery_type === 'other') {
+            deliveryLabel = `Temporal: ${addr}`;
+        } else {
+            deliveryLabel = `Dirección: ${addr}`;
+        }
+
         const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pedido #${order.id.slice(0,8)}</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -266,30 +276,31 @@ body{font-family:'Segoe UI',Arial,sans-serif;padding:8px;max-width:260px;margin:
 @media print{@page{size:letter;margin:15mm}body{max-width:260px;margin:0 auto}}
 .hd{text-align:center;border-bottom:2px double #333;padding-bottom:6px;margin-bottom:6px}
 .hd h1{font-size:13px;font-weight:900;letter-spacing:1px}
+.hd .company{font-size:10px;font-weight:700;margin:2px 0;color:#333}
 .hd p{font-size:8px;color:#666;margin-top:1px}
 .info{font-size:8px;margin-bottom:5px;padding:3px 0;border-bottom:1px dashed #ccc}
-.info div{display:flex;justify-content:space-between;padding:1px 0}
-.info .lb{font-weight:700;color:#555}
+.info div{display:flex;flex-direction:column;padding:2px 0}
+.info .lb{font-weight:700;color:#555;font-size:7px;text-transform:uppercase}
+.info .val{font-size:9px;color:#000}
 table{width:100%;border-collapse:collapse;margin-bottom:5px}
 th{font-size:7px;text-transform:uppercase;color:#999;border-bottom:1px solid #333;padding:2px 3px;text-align:left}
-th:nth-child(2){text-align:center}th:nth-child(3),th:nth-child(4){text-align:right}
-td{padding:1px 3px;font-size:8px;border-bottom:1px dotted #eee}
-td:nth-child(2){text-align:center}td:nth-child(3),td:nth-child(4){text-align:right}
-.cat td{font-size:7px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:#555;background:#f0f0f0;border-top:1px solid #333;padding:3px}
-.tot{border-top:2px double #333;padding-top:4px;display:flex;justify-content:space-between;font-size:11px;font-weight:900}
+th:nth-child(2){text-align:right}
+td{padding:2px 3px;font-size:9px;border-bottom:1px dotted #eee}
+td:nth-child(2){text-align:right;font-weight:900;font-size:11px}
+.cat td{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:#000;background:#f9f9f9;border-top:1px solid #333;padding:4px 3px}
 .ft{text-align:center;margin-top:5px;padding-top:3px;border-top:1px dashed #ccc;font-size:7px;color:#999}
 </style></head><body>
-<div class="hd"><h1>JHOANES BAKERY</h1><p>Sistema de Pedidos</p><p>PEDIDO #${order.id.slice(0,8).toUpperCase()}</p><p>${fecha}</p></div>
+<div class="hd"><h1>JHOANES BAKERY</h1><p>Sistema de Pedidos</p>${companyName ? `<div class="company">${companyName}</div>` : ''}<p>PEDIDO #${order.id.slice(0,8).toUpperCase()}</p><p>${fecha}</p></div>
 <div class="info">
-<div><span class="lb">Cliente:</span><span>${clientName}</span></div>
-${clientPhone ? `<div><span class="lb">Tel:</span><span>${clientPhone}</span></div>` : ''}
-<div><span class="lb">Entrega:</span><span>${deliveryLabel}</span></div>
-${order.delivery_type !== 'pickup' && addr ? `<div><span class="lb">Dir:</span><span>${addr}</span></div>` : ''}
-${order.delivery_type === 'pickup' && addr ? `<div><span class="lb">Dir Local:</span><span>${addr}</span></div>` : ''}
-<div><span class="lb">Estado:</span><span>${order.status}</span></div>
+<div><span class="lb">Cliente:</span><span class="val">${clientName}</span></div>
+${clientPhone ? `<div><span class="lb">Tel:</span><span class="val">${clientPhone}</span></div>` : ''}
+<div><span class="lb">Tipo de Entrega:</span><span class="val">${deliveryLabel}</span></div>
+<div><span class="lb">Estado:</span><span class="val">${order.status}</span></div>
 </div>
-<table><thead><tr><th>Producto</th><th>Cant</th><th>P.U</th><th>Subt</th></tr></thead><tbody>${categoryRows}</tbody></table>
-<div class="tot"><span>TOTAL</span><span>$${Number(order.total || 0).toFixed(2)}</span></div>
+<table><thead><tr><th>Producto</th><th>Cant</th></tr></thead><tbody>${categoryRows}</tbody></table>
+${order.notes ? `<div class="ft"><b>Notas:</b> ${order.notes.replace(/\n/g, ' | ')}</div>` : ''}
+<div class="ft">Gracias por tu compra</div>
+</body></html>`;
 ${order.notes ? `<div class="ft"><b>Notas:</b> ${order.notes.replace(/\n/g, ' | ')}</div>` : ''}
 <div class="ft">Gracias por tu compra</div>
 <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();}}<\/script>

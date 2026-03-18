@@ -40,3 +40,4 @@ recursos/
 *.sqlite.bak
 check-users.js
 database.sqlite
+Trash/
