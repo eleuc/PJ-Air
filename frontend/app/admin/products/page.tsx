@@ -12,24 +12,34 @@ interface Product {
     id: number;
     name: string;
     category: string;
+    category_en?: string;
     price: number;
     description: string;
     image: string;
+    category_min_qty?: number;
 }
 
 interface ProductForm {
     name: string;
     category: string;
+    category_en: string;
     price: string;
     description: string;
     image: string;
+    category_min_qty: string;
 }
 
 const LS_CATS_KEY = 'admin_custom_categories';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 const emptyForm: ProductForm = {
-    name: '', category: '', price: '', description: '', image: ''
+    name: '',
+    category: '',
+    category_en: '',
+    price: '',
+    description: '',
+    image: '',
+    category_min_qty: '1',
 };
 
 function getDynamicCategories(products: Product[]): string[] {
@@ -103,9 +113,11 @@ export default function AdminProductsPage() {
         setForm({
             name: p.name,
             category: p.category,
-            price: String(p.price),
+            category_en: p.category_en || '',
+            price: p.price.toString(),
             description: p.description || '',
             image: p.image || '',
+            category_min_qty: (p.category_min_qty || 1).toString(),
         });
         setFormError(null);
         setShowModal(true);
@@ -113,6 +125,10 @@ export default function AdminProductsPage() {
 
     // Image upload via file input
     const handleImageUpload = async (file: File) => {
+        // Instant local preview
+        const objectUrl = URL.createObjectURL(file);
+        setForm(f => ({ ...f, image: objectUrl }));
+
         setUploadingImage(true);
         try {
             const formData = new FormData();
@@ -125,11 +141,12 @@ export default function AdminProductsPage() {
 
             if (!res.ok) throw new Error('Error al subir imagen');
             const data = await res.json();
+            // Replace local preview with server path
             setForm(f => ({ ...f, image: data.url }));
         } catch (err: any) {
-            // Fallback: use a local object URL preview
-            const objectUrl = URL.createObjectURL(file);
-            setForm(f => ({ ...f, image: objectUrl }));
+            console.error('Upload error:', err);
+            // Fallback: keep the local object URL so the user can still save (though it might break later)
+            // but we already set it at the start.
         } finally {
             setUploadingImage(false);
         }
@@ -145,16 +162,23 @@ export default function AdminProductsPage() {
             setFormError('El precio debe ser un número positivo.');
             return;
         }
+        const minQty = parseInt(form.category_min_qty);
+        if (isNaN(minQty) || minQty <= 0) {
+            setFormError('La cantidad mínima debe ser un número positivo.');
+            return;
+        }
 
         setSaving(true);
         setFormError(null);
         try {
             const payload = {
                 name: form.name.trim(),
-                category: form.category,
+                category: form.category.trim(),
+                category_en: form.category_en.trim() || form.category.trim(),
                 price,
                 description: form.description.trim(),
                 image: form.image.trim(),
+                category_min_qty: minQty,
             };
 
             if (editingProduct) {
@@ -359,15 +383,43 @@ export default function AdminProductsPage() {
                                     <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Ej: Croissant de Mantequilla" className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium" />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Categoría *</label>
-                                    <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium">
-                                        <option value="">— Seleccionar —</option>
-                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                                    </select>
+                                    <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Categoría (ES) *</label>
+                                    <input
+                                        type="text"
+                                        list="categories-list"
+                                        value={form.category}
+                                        onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                                        placeholder="Ej: Croissants"
+                                        className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                    />
+                                    <datalist id="categories-list">
+                                        {categories.map(c => <option key={c} value={c} />)}
+                                    </datalist>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Categoría (EN) *</label>
+                                    <input
+                                        type="text"
+                                        value={form.category_en}
+                                        onChange={e => setForm(f => ({ ...f, category_en: e.target.value }))}
+                                        placeholder="Ej: Croissants"
+                                        className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Precio ($) *</label>
                                     <input type="number" step="0.01" min="0" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="0.00" className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Mínimo por cat.</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={form.category_min_qty}
+                                        onChange={e => setForm(f => ({ ...f, category_min_qty: e.target.value }))}
+                                        placeholder="1"
+                                        className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                    />
                                 </div>
                                 <div className="col-span-2">
                                     <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Descripción</label>

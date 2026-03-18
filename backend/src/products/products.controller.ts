@@ -53,7 +53,8 @@ export class ProductsController {
     @UseInterceptors(FileInterceptor('file', {
         storage: diskStorage({
             destination: (req, file, cb) => {
-                const uploadPath = join(__dirname, '..', '..', '..', 'frontend', 'public', 'images', 'products');
+                // process.cwd() is [root]/backend
+                const uploadPath = join(process.cwd(), '..', 'frontend', 'public', 'images', 'products');
                 if (!fs.existsSync(uploadPath)) {
                     fs.mkdirSync(uploadPath, { recursive: true });
                 }
