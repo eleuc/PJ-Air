@@ -169,6 +169,21 @@ const es: Translations = {
     paymentDueNotice: 'Este pedido deberá ser pagado antes del:',
     noOrdersYet: 'Aún no has realizado ningún pedido.',
     startShopping: 'Empezar a comprar',
+    confirmed: '¡Pedido Confirmado!',
+    thanks: 'Gracias por confiar en Panadería Jhoanes para tus momentos especiales.',
+    tracking: 'Estado del Pedido',
+    steps: {
+      pending: { label: 'Pedido Recibido', desc: 'Hemos recibido tu orden y ya estamos preparando los ingredientes.' },
+      processing: { label: 'En Producción', desc: 'Nuestros maestros pasteleros están trabajando en tus productos.' },
+      delivering: { label: 'En Delivery', desc: 'Tu pedido va en camino a tu dirección.' },
+      delivered: { label: 'Entregado', desc: '¡Pedido entregado con éxito!' },
+    },
+    deliveryDate: 'Fecha de Entrega',
+    yourPurchase: 'Tu compra',
+    shippingAddress: 'Dirección de Envío',
+    continueShopping: 'Seguir Comprando',
+    viewMyOrders: 'Ver Mis Pedidos',
+    promotions: 'Promociones Vigentes',
   },
 
   // ── Checkout ────────────────────────────────────────────────────────────────

@@ -5,10 +5,11 @@ import Navbar from '@/components/layout/Navbar';
 import { CheckCircle2, Package, Calendar, Clock, MapPin, ChevronRight, ShoppingBag, Receipt, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function OrderConfirmationPage({ params }: { params: Promise<{ id: string }> }) {
-    const resolvedParams = use(params);
-    const orderId = resolvedParams.id;
+    const { id: orderId } = use(params);
+    const { t, locale } = useLanguage();
     const [order, setOrder] = useState<any>(null);
     const [items, setItems] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -30,10 +31,10 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
     }, [orderId]);
 
     const steps = [
-        { key: 'pending', label: 'Pedido Recibido', desc: 'Hemos recibido tu orden y ya estamos preparando los ingredientes.' },
-        { key: 'processing', label: 'En Producción', desc: 'Nuestros maestros pasteleros están trabajando en tus productos.' },
-        { key: 'delivering', label: 'En Delivery', desc: 'Tu pedido va en camino a tu dirección.' },
-        { key: 'Entregado', label: 'Entregado', desc: '¡Pedido entregado con éxito!' }
+        { key: 'Pedido Enviado', ...t.orders.steps.pending },
+        { key: 'En Producción', ...t.orders.steps.processing },
+        { key: 'En Delivery', ...t.orders.steps.delivering },
+        { key: 'Entregado', ...t.orders.steps.delivered }
     ];
 
     if (isLoading) {
@@ -42,7 +43,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
                 <Navbar />
                 <div className="flex flex-col items-center justify-center py-40 animate-pulse">
                     <Loader2 size={48} className="animate-spin text-primary/20 mb-4" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Consultando tu pedido...</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t.common.loading}</p>
                 </div>
             </div>
         );
@@ -53,8 +54,8 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
             <div className="min-h-screen bg-[#fafafa]">
                 <Navbar />
                 <div className="max-w-md mx-auto py-40 text-center">
-                    <h1 className="text-2xl font-bold mb-4">Pedido no encontrado</h1>
-                    <Link href="/orders" className="text-primary font-bold underline">Volver a mis pedidos</Link>
+                    <h1 className="text-2xl font-bold mb-4">{locale === 'en' ? 'Order not found' : 'Pedido no encontrado'}</h1>
+                    <Link href="/orders" className="text-primary font-bold underline">{locale === 'en' ? 'Back to my orders' : 'Volver a mis pedidos'}</Link>
                 </div>
             </div>
         );
@@ -72,15 +73,15 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
                     <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-green-100/50">
                         <CheckCircle2 size={56} />
                     </div>
-                    <h1 className="text-4xl font-bold font-serif text-foreground mb-4">¡Pedido Confirmado!</h1>
-                    <p className="text-lg text-muted-foreground font-medium">Gracias por confiar en Pedidos Jhoanes para tus momentos especiales.</p>
+                    <h1 className="text-4xl font-bold font-serif text-foreground mb-4">{t.orders.confirmed}</h1>
+                    <p className="text-lg text-muted-foreground font-medium">{t.orders.thanks}</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                     {/* Tracking & Info */}
                     <div className="lg:col-span-7 space-y-6">
                         <section className="bg-card rounded-[32px] border border-border p-8 shadow-sm">
-                            <h2 className="text-xl font-bold mb-8 flex items-center gap-2 font-serif"><Clock className="text-primary" /> Estado del Pedido</h2>
+                            <h2 className="text-xl font-bold mb-8 flex items-center gap-2 font-serif"><Clock className="text-primary" /> {t.orders.tracking}</h2>
 
                             <div className="relative space-y-12 pl-8 border-l-2 border-border ml-2">
                                 {steps.slice(0, 3).map((step, idx) => {
@@ -103,7 +104,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
                                 <Calendar size={32} />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black text-primary uppercase tracking-widest mb-1">Fecha de Entrega</h3>
+                                <h3 className="text-sm font-black text-primary uppercase tracking-widest mb-1">{t.orders.deliveryDate}</h3>
                                 <p className="text-2xl font-bold text-foreground font-serif">{order.delivery_date}</p>
                             </div>
                         </section>
@@ -113,7 +114,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
                     <div className="lg:col-span-5">
                         <div className="bg-card rounded-[32px] border border-border p-8 shadow-xl sticky top-28">
                             <div className="flex justify-between items-center mb-8">
-                                <h3 className="text-xl font-bold flex items-center gap-2 font-serif"><ShoppingBag size={20} className="text-primary" /> Tu compra</h3>
+                                <h3 className="text-xl font-bold flex items-center gap-2 font-serif"><ShoppingBag size={20} className="text-primary" /> {t.orders.yourPurchase}</h3>
                                 <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-1 rounded uppercase tracking-widest">#{order.id.toString().slice(0, 8)}</span>
                             </div>
 
@@ -139,28 +140,28 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
                             <div className="bg-muted/50 rounded-2xl p-4 flex items-start gap-3 mb-8">
                                 <MapPin className="text-primary shrink-0" size={18} />
                                 <div className="text-xs font-medium text-muted-foreground leading-relaxed">
-                                    <p className="font-bold text-foreground mb-1">Dirección de Envío:</p>
+                                    <p className="font-bold text-foreground mb-1">{t.orders.shippingAddress}:</p>
                                     {order.address ? (
                                         <p>{order.address.alias}: {order.address.address}. {order.address.city && `${order.address.city}.`} Zona {order.address.zone}</p>
                                     ) : (
-                                        <p>Dirección no disponible (ID: {order.address_id})</p>
+                                        <p>{locale === 'en' ? 'Address not available' : 'Dirección no disponible'} (ID: {order.address_id})</p>
                                     )}
                                 </div>
                             </div>
 
                             <div className="space-y-4">
                                 <Link href="/" className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-white rounded-2xl font-bold text-sm shadow-xl hover:bg-black transition-all group">
-                                    Seguir Comprando <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                                    {t.orders.continueShopping} <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
                                 <Link href="/orders" className="w-full flex items-center justify-center gap-2 py-4 bg-secondary text-primary hover:bg-primary/10 transition-all rounded-2xl font-bold text-sm">
-                                    <Receipt size={18} /> Ver Mis Pedidos
+                                    <Receipt size={18} /> {t.orders.viewMyOrders}
                                 </Link>
                             </div>
                         </div>
 
                         {/* Promotions Section */}
                         <div className="mt-8 bg-card rounded-[32px] border border-border p-8 shadow-sm">
-                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2 font-serif"><CheckCircle2 className="text-green-500" size={18} /> Promociones Vigentes</h3>
+                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2 font-serif"><CheckCircle2 className="text-green-500" size={18} /> {t.orders.promotions}</h3>
                             <div className="space-y-3">
                                 <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10">
                                     <p className="text-sm font-bold text-primary">2x1 en Cookies Artesanales</p>

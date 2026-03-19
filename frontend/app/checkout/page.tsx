@@ -349,8 +349,8 @@ export default function CheckoutPage() {
         const payDate = new Date(delDate);
         payDate.setDate(delDate.getDate() + 6);
         setIsBeforeCutoff(before);
-        setDeliveryDate(delDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }));
-        setPaymentDate(payDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }));
+        setDeliveryDate(delDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' }));
+        setPaymentDate(payDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' }));
     }, []);
 
     // ── Submit ────────────────────────────────────────────────────────────────

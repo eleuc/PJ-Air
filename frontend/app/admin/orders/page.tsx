@@ -250,15 +250,27 @@ export default function AdminOrdersPage() {
         });
         const categoryRows = Object.entries(grouped).map(([cat, catItems]) => {
             const rows = catItems.map(item =>
-                `<tr><td>${item.product?.name || 'Producto'}</td><td>${item.quantity}</td><td>$${Number(item.price_at_time).toFixed(2)}</td><td>$${(item.quantity * Number(item.price_at_time)).toFixed(2)}</td></tr>`
+                `<tr><td>${item.product?.name || 'Producto'}</td><td>${item.quantity}</td></tr>`
             ).join('');
-            return `<tr class="cat"><td colspan="4">${cat}</td></tr>${rows}`;
+            return `<tr class="cat"><td colspan="2">${cat}</td></tr>${rows}`;
         }).join('');
         const fecha = new Date(order.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
         const clientName = order.user?.profile?.full_name || 'Anónimo';
         const clientPhone = order.user?.profile?.phone || '';
         const addr = order.address?.address || '';
-        const deliveryLabel = order.delivery_type === 'pickup' ? 'Retiro en local' : order.delivery_type === 'other' ? 'Otra dirección' : 'Dirección guardada';
+        
+        let deliveryLabel = '';
+        let addressInfo = '';
+        
+        if (order.delivery_type === 'pickup') {
+            deliveryLabel = 'Pick up';
+        } else if (order.delivery_type === 'other') {
+            deliveryLabel = 'Temporal';
+            addressInfo = addr;
+        } else {
+            deliveryLabel = 'Dirección';
+            addressInfo = addr;
+        }
         const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pedido #${order.id.slice(0,8)}</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -272,9 +284,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;padding:8px;max-width:260px;margin:
 .info .lb{font-weight:700;color:#555}
 table{width:100%;border-collapse:collapse;margin-bottom:5px}
 th{font-size:7px;text-transform:uppercase;color:#999;border-bottom:1px solid #333;padding:2px 3px;text-align:left}
-th:nth-child(2){text-align:center}th:nth-child(3),th:nth-child(4){text-align:right}
+th:nth-child(2){text-align:right}
 td{padding:1px 3px;font-size:8px;border-bottom:1px dotted #eee}
-td:nth-child(2){text-align:center}td:nth-child(3),td:nth-child(4){text-align:right}
+td:nth-child(2){text-align:right}
 .cat td{font-size:7px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:#555;background:#f0f0f0;border-top:1px solid #333;padding:3px}
 .tot{border-top:2px double #333;padding-top:4px;display:flex;justify-content:space-between;font-size:11px;font-weight:900}
 .ft{text-align:center;margin-top:5px;padding-top:3px;border-top:1px dashed #ccc;font-size:7px;color:#999}
@@ -284,15 +296,16 @@ td:nth-child(2){text-align:center}td:nth-child(3),td:nth-child(4){text-align:rig
 <div><span class="lb">Cliente:</span><span>${clientName}</span></div>
 ${clientPhone ? `<div><span class="lb">Tel:</span><span>${clientPhone}</span></div>` : ''}
 <div><span class="lb">Entrega:</span><span>${deliveryLabel}</span></div>
-${order.delivery_type !== 'pickup' && addr ? `<div><span class="lb">Dir:</span><span>${addr}</span></div>` : ''}
-${order.delivery_type === 'pickup' && addr ? `<div><span class="lb">Dir Local:</span><span>${addr}</span></div>` : ''}
+${addressInfo ? `<div><span class="lb">${deliveryLabel}:</span><span>${addressInfo}</span></div>` : ''}
 <div><span class="lb">Estado:</span><span>${order.status}</span></div>
 </div>
-<table><thead><tr><th>Producto</th><th>Cant</th><th>P.U</th><th>Subt</th></tr></thead><tbody>${categoryRows}</tbody></table>
-<div class="tot"><span>TOTAL</span><span>$${Number(order.total || 0).toFixed(2)}</span></div>
+<table><thead><tr><th>Producto</th><th style="text-align:right">Cant</th></tr></thead><tbody>${categoryRows}</tbody></table>
+<div style="border-top:1px solid #333; margin-top:10px; padding-top:5px; text-align:right; font-weight:bold; font-size:10px">
+    Total productos: ${items.reduce((acc, i) => acc + i.quantity, 0)}
+</div>
 ${order.notes ? `<div class="ft"><b>Notas:</b> ${order.notes.replace(/\n/g, ' | ')}</div>` : ''}
 <div class="ft">Gracias por tu compra</div>
-<script>window.onload=function(){window.print();window.onafterprint=function(){window.close();}}<\/script>
+<script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);}<\/script>
 </body></html>`;
         const w = window.open('', '_blank', 'width=900,height=700');
         if (w) { w.document.write(html); w.document.close(); }

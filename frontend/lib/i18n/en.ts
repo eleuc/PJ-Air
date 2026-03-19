@@ -167,6 +167,21 @@ const en = {
     paymentDueNotice: 'This order must be paid before:',
     noOrdersYet: 'You haven\'t placed any orders yet.',
     startShopping: 'Start shopping',
+    confirmed: 'Order Confirmed!',
+    thanks: 'Thank you for choosing Jhoanes Bakery for your special moments.',
+    tracking: 'Order Status',
+    steps: {
+      pending: { label: 'Order Received', desc: 'We have received your order and are preparing the ingredients.' },
+      processing: { label: 'In Production', desc: 'Our master bakers are working on your products.' },
+      delivering: { label: 'Out for Delivery', desc: 'Your order is on its way to your address.' },
+      delivered: { label: 'Delivered', desc: 'Order delivered successfully!' },
+    },
+    deliveryDate: 'Delivery Date',
+    yourPurchase: 'Your Purchase',
+    shippingAddress: 'Shipping Address',
+    continueShopping: 'Continue Shopping',
+    viewMyOrders: 'View My Orders',
+    promotions: 'Current Promotions',
   },
 
   // ── Checkout ────────────────────────────────────────────────────────────────

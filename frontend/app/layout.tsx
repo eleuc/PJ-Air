@@ -30,6 +30,10 @@ export const metadata: Metadata = {
     ],
     type: "website",
   },
+  icons: {
+    icon: "/logo-whatsapp.png",
+    apple: "/logo-whatsapp.png",
+  },
 };
 
 import { CartProvider } from '@/context/CartContext';
