@@ -54,7 +54,7 @@ export class ProductsController {
         storage: diskStorage({
             destination: (req, file, cb) => {
                 // process.cwd() is [root]/backend
-                const uploadPath = join(process.cwd(), '..', 'frontend', 'public', 'images', 'products');
+                const uploadPath = join(process.cwd(), 'uploads', 'products');
                 if (!fs.existsSync(uploadPath)) {
                     fs.mkdirSync(uploadPath, { recursive: true });
                 }
@@ -68,7 +68,7 @@ export class ProductsController {
     }))
     async uploadImage(@UploadedFile() file: Express.Multer.File) {
         if (!file) throw new Error('No file uploaded');
-        return { url: `/images/products/${file.filename}` };
+        return { url: `/uploads/products/${file.filename}` };
     }
 
     @Post('upload')
