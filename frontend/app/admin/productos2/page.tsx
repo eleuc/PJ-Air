@@ -301,7 +301,7 @@ export default function Productos2Page() {
                                         <div className="relative aspect-square bg-muted/30 overflow-hidden">
                                             {product.image ? (
                                                 <img
-                                                    src={product.image}
+                                                    src={product.image?.startsWith('http') ? product.image : `${API_BASE}${product.image}`}
                                                     alt={product.name}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                     onError={e => {
@@ -380,8 +380,7 @@ export default function Productos2Page() {
                                         <div className="w-28 h-28 rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden flex items-center justify-center shrink-0 relative">
                                             {(imagePreview || form.image) ? (
                                                 <img
-                                                    src={imagePreview || form.image}
-                                                    alt="Preview"
+                                                    src={imagePreview?.startsWith('http') || imagePreview?.startsWith('blob:') ? imagePreview : `${API_BASE}${imagePreview}`}
                                                     className="w-full h-full object-cover"
                                                     onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
                                                 />

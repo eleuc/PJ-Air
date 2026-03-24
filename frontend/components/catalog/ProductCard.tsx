@@ -41,7 +41,7 @@ export const ProductCard = ({
             {/* Image Section */}
             <Link href={`/catalog/${product.id}`} className="relative w-full mb-5 overflow-hidden rounded-[2.5rem] aspect-square bg-muted/30 flex items-center justify-center">
                 <img
-                    src={product.image}
+                    src={product.image?.startsWith('http') ? product.image : `${process.env.NEXT_PUBLIC_API_URL}${product.image}`}
                     alt={product.name}
                     className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                     onError={(e) => {

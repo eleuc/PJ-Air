@@ -1,0 +1,262 @@
+[
+  {
+    "id": 53,
+    "name": "Cookie Croissant",
+    "image": "/uploads/products/Cookie Croissant.jpg"
+  },
+  {
+    "id": 54,
+    "name": "Pain au Chocolat",
+    "image": "/uploads/products/Pain au Chocolat.jpg"
+  },
+  {
+    "id": 55,
+    "name": "Nutella New York Roll",
+    "image": "/uploads/products/Nutella New York Roll.jpg"
+  },
+  {
+    "id": 56,
+    "name": "Fruit Danish",
+    "image": "/uploads/products/Fruit Danish.jpg"
+  },
+  {
+    "id": 57,
+    "name": "Raspberry Cream Cheese",
+    "image": "/uploads/products/Raspberry Cream Cheese.jpg"
+  },
+  {
+    "id": 58,
+    "name": "Chocolate Mousse Croissant",
+    "image": "/uploads/products/Chocolate Mousse.jpg"
+  },
+  {
+    "id": 59,
+    "name": "Lemon Pie Croissant",
+    "image": "/uploads/products/Lemon Pie Croissant.jpg"
+  },
+  {
+    "id": 60,
+    "name": "Almond Croissant",
+    "image": "/uploads/products/Almond Croissant.jpg"
+  },
+  {
+    "id": 61,
+    "name": "Pistachio & Raspberry",
+    "image": "/uploads/products/Pistachio & Raspberry.jpg"
+  },
+  {
+    "id": 62,
+    "name": "Dulce de Leche",
+    "image": "/uploads/products/Dulce de Leche.jpg"
+  },
+  {
+    "id": 63,
+    "name": "Strawberry Croissant",
+    "image": "/uploads/products/Strawberry Croissant.jpg"
+  },
+  {
+    "id": 64,
+    "name": "Dubai Chocolate",
+    "image": "/uploads/products/Dubai Chocolate.jpg"
+  },
+  {
+    "id": 65,
+    "name": "Artisanal Croissant",
+    "image": "/uploads/products/Artisanal Croissant.jpg"
+  },
+  {
+    "id": 66,
+    "name": "Emerald Temptation",
+    "image": "/uploads/products/Emerald Temptation.jpg"
+  },
+  {
+    "id": 67,
+    "name": "Zesty Lemon",
+    "image": "/uploads/products/Zesty Lemon.jpg"
+  },
+  {
+    "id": 68,
+    "name": "Classic Tres Leches",
+    "image": "/uploads/products/Classic Tres Leches.jpg"
+  },
+  {
+    "id": 69,
+    "name": "Apple Essence",
+    "image": "/uploads/products/Apple Essence.jpg"
+  },
+  {
+    "id": 70,
+    "name": "Berry Cloud Pavlova",
+    "image": "/uploads/products/Berry Cloud Pavlova.jpg"
+  },
+  {
+    "id": 71,
+    "name": "Tiramisú",
+    "image": "/uploads/products/Tiramisú.jpg"
+  },
+  {
+    "id": 72,
+    "name": "Creamy Dulce Temptation",
+    "image": "/uploads/products/Creamy Dulce Temptation.jpg"
+  },
+  {
+    "id": 73,
+    "name": "Triple Chocolate Mousse",
+    "image": "/uploads/products/Chocolate Mousse.jpg"
+  },
+  {
+    "id": 74,
+    "name": "Tropical Bliss",
+    "image": "/uploads/products/Tropical Bliss.jpg"
+  },
+  {
+    "id": 75,
+    "name": "Pear Harmony",
+    "image": "/uploads/products/Pear Harmony.jpg"
+  },
+  {
+    "id": 76,
+    "name": "Crème Brûlée",
+    "image": "/uploads/products/Crème Brûlée.jpg"
+  },
+  {
+    "id": 77,
+    "name": "Blueberry Heart",
+    "image": "/uploads/products/Blueberry Heart.jpg"
+  },
+  {
+    "id": 78,
+    "name": "Napoleon",
+    "image": "/uploads/products/Napoleon.jpg"
+  },
+  {
+    "id": 79,
+    "name": "Dark Passion",
+    "image": "/uploads/products/Dark Passion.jpg"
+  },
+  {
+    "id": 80,
+    "name": "Golden Crunch",
+    "image": "/uploads/products/Golden Crunch.jpg"
+  },
+  {
+    "id": 81,
+    "name": "Golden Love",
+    "image": "/uploads/products/Golden Love.jpg"
+  },
+  {
+    "id": 82,
+    "name": "Caramel Banana Bliss",
+    "image": "/uploads/products/Caramel Banana Bliss.jpg"
+  },
+  {
+    "id": 83,
+    "name": "Fruit Tart",
+    "image": "/uploads/products/Fruit Tart.jpg"
+  },
+  {
+    "id": 84,
+    "name": "Mango Coco Dream",
+    "image": "/uploads/products/Mango Coco Dream.jpg"
+  },
+  {
+    "id": 85,
+    "name": "Orange Blossom Delight",
+    "image": "/uploads/products/Orange Blossom Delight.jpg"
+  },
+  {
+    "id": 86,
+    "name": "Rosa Elegance",
+    "image": "/uploads/products/Rosa Elegance.jpg"
+  },
+  {
+    "id": 87,
+    "name": "Raspberry Secret",
+    "image": "/uploads/products/Raspberry Secret.jpg"
+  },
+  {
+    "id": 88,
+    "name": "Piña Colada Dream",
+    "image": "/uploads/products/placeholder.jpg"
+  },
+  {
+    "id": 89,
+    "name": "Mango Tres Leches",
+    "image": "/uploads/products/Mango Tres Leches.jpg"
+  },
+  {
+    "id": 90,
+    "name": "Strawberry Bliss",
+    "image": "/uploads/products/Strawberry Bliss.jpg"
+  },
+  {
+    "id": 91,
+    "name": "Mocca Chocolate Mousse Slice x10",
+    "image": "/uploads/products/Chocolate Mousse.jpg"
+  },
+  {
+    "id": 92,
+    "name": "Carrot Cake Slice",
+    "image": "/uploads/products/carrot_p.jpg"
+  },
+  {
+    "id": 93,
+    "name": "Black Forest Slice",
+    "image": "/uploads/products/BlackForest_p.jpg"
+  },
+  {
+    "id": 94,
+    "name": "White Chocolate Mousse Slice",
+    "image": "/uploads/products/Chocolate Mousse.jpg"
+  },
+  {
+    "id": 95,
+    "name": "Red Velvet",
+    "image": "/uploads/products/red_velvet_p.jpg"
+  },
+  {
+    "id": 96,
+    "name": "New York Cheesecake Slices",
+    "image": "/uploads/products/NewYork_p.jpg"
+  },
+  {
+    "id": 97,
+    "name": "Mango Cheesecake Slice (Cold) x10",
+    "image": "/uploads/products/Mango Cheesecake.jpg"
+  },
+  {
+    "id": 98,
+    "name": "Tiramisu Slice",
+    "image": "/uploads/products/Tiramisu.jpg"
+  },
+  {
+    "id": 99,
+    "name": "Dulce de Leche Cheesecake Slice",
+    "image": "/uploads/products/Dulce de Leche.jpg"
+  },
+  {
+    "id": 100,
+    "name": "Strawberry Shortcake Slice",
+    "image": "/uploads/products/Strawberry.jpg"
+  },
+  {
+    "id": 101,
+    "name": "Producto  prrueba 2",
+    "image": "/uploads/products/e5822692d8d14bcb757ef663.jpg"
+  },
+  {
+    "id": 102,
+    "name": "Producto prueba 3",
+    "image": "/uploads/products/f410e842d95da310419eda4ab7.jpg"
+  },
+  {
+    "id": 103,
+    "name": "Test Product",
+    "image": "/uploads/products/test.jpg"
+  },
+  {
+    "id": 104,
+    "name": "Producto prueba 4",
+    "image": "/uploads/products/6d351449bf81098b09be28adb.jpg"
+  }
+]

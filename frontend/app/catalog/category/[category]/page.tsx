@@ -21,7 +21,7 @@ function ProductCard({
     return (
         <div className="group bg-white rounded-3xl border border-border/50 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col overflow-hidden">
             <Link href={`/catalog/${product.id}`} className="relative w-full aspect-square overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 block">
-                <img src={product.image} alt={product.name}
+                <img src={product.image?.startsWith('http') ? product.image : `${process.env.NEXT_PUBLIC_API_URL}${product.image}`} alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?q=80&w=400'; }} />
                 {isInCart ? (

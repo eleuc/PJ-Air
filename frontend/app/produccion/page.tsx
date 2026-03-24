@@ -310,7 +310,7 @@ export default function ProduccionPage() {
                                         <div key={item.id} className="flex items-center gap-6 p-5 bg-slate-50 rounded-[2rem] border border-transparent hover:border-slate-200 hover:bg-white hover:shadow-lg transition-all group">
                                             <div className="relative">
                                                 {item.product?.image ? (
-                                                    <img src={item.product.image} className="w-16 h-16 rounded-2xl object-cover" alt="" />
+                                                    <img src={item.product?.image?.startsWith('http') ? item.product.image : `${process.env.NEXT_PUBLIC_API_URL}${item.product?.image}`} className="w-16 h-16 rounded-2xl object-cover" alt="" />
                                                 ) : (
                                                     <div className="w-16 h-16 bg-slate-200 rounded-2xl flex items-center justify-center text-slate-400"><Package size={24} /></div>
                                                 )}

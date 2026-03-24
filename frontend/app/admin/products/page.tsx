@@ -273,7 +273,7 @@ export default function AdminProductsPage() {
                             <div key={product.id} className="bg-card rounded-2xl border border-border overflow-hidden hover:shadow-lg transition-all group">
                                 <div className="h-40 overflow-hidden relative bg-muted/30">
                                     {product.image ? (
-                                        <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                        <img src={product.image?.startsWith('http') ? product.image : `${API_BASE}${product.image}`} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-muted-foreground/30"><Package size={40} /></div>
                                     )}
@@ -317,7 +317,7 @@ export default function AdminProductsPage() {
                                     <tr key={product.id} className="hover:bg-muted/40 transition-colors">
                                         <td className="px-6 py-4">
                                             {product.image ? (
-                                                <img src={product.image} className="w-12 h-12 rounded-xl object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                                <img src={product.image?.startsWith('http') ? product.image : `${API_BASE}${product.image}`} className="w-12 h-12 rounded-xl object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                                             ) : (
                                                 <div className="w-12 h-12 rounded-xl bg-muted/30 flex items-center justify-center text-muted-foreground/30"><Package size={20} /></div>
                                             )}
@@ -433,7 +433,7 @@ export default function AdminProductsPage() {
                                     {/* Image preview */}
                                     {form.image && (
                                         <div className="mb-3 w-full h-40 rounded-xl overflow-hidden border border-border bg-muted/30 relative">
-                                            <img src={form.image} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                            <img src={form.image?.startsWith('http') || form.image?.startsWith('blob:') ? form.image : `${API_BASE}${form.image}`} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                                         </div>
                                     )}
 
