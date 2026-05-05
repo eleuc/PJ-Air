@@ -650,26 +650,26 @@ function ReportsPageContent() {
                                             <table className="w-full table-fixed border-collapse text-left" style={{ width: '100%', minWidth: '100%' }}>
                                                 <thead>
                                                     <tr className="bg-gray-100">
-                                                        <th className="py-1 px-0.5 font-black text-[9pt] uppercase border-b border-r border-black w-auto overflow-hidden">Producto</th>
+                                                        <th className="py-1 px-0.5 font-black text-[5pt] uppercase border-b border-r border-black w-auto overflow-hidden">Producto</th>
                                                         {groupCols.map((col, ci) => {
                                                             const isPeriod = col.id.startsWith('period_');
                                                             return (
                                                                 <th key={ci} className={`${isPeriod ? 'period-header-th' : 'vertical-header-th'} border-b border-r border-black text-center ${isPeriod ? 'w-[50px] min-w-[50px] max-w-[50px]' : 'w-[25px] min-w-[25px] max-w-[25px]'}`}>
                                                                     <div className={isPeriod ? 'period-header-content' : 'vertical-header-content'}>
-                                                                        <div className={isPeriod ? 'period-name' : 'vertical-client-name text-[8.5pt]'}>{col.name}</div>
+                                                                        <div className={isPeriod ? 'period-name' : 'vertical-client-name text-[4.5pt]'}>{col.name}</div>
                                                                     </div>
                                                                 </th>
                                                             );
                                                         })}
                                                         {groupIdx === columnGroups.length - 1 && (
-                                                            <th className="py-1 px-0.5 border-b border-black text-right font-black text-[9pt] bg-yellow-100 w-[35px] min-w-[35px] max-w-[35px]">T</th>
+                                                            <th className="py-1 px-0.5 border-b border-black text-right font-black text-[5pt] bg-yellow-100 w-[35px] min-w-[35px] max-w-[35px]">T</th>
                                                         )}
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-black">
                                                     {cat.products.map((prod, pi) => (
                                                         <tr key={pi} className={pi % 2 === 1 ? 'bg-gray-50' : 'bg-white'}>
-                                                            <td className="py-0 px-0.5 font-normal text-[13pt] border-r border-black leading-tight truncate" title={prod.name}>
+                                                            <td className="py-0 px-0.5 font-normal text-[9pt] border-r border-black leading-tight truncate" title={prod.name}>
                                                                 {prod.name}
                                                             </td>
                                                             {groupCols.map((col, ci) => {
@@ -677,31 +677,31 @@ function ReportsPageContent() {
                                                                 const qty = prod.clientQtys[colKey] || 0;
                                                                 const isPeriod = col.id.startsWith('period_');
                                                                 return (
-                                                                    <td key={ci} className={`py-0 px-0.5 text-center text-[13pt] border-r border-black font-bold ${isPeriod ? 'min-w-[50px] max-w-[50px]' : 'min-w-[25px] max-w-[25px]'}`}>
+                                                                    <td key={ci} className={`py-0 px-0.5 text-center text-[9pt] border-r border-black font-bold ${isPeriod ? 'min-w-[50px] max-w-[50px]' : 'min-w-[25px] max-w-[25px]'}`}>
                                                                         {qty > 0 ? qty : '.'}
                                                                     </td>
                                                                 );
                                                             })}
                                                             {groupIdx === columnGroups.length - 1 && (
-                                                                <td className="py-0 px-0.1 text-right font-black text-[10.5pt] bg-yellow-100 min-w-[35px] max-w-[35px] overflow-hidden">{prod.total}</td>
+                                                                <td className="py-0 px-0.1 text-right font-black text-[6.5pt] bg-yellow-100 min-w-[35px] max-w-[35px] overflow-hidden">{prod.total}</td>
                                                             )}
                                                         </tr>
                                                     ))}
                                                 </tbody>
                                                 <tfoot>
                                                     <tr className="bg-yellow-300 font-black border-t-2 border-black">
-                                                        <td className="py-1 px-0.5 font-black text-[10pt] border-r border-black overflow-hidden truncate">TOTAL CAT.</td>
+                                                        <td className="py-1 px-0.5 font-black text-[6pt] border-r border-black overflow-hidden truncate">TOTAL CAT.</td>
                                                         {groupCols.map((col, ci) => {
                                                             const colKey = col.id;
                                                             const isPeriod = col.id.startsWith('period_');
                                                             return (
-                                                                <td key={ci} className={`py-0 px-0.5 text-center font-black text-[13pt] border-r border-black ${isPeriod ? 'min-w-[50px] max-w-[50px]' : 'min-w-[25px] max-w-[25px]'}`}>
+                                                                <td key={ci} className={`py-0 px-0.5 text-center font-black text-[9pt] border-r border-black ${isPeriod ? 'min-w-[50px] max-w-[50px]' : 'min-w-[25px] max-w-[25px]'}`}>
                                                                     {cat.clientTotals[colKey] || 0}
                                                                 </td>
                                                             );
                                                         })}
                                                             {groupIdx === columnGroups.length - 1 && (
-                                                                <td className="py-0 px-0.1 text-right font-black text-[10.5pt] min-w-[35px] max-w-[35px] bg-yellow-300 overflow-hidden">{cat.grandTotal}</td>
+                                                                <td className="py-0 px-0.1 text-right font-black text-[6.5pt] min-w-[35px] max-w-[35px] bg-yellow-300 overflow-hidden">{cat.grandTotal}</td>
                                                             )}
                                                     </tr>
                                                 </tfoot>
