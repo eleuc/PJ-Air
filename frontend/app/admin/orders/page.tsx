@@ -248,11 +248,11 @@ export default function AdminOrdersPage() {
             if (!grouped[cat]) grouped[cat] = [];
             grouped[cat].push(item);
         });
-        const categoryRows = Object.entries(grouped).map(([cat, catItems]) => {
-            const rows = catItems.map(item =>
-                `<tr><td>${item.product?.name || 'Producto'}</td><td>${item.quantity}</td></tr>`
+        const categoryRows = Object.entries(grouped).map(([cat, catItems], idx) => {
+            const rows = catItems.map((item, rowIdx) =>
+                `<tr${rowIdx === 0 ? ' class="first-row"' : ''}><td>${item.product?.name || 'Producto'}</td><td>${item.quantity}</td></tr>`
             ).join('');
-            return `<tr class="cat"><td colspan="2">${cat}</td></tr>${rows}`;
+            return `${idx > 0 ? '<tr style="height:6px"><td colspan="2" style="border:none"></td></tr>' : ''}<tr class="cat"><td colspan="2">${cat}</td></tr>${rows}`;
         }).join('');
         const fecha = new Date(order.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
         const clientName = order.user?.profile?.full_name || 'Anónimo';
@@ -274,22 +274,23 @@ export default function AdminOrdersPage() {
         const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pedido #${order.id.slice(0,8)}</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Arial,sans-serif;padding:8px;max-width:260px;margin:0 auto;font-size:9px}
-@media print{@page{size:letter;margin:15mm}body{max-width:260px;margin:0 auto}}
-.hd{text-align:center;border-bottom:2px double #333;padding-bottom:6px;margin-bottom:6px}
-.hd h1{font-size:13px;font-weight:900;letter-spacing:1px}
-.hd p{font-size:8px;color:#666;margin-top:1px}
-.info{font-size:8px;margin-bottom:5px;padding:3px 0;border-bottom:1px dashed #ccc}
+body{font-family:'Segoe UI',Arial,sans-serif;padding:20px;width:80%;margin:0 auto;font-size:10px}
+@media print{@page{size:letter;margin:15mm}body{width:80%;max-width:none;margin:0 auto}}
+.hd{text-align:center;border-bottom:2px double #333;padding-bottom:6px;margin-bottom:8px}
+.hd h1{font-size:14px;font-weight:900;letter-spacing:1px}
+.hd p{font-size:9px;color:#666;margin-top:1px}
+.info{font-size:9px;margin-bottom:6px;padding:3px 0;border-bottom:1px dashed #ccc}
 .info div{display:flex;justify-content:space-between;padding:1px 0}
 .info .lb{font-weight:700;color:#555}
-table{width:100%;border-collapse:collapse;margin-bottom:5px}
-th{font-size:7px;text-transform:uppercase;color:#999;border-bottom:1px solid #333;padding:2px 3px;text-align:left}
+table{width:100%;border-collapse:collapse;margin-bottom:6px}
+th{font-size:8px;text-transform:uppercase;color:#999;padding:1px 4px 3px 4px;text-align:left}
 th:nth-child(2){text-align:right}
-td{padding:1px 3px;font-size:8px;border-bottom:1px dotted #eee}
+td{padding:2px 4px;font-size:9px;border-top:1px dotted #eee}
+tr.first-row td{border-top:none}
 td:nth-child(2){text-align:right}
-.cat td{font-size:7px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:#555;background:#f0f0f0;border-top:1px solid #333;padding:3px}
-.tot{border-top:2px double #333;padding-top:4px;display:flex;justify-content:space-between;font-size:11px;font-weight:900}
-.ft{text-align:center;margin-top:5px;padding-top:3px;border-top:1px dashed #ccc;font-size:7px;color:#999}
+.cat td{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:#555;background:#f0f0f0;border-top:1px solid #333;padding:2px}
+.tot{border-top:2px double #333;padding-top:4px;display:flex;justify-content:space-between;font-size:12px;font-weight:900}
+.ft{text-align:center;margin-top:6px;padding-top:3px;border-top:1px dashed #ccc;font-size:7px;color:#999}
 </style></head><body>
 <div class="hd"><h1>JHOANES BAKERY</h1><p>Sistema de Pedidos</p><p>PEDIDO #${order.id.slice(0,8).toUpperCase()}</p><p>${fecha}</p></div>
 <div class="info">
@@ -300,11 +301,11 @@ ${addressInfo ? `<div><span class="lb">${deliveryLabel}:</span><span>${addressIn
 <div><span class="lb">Estado:</span><span>${order.status}</span></div>
 </div>
 <table><thead><tr><th>Producto</th><th style="text-align:right">Cant</th></tr></thead><tbody>${categoryRows}</tbody></table>
-<div style="border-top:1px solid #333; margin-top:10px; padding-top:5px; text-align:right; font-weight:bold; font-size:10px">
+<div style="border-top:1px solid #333; margin-top:7px; padding-top:4px; text-align:right; font-weight:bold; font-size:11px">
     Total productos: ${items.reduce((acc, i) => acc + i.quantity, 0)}
 </div>
-${order.notes ? `<div class="ft"><b>Notas:</b> ${order.notes.replace(/\n/g, ' | ')}</div>` : ''}
-<div class="ft">Gracias por tu compra</div>
+${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Notas:</b> ${order.notes.replace(/\n/g, ' | ')}</div>` : ''}
+<div class="ft" style="font-size:8px; margin-top:4px; padding-top:2px">Gracias por tu compra</div>
 <script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);}<\/script>
 </body></html>`;
         const w = window.open('', '_blank', 'width=900,height=700');
