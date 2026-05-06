@@ -96,7 +96,6 @@ npx jest src/users/users.service.spec.ts
 npx jest -t "should calculate product price"
 ```
 
-
 ## Pending Security Improvements
 
 ### Authentication Context (JWT `userId` Inference)
@@ -110,4 +109,25 @@ The following endpoints need to be refactored to extract `req.user.id` via an `A
 - **Addresses Module**: `POST /addresses` expects `userId` in the body payload, and `GET /addresses/user/:userId` expects it in the URL.
 - **Orders Module**: `POST /orders` expects `userId` in the body payload, and `GET /orders/user/:userId` expects it in the URL.
 
-*Note: For administrative workflows, an override option to pass a specific `userId` can be preserved (e.g. `GET /orders/reports/range?userId=xxx`), but standard user operations must default strictly to their own authenticated session context.*
+_Note: For administrative workflows, an override option to pass a specific `userId` can be preserved (e.g. `GET /orders/reports/range?userId=xxx`), but standard user operations must default strictly to their own authenticated session context._
+
+### Security & Authorization Testing Gaps
+
+While the project has an extensive testing plan, several critical security validation tests are currently skipped or unimplemented:
+
+- **Tenant Isolation Boundaries**: Tests preventing users from accessing or modifying other users' addresses or orders (`resource-ownership.e2e-spec.ts`) are currently bypassed (`it.skip`).
+- **Role-Based Access Control (RBAC)**: Tests ensuring standard users cannot access administrative product and user management endpoints (`roles-guard.e2e-spec.ts`) are currently bypassed (`it.skip`).
+- **Production Environment Hardening**: The validation to ensure potentially dangerous `Devtools` wiping and seeding endpoints are strictly disabled in production is not actively enforced.
+- **Bootstrapping Security**: Integration validations for Cross-Origin Resource Sharing (CORS) configurations are currently missing.
+
+---
+
+## 🔮 Future Work
+
+_These are suggestions for future enhancements, not currently planned on the active roadmap and require further consideration._
+
+- **Third-Party Payment Gateways**: Integrating and testing external payment processors (e.g., Stripe, PayPal) within the current checkout flow.
+- **Rate Limiting & Throttling**: Implementing strict endpoint protections against brute-force and DDoS attacks (e.g., `@nestjs/throttler`).
+- **Performance & Load Testing**: Stress-testing the application under high concurrency to validate inventory deduction integrity and database locks.
+- **Security Vulnerability Audits**: Adding explicit tests against common OWASP threats such as SQL Injection, XSS, and CSRF payloads.
+- **Environment Validation**: Adding strict startup validation schemas to ensure the application fails fast if critical environment variables are missing or misconfigured.
