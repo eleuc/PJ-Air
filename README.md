@@ -95,3 +95,19 @@ npx jest src/users/users.service.spec.ts
 # Run matching tests by pattern
 npx jest -t "should calculate product price"
 ```
+
+
+## Pending Security Improvements
+
+### Authentication Context (JWT `userId` Inference)
+
+Currently, several backend endpoints expect the `userId` to be provided explicitly in the request body or URL parameters instead of securely inferring it from the authenticated user's JWT session. This bypasses proper tenant isolation and could theoretically allow unauthorized access if a user supplies another user's ID.
+
+The following endpoints need to be refactored to extract `req.user.id` via an `AuthGuard`:
+
+- **Users Module**: Most profile endpoints (`PATCH /users/:id/profile`, `POST /users/:id/avatar`, `PATCH /users/:id/role`, `PATCH /users/:id/general-discount`) fully trust the `:id` URL parameter.
+- **Auth Module**: `PATCH /auth/change-password` expects `userId` inside the JSON body payload.
+- **Addresses Module**: `POST /addresses` expects `userId` in the body payload, and `GET /addresses/user/:userId` expects it in the URL.
+- **Orders Module**: `POST /orders` expects `userId` in the body payload, and `GET /orders/user/:userId` expects it in the URL.
+
+*Note: For administrative workflows, an override option to pass a specific `userId` can be preserved (e.g. `GET /orders/reports/range?userId=xxx`), but standard user operations must default strictly to their own authenticated session context.*
