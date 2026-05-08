@@ -37,7 +37,6 @@ recursos/
 # Large / temporary files
 *.zip
 *.bak
-*.sqlite.bak
+*.sqlite
 check-users.js
-database.sqlite
 backend/uploads/*

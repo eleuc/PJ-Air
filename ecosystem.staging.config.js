@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'pj-air-backend',
+      name: 'pj-air-backend-staging',
       cwd: './backend',
       script: 'dist/src/main.js',
       instances: 1,
@@ -9,14 +9,14 @@ module.exports = {
       watch: false,
       max_memory_restart: '1G',
       env_production: {
-        NODE_ENV: 'production',
-        PORT: 3001,
-        DATABASE_PATH: '../database.sqlite',
-        FRONTEND_URL: 'https://app.jhoanes.com'
+        NODE_ENV: 'staging',
+        PORT: 3101,
+        DATABASE_PATH: '../database-staging.sqlite',
+        FRONTEND_URL: 'https://staging.jhoanes.com'
       }
     },
     {
-      name: 'pj-air-frontend',
+      name: 'pj-air-frontend-staging',
       cwd: './frontend',
       script: 'node_modules/next/dist/bin/next',
       args: 'start',
@@ -25,9 +25,9 @@ module.exports = {
       watch: false,
       max_memory_restart: '1G',
       env_production: {
-        NODE_ENV: 'production',
-        PORT: 3000,
-        NEXT_PUBLIC_API_URL: 'https://app.jhoanes.com:3001'
+        NODE_ENV: 'staging',
+        PORT: 3100,
+        NEXT_PUBLIC_API_URL: 'https://staging.jhoanes.com/api'
       }
     }
   ]
