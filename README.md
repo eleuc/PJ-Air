@@ -96,9 +96,40 @@ npx jest src/users/users.service.spec.ts
 npx jest -t "should calculate product price"
 ```
 
-## Pending Security Improvements
+## Future Work
 
-### Authentication Context (JWT `userId` Inference)
+- Agregar fecha de entrega configurable en checkout.
+
+## Issues
+
+Errores reportados en produccion:
+
+- Todo el programa mezcla ingles y español por tolao.
+- Recuperar Contraseña no funciona.
+- En profile/adresses/new, el mapa embedido muestra el mensaje "This page can't load Google Maps correctly.", pero el mapa si funciona
+- En checkout, la cantidad de un producto no es modificable a mano, solo con los botones de + y -
+  - En la lista de productos si se puede modificar. Se deben combinar ambos como el mismo componente.
+- Estoy seguro de que la seleccion de mapa en checkout "Other Address" es diferente que la de addresses/new. Tambien deben compartir componente.
+- Contraseñas se guardan sin hashear.
+- El pdf generado al imprimir reporte incluye el mismo boton de imprimir.
+- En el panel de informacion de usuario en admin/users, un pedido sin procesar muestra "Pedido Enviado".Buscar otra terminologia para evitar confusiones.
+- El boton "Ver Detalle" de pedido en la info de usuarios en admin no funciona bien.
+- Usuarios tipo produccion y delivery no tienen dashboard.
+- No se puede subir foto de avatar. Se muestra como un archivo roto.
+- En admin/users al agregar descuento por producto, se muestran las dos opciones de precio fijo y descuento a la vez. Deberia verse una sola porque es confuso.
+- Los descuentos o precios adicionales registrados al usuario no se aplican. Ni en el checkout, ni en la orden final.
+- Hacer configuable los tipos de flota.
+- admin/orders
+  - no se puede asignar.
+  - info de pedido muestra "Linea de Tiempo" cuando deberia ser "Estado".
+  - estado por defecto es "Pedido Enviado", que no aparece en la lista de estados disponibles, y de paso es bien confuso.
+  - En info, logistica de entrega, deberia ser asignable tambien, no solo en la lista principal.
+  - Linea de Productos no muestra el titulo del producto, sino el default "Articulo Invitado".
+  - WTF es "Archivar Cierre"? el boton no hace nada. Probablemente deberia ser "Eliminar Orden", con sus respectivos chequeos de seguridad.
+- Unificar componentes de tablas en cada categoria en admin.
+- Eliminar categoria de clientes en admin, es redundante.
+
+## Authentication Context (JWT `userId` Inference)
 
 Currently, several backend endpoints expect the `userId` to be provided explicitly in the request body or URL parameters instead of securely inferring it from the authenticated user's JWT session. This bypasses proper tenant isolation and could theoretically allow unauthorized access if a user supplies another user's ID.
 
@@ -111,7 +142,7 @@ The following endpoints need to be refactored to extract `req.user.id` via an `A
 
 _Note: For administrative workflows, an override option to pass a specific `userId` can be preserved (e.g. `GET /orders/reports/range?userId=xxx`), but standard user operations must default strictly to their own authenticated session context._
 
-### Security & Authorization Testing Gaps
+## Security & Authorization Testing Gaps
 
 While the project has an extensive testing plan, several critical security validation tests are currently skipped or unimplemented:
 
@@ -122,7 +153,7 @@ While the project has an extensive testing plan, several critical security valid
 
 ---
 
-## 🔮 Future Work
+## Ideas
 
 _These are suggestions for future enhancements, not currently planned on the active roadmap and require further consideration._
 
