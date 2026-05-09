@@ -34,7 +34,8 @@ export class UsersController {
     FileInterceptor('file', {
       storage: diskStorage({
         destination: (req, file, cb) => {
-          const uploadPath = join(__dirname, '..', '..', '..', 'frontend', 'public', 'images', 'avatars');
+          // process.cwd() is [root]/backend
+          const uploadPath = join(process.cwd(), 'uploads', 'avatars');
           if (!fs.existsSync(uploadPath)) {
             fs.mkdirSync(uploadPath, { recursive: true });
           }
@@ -60,7 +61,7 @@ export class UsersController {
     console.log('File Name:', file.filename);
     console.log('File Path:', file.path);
     
-    const avatarUrl = `/images/avatars/${file.filename}`;
+    const avatarUrl = `/uploads/avatars/${file.filename}`;
     try {
       const result = await this.usersService.updateAvatar(id, avatarUrl);
       console.log('Profile updated successfully');

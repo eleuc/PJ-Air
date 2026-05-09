@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function ProfilePage() {
-    const { user } = useAuth();
+    const { user, isLoading: isAuthLoading } = useAuth();
     const router = useRouter();
     const { t, locale } = useLanguage();
     const [isLoading, setIsLoading] = useState(true);
@@ -33,6 +33,8 @@ export default function ProfilePage() {
     const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
+        if (isAuthLoading) return;
+        
         if (!user) {
             router.push('/auth/login');
             return;
@@ -56,7 +58,7 @@ export default function ProfilePage() {
         };
 
         fetchUserData();
-    }, [user, router]);
+    }, [user, isAuthLoading, router]);
 
     const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -171,7 +173,7 @@ export default function ProfilePage() {
                                 >
                                     {profile?.avatar_url ? (
                                         <img 
-                                            src={profile.avatar_url} 
+                                            src={profile.avatar_url?.startsWith('http') || profile.avatar_url?.startsWith('data:') ? profile.avatar_url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${profile.avatar_url}`} 
                                             alt="Avatar" 
                                             className="w-full h-full object-cover"
                                         />
