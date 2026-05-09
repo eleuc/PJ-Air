@@ -9,7 +9,7 @@ module.exports = {
       watch: false,
       max_memory_restart: '1G',
       env_production: {
-        NODE_ENV: 'staging',
+        NODE_ENV: 'production',
         PORT: 3101,
         DATABASE_PATH: '../database-staging.sqlite',
         FRONTEND_URL: 'https://staging.jhoanes.com'
@@ -25,7 +25,7 @@ module.exports = {
       watch: false,
       max_memory_restart: '1G',
       env_production: {
-        NODE_ENV: 'staging',
+        NODE_ENV: 'production',
         PORT: 3100,
         NEXT_PUBLIC_API_URL: 'https://staging.jhoanes.com/api'
       }

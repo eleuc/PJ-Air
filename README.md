@@ -98,12 +98,41 @@ npx jest -t "should calculate product price"
 
 ## Future Work
 
-- Agregar fecha de entrega configurable en checkout.
+## Setup
+
+Setting up the application involves multiple complex stages, which aren't fully documented nor consistently located.
+The best approach is to implement all of these as scripts, rather than documenting the process, and then point users and admins to the necessary scripts at each stage.
+
+- **Install**: Involves cloning the repository and installing node dependencies.
+  - The dependency situation for scripts is not resolved.
+  - There are also SO MANY SCRIPTS EVERYWHERE. Probably most of them are useless, but the useful ones are still all over the place. Requires consolidation and cleanup.
+- **Build**: Both backend and frontend have to be built separately
+  - Frontend needs `NEXT_PUBLIC_API_URL` env configured in [frontend/.env.local] to point to the api host (undocumented)
+    - I think development DOES NOT need this. Very confusing.
+- **Deploy**: Configure nginx site, ensure certificates. Only for remote envionments, production and staging
+- **Start**: Start both frontend and backend servers, which run separately
+  - Backend may need [backend/.env] configured for some things (undocumented)
+  - Production and staging use pm2 with ecosystem configs
+  - Development simply launch them manually in the terminal (undocumented)
+  - Backend has `npm run start:prod` which sometimes is used but it's unclear when
+  - Both frontend and backend have `npm run start` that uses a different script than pm2. Inconsistent!
+- **Update**: Involves pulling changes, rebuilding, and restarting the pm2 processes. Likely also requires repeating install and deploy.
+- **Other Stages**: In the chaos, there are other steps necessary to run the application correctly that don't quite fit in the previous stages, although they should
+  - Seeding data
+  - Testing?
+  - Monitoring uptime is completely missing. It could be done from a user machine or from the server.
+
+There is a lot of important local configuration to setup, depending on the setup stage, environment, and binary (frontend/backend), and it's also not located consistently. These could be potentially generated as part of the setup process, but more importantly, properly consolidated with time.
+
+- pm2 ecosystem script
+- nginx site config
+- env variables (local and pm2 defined?)
 
 ## Issues
 
 Errores reportados en produccion:
 
+- Agregar fecha de entrega configurable en checkout.
 - Todo el programa mezcla ingles y español por tolao.
 - Recuperar Contraseña no funciona.
 - En profile/adresses/new, el mapa embedido muestra el mensaje "This page can't load Google Maps correctly.", pero el mapa si funciona

@@ -27,7 +27,7 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
         PORT: 3000,
-        NEXT_PUBLIC_API_URL: 'https://app.jhoanes.com:3001'
+        NEXT_PUBLIC_API_URL: 'https://app.jhoanes.com/api'
       }
     }
   ]
