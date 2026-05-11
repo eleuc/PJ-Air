@@ -120,14 +120,39 @@ describe('Orders Integration Tests', () => {
   });
 
   it('should maintain order history integrity (no cascading deletion) if a referenced product is deleted', async () => {
-    // Since we don't have Product entity imported to delete it, we just verify
-    // that the relation in OrderItem does not have onDelete: 'CASCADE' 
-    // which would drop the order items if a product is deleted.
-    const metadata = dataSource.getMetadata(OrderItem);
-    
-    const productRelation = metadata.relations.find(r => r.propertyName === 'product');
-    
-    expect(productRelation).toBeDefined();
-    expect(productRelation?.onDelete).not.toBe('CASCADE');
+    const productRepo = dataSource.getRepository(Product);
+    const orderRepo = dataSource.getRepository(Order);
+    const orderItemRepo = dataSource.getRepository(OrderItem);
+
+    // 1. Create a product
+    const product = await productRepo.save({
+      name: 'Integrity Test Product',
+      price: 25.0,
+      category: 'Cake',
+    });
+
+    // 2. Create an order
+    const order = await orderRepo.save({
+      id: 'integrity-order-id',
+      user_id: 'user-1',
+      total: 25.0,
+      status: 'pending',
+    });
+
+    // 3. Create an order item referencing the product
+    await orderItemRepo.save({
+      order_id: order.id,
+      product_id: product.id,
+      quantity: 1,
+      price_at_time: 25.0,
+    });
+
+    // 4. Try to delete the product directly, expecting a foreign key constraint violation
+    await expect(productRepo.delete(product.id)).rejects.toThrow(/SQLITE_CONSTRAINT|FOREIGN KEY/);
+
+    // 5. Verify the product is still safe and sound in the database
+    const preservedProduct = await productRepo.findOne({ where: { id: product.id } });
+    expect(preservedProduct).toBeDefined();
+    expect(preservedProduct?.name).toBe('Integrity Test Product');
   });
 });

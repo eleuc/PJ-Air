@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConflictException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ProductsService } from './products.service';
 import { Product } from './product.entity';
@@ -178,6 +179,18 @@ describe('ProductsService', () => {
       const result = await service.delete(999);
       expect(result).toBeNull();
       expect(mockProductRepository.remove).not.toHaveBeenCalled();
+    });
+
+    it('delete should throw ConflictException when product is associated with order history (foreign key constraint)', async () => {
+      const product = { id: 123, name: 'Tied Product' };
+      mockProductRepository.findOne.mockResolvedValue(product);
+
+      const dbError = new Error('SQLITE_CONSTRAINT: FOREIGN KEY constraint failed');
+      (dbError as any).code = 'SQLITE_CONSTRAINT';
+      mockProductRepository.remove.mockRejectedValueOnce(dbError);
+
+      await expect(service.delete(123)).rejects.toThrow(ConflictException);
+      expect(mockProductRepository.remove).toHaveBeenCalledWith(product);
     });
 
     it('updateCategory should update all products matching the old category name', async () => {
