@@ -7,6 +7,7 @@ import {
     CheckCircle2, X, MapPin, ShoppingBag, ChevronRight, Package, Clock, Edit, Truck, Trash2
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { API_URL } from '@/lib/config';
 
 interface Address { id: string; address: string; city: string; state?: string; zip_code?: string; country?: string; is_default?: boolean; }
 interface OrderItem { 
@@ -298,7 +299,7 @@ export default function AdminUsersPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 {u.profile?.avatar_url ? (
-                                                    <img src={u.profile.avatar_url?.startsWith('http') || u.profile.avatar_url?.startsWith('data:') ? u.profile.avatar_url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${u.profile.avatar_url}`} className="w-9 h-9 rounded-full object-cover" alt="" />
+                                                    <img src={u.profile.avatar_url?.startsWith('http') || u.profile.avatar_url?.startsWith('data:') ? u.profile.avatar_url : `${API_URL}${u.profile.avatar_url}`} className="w-9 h-9 rounded-full object-cover" alt="" />
                                                 ) : (
                                                     <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center"><User size={16} /></div>
                                                 )}
@@ -370,7 +371,7 @@ export default function AdminUsersPage() {
                         <div className="px-8 py-6 border-b border-border bg-muted/20 flex items-center justify-between shrink-0">
                             <div className="flex items-center gap-4">
                                 {selectedUser.profile?.avatar_url ? (
-                                    <img src={selectedUser.profile.avatar_url?.startsWith('http') || selectedUser.profile.avatar_url?.startsWith('data:') ? selectedUser.profile.avatar_url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${selectedUser.profile.avatar_url}`} className="w-12 h-12 rounded-full object-cover" alt="" />
+                                    <img src={selectedUser.profile.avatar_url?.startsWith('http') || selectedUser.profile.avatar_url?.startsWith('data:') ? selectedUser.profile.avatar_url : `${API_URL}${selectedUser.profile.avatar_url}`} className="w-12 h-12 rounded-full object-cover" alt="" />
                                 ) : (
                                     <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xl font-bold">
                                         {(selectedUser.profile?.full_name || selectedUser.email)?.[0]?.toUpperCase()}

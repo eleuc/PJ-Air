@@ -14,6 +14,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { api } from '@/lib/api';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { GOOGLE_MAPS_KEY } from '@/lib/config';
 
 const MIN_ORDER_AMOUNT = 500;
 
@@ -60,7 +61,7 @@ function InlineAddressForm({
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY || ''
+        googleMapsApiKey: GOOGLE_MAPS_KEY || ''
     });
 
     const [map, setMap] = useState<google.maps.Map | null>(null);

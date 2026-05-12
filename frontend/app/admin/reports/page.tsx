@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 import { 
+import { API_URL } from '@/lib/config';
     Calendar as CalendarIcon, 
     Printer, 
     Search, 
@@ -47,7 +48,7 @@ interface CategoryBlock {
 
 // ─── Inner Component (needs Suspense because of useSearchParams) ─────────────
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 
 const getProductionDate = (dateStr: string) => {
     if (!dateStr) return '';

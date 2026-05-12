@@ -8,6 +8,7 @@ import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
+import { GOOGLE_MAPS_KEY } from '@/lib/config';
 
 
 
@@ -46,7 +47,7 @@ function NewAddressContent() {
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY || ''
+        googleMapsApiKey: GOOGLE_MAPS_KEY || ''
     });
 
     const [map, setMap] = useState<google.maps.Map | null>(null);

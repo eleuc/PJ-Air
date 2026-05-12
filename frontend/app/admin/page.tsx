@@ -7,8 +7,9 @@ import { useRouter } from 'next/navigation';
 import { ShoppingBag, Layers, Users, TrendingUp, ArrowRight, Loader2, FileText, Calendar, ChevronRight } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
+import { API_URL } from '@/lib/config';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 
 export default function AdminDashboardPage() {
     const { t } = useLanguage();

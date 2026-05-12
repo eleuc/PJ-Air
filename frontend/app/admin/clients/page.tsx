@@ -8,6 +8,7 @@ import {
     ChevronLeft, ListFilter, Percent, Tag, DollarSign
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { API_URL } from '@/lib/config';
 
 interface Address { id: string; address: string; city: string; state?: string; zip_code?: string; country?: string; is_default?: boolean; }
 interface OrderItem { 
@@ -246,7 +247,7 @@ export default function AdminClientsPage() {
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-4">
                                             <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold text-lg shadow-inner">
-                                                {u.profile?.avatar_url ? <img src={u.profile.avatar_url?.startsWith('http') || u.profile.avatar_url?.startsWith('data:') ? u.profile.avatar_url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${u.profile.avatar_url}`} className="w-full h-full rounded-2xl object-cover" /> : (u.profile?.full_name || u.email || '?')[0].toUpperCase()}
+                                                {u.profile?.avatar_url ? <img src={u.profile.avatar_url?.startsWith('http') || u.profile.avatar_url?.startsWith('data:') ? u.profile.avatar_url : `${API_URL}${u.profile.avatar_url}`} className="w-full h-full rounded-2xl object-cover" /> : (u.profile?.full_name || u.email || '?')[0].toUpperCase()}
                                             </div>
                                             <div>
                                                 <p className="font-bold text-slate-900">{u.profile?.full_name || 'Sin Nombre'}</p>

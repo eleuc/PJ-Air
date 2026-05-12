@@ -14,6 +14,7 @@ import {
     LogIn, UserPlus, Lock, User as UserIcon, Loader2, Eye, EyeOff,
 } from 'lucide-react';
 import Link from 'next/link';
+import { API_URL } from '@/lib/config';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Login Modal — shown when user is not authenticated
@@ -204,7 +205,7 @@ function ProductCard({
                 style={{ aspectRatio: '1/1' }}
             >
                 <img
-                    src={product.image?.startsWith('http') ? product.image : `${process.env.NEXT_PUBLIC_API_URL}${product.image}`}
+                    src={product.image?.startsWith('http') ? product.image : `${API_URL}${product.image}`}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     onError={(e) => {

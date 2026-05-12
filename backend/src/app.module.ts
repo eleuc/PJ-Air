@@ -1,6 +1,6 @@
 import { Module, OnModuleInit, Logger } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DATABASE_PATH, NODE_ENV } from './config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -21,25 +21,12 @@ import { ProductDiscount } from './users/product-discount.entity';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const dbPath = configService.get<string>('DATABASE_PATH') || require('path').join(process.cwd(), 'database.sqlite');
-        const logger = new Logger('DatabaseModule');
-        logger.log(`Using SQLite database at: ${require('path').resolve(dbPath)}`);
-        
-        return {
-          type: 'sqlite',
-          database: dbPath,
-          entities: [Product, User, Profile, Address, Order, OrderItem, ProductDiscount],
-          synchronize: configService.get<string>('NODE_ENV') !== 'production',
-          logging: false,
-        };
-      },
+    TypeOrmModule.forRoot({
+      type: 'sqlite',
+      database: DATABASE_PATH,
+      entities: [Product, User, Profile, Address, Order, OrderItem, ProductDiscount],
+      synchronize: NODE_ENV !== 'production',
+      logging: false,
     }),
     UsersModule,
     ProductsModule,

@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Terminal, Github, Key, MapPin, Database, Zap, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { API_URL } from '@/lib/config';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 
 export default function DevTools() {
     const { user, profile, signOut } = useAuth();

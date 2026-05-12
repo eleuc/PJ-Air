@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, ConflictException, InternalServerErr
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
 import * as nodemailer from 'nodemailer';
+import { SITE_URL, SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS } from '../config';
 
 @Injectable()
 export class AuthService {
@@ -93,20 +94,20 @@ export class AuthService {
       );
     }
 
-    const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+    const siteUrl = SITE_URL;
 
     try {
       // SMTP configuration - use env vars if available, fallback to Ethereal for dev
       let transporterParams: any;
 
-      if (process.env.SMTP_HOST) {
+      if (SMTP_HOST) {
         transporterParams = {
-          host: process.env.SMTP_HOST,
-          port: parseInt(process.env.SMTP_PORT || '587'),
-          secure: process.env.SMTP_SECURE === 'true',
+          host: SMTP_HOST,
+          port: parseInt(SMTP_PORT),
+          secure: SMTP_SECURE,
           auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
+            user: SMTP_USER,
+            pass: SMTP_PASS,
           },
         };
       } else {
@@ -141,7 +142,7 @@ export class AuthService {
       }
 
       const info = await transporter.sendMail({
-        from: process.env.SMTP_USER ? `"Jhoanes Bakery, Order System" <${process.env.SMTP_USER}>` : '"Jhoanes Bakery, Order System" <noresponder@jhpanesbakery.com>',
+        from: SMTP_USER ? `"Jhoanes Bakery, Order System" <${SMTP_USER}>` : '"Jhoanes Bakery, Order System" <noresponder@jhpanesbakery.com>',
         to: user.email,
         subject: "Password Recovery",
         text: `Estimado cliente, su contraseña es: ${user.password}\n\nIr a la tienda: ${siteUrl}/auth/login`,

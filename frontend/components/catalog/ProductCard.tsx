@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Minus, Plus, ShoppingCart, Info, Check, Edit3 } from 'lucide-react';
 import { Product } from '@/lib/products';
 import { useLanguage } from '@/context/LanguageContext';
+import { API_URL } from '@/lib/config';
 
 interface ProductCardProps {
     product: Product;
@@ -41,7 +42,7 @@ export const ProductCard = ({
             {/* Image Section */}
             <Link href={`/catalog/${product.id}`} className="relative w-full mb-5 overflow-hidden rounded-[2.5rem] aspect-square bg-muted/30 flex items-center justify-center">
                 <img
-                    src={product.image?.startsWith('http') ? product.image : `${process.env.NEXT_PUBLIC_API_URL}${product.image}`}
+                    src={product.image?.startsWith('http') ? product.image : `${API_URL}${product.image}`}
                     alt={product.name}
                     className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                     onError={(e) => {

@@ -7,6 +7,7 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
+import { API_URL } from '@/lib/config';
 
 export default function Navbar() {
     const { getCartCount } = useCart();
@@ -55,7 +56,7 @@ export default function Navbar() {
                                             </Link>
                                             <Link href="/profile" className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary border border-primary/20 hover:bg-primary hover:text-white transition-all overflow-hidden">
                                                 {profile?.avatar_url ? (
-                                                    <img src={profile.avatar_url?.startsWith('http') || profile.avatar_url?.startsWith('data:') ? profile.avatar_url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${profile.avatar_url}`} alt="Avatar" className="w-full h-full object-cover" />
+                                                    <img src={profile.avatar_url?.startsWith('http') || profile.avatar_url?.startsWith('data:') ? profile.avatar_url : `${API_URL}${profile.avatar_url}`} alt="Avatar" className="w-full h-full object-cover" />
                                                 ) : (
                                                     <User size={20} />
                                                 )}

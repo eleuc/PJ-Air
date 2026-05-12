@@ -1,18 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { join, resolve } from 'path';
+import { resolve } from 'path';
+import { initialize, PORT, UPLOAD_PATH } from './config';
+
+try {
+    initialize();
+} catch (error: any) {
+    console.error(error.message);
+    process.exit(1);
+}
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors(); // Enable CORS for development
   
-  const uploadsPath = resolve(process.env.UPLOAD_PATH || 'uploads');
+  const uploadsPath = resolve(UPLOAD_PATH);
   console.log('UPLOADS PATH RESOLVED TO:', uploadsPath);
   app.useStaticAssets(uploadsPath, {
     prefix: '/uploads',
   });
 
-  await app.listen(process.env.PORT ?? 3001);
+  await app.listen(PORT);
 }
 bootstrap();

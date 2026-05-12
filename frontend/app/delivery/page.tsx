@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { API_URL } from '@/lib/config';
 
 interface OrderItem {
     id: string;
@@ -338,7 +339,7 @@ export default function DeliveryPage() {
                                         {selectedOrder.items?.map(item => (
                                             <div key={item.id} className="flex items-center gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
                                                 {item.product?.image ? (
-                                                    <img src={item.product.image?.startsWith('http') ? item.product.image : `${process.env.NEXT_PUBLIC_API_URL}${item.product.image}`} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt={item.product.name} />
+                                                    <img src={item.product.image?.startsWith('http') ? item.product.image : `${API_URL}${item.product.image}`} className="w-12 h-12 rounded-xl object-cover shadow-sm" alt={item.product.name} />
                                                 ) : (
                                                     <div className="w-12 h-12 bg-slate-200 rounded-xl flex items-center justify-center text-slate-400">
                                                         <Package size={20} />

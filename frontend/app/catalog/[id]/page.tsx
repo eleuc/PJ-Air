@@ -9,6 +9,7 @@ import { api } from '@/lib/api';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
+import { API_URL } from '@/lib/config';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
@@ -91,7 +92,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         <div className="jhoanes-card p-4 bg-white/50 backdrop-blur-md">
                             <div className="aspect-square rounded-[2rem] overflow-hidden bg-muted/30">
                                 <img 
-                                    src={product.image?.startsWith('http') ? product.image : `${process.env.NEXT_PUBLIC_API_URL}${product.image}`} 
+                                    src={product.image?.startsWith('http') ? product.image : `${API_URL}${product.image}`} 
                                     alt={product.name} 
                                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                                     onError={(e) => {

@@ -9,6 +9,7 @@ import {
     Plus, Minus, Trash2, CalendarDays, Printer
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { API_URL } from '@/lib/config';
 
 interface OrderItem {
     id: string;
@@ -608,7 +609,7 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                         <div key={item.id} className="flex gap-6 p-5 rounded-[2rem] bg-slate-50 group border border-transparent hover:border-slate-200 hover:bg-white hover:shadow-lg transition-all">
                                             <div className="relative shrink-0">
                                                 {item.product?.image ? (
-                                                    <img src={item.product.image?.startsWith('http') ? item.product.image : `${process.env.NEXT_PUBLIC_API_URL}${item.product.image}`} className="w-20 h-20 rounded-[1.5rem] object-cover shadow-md group-hover:scale-110 transition-transform duration-500" alt={item.product.name} />
+                                                    <img src={item.product.image?.startsWith('http') ? item.product.image : `${API_URL}${item.product.image}`} className="w-20 h-20 rounded-[1.5rem] object-cover shadow-md group-hover:scale-110 transition-transform duration-500" alt={item.product.name} />
                                                 ) : (
                                                     <div className="w-20 h-20 bg-slate-200 rounded-[1.5rem] flex items-center justify-center text-slate-400"><ShoppingBag size={32} /></div>
                                                 )}

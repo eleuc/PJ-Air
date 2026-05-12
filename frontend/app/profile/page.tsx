@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
+import { API_URL } from '@/lib/config';
 
 export default function ProfilePage() {
     const { user, isLoading: isAuthLoading } = useAuth();
@@ -69,7 +70,7 @@ export default function ProfilePage() {
         uploadData.append('file', file);
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/users/${user.id}/avatar`, {
+            const response = await fetch(`${API_URL}/users/${user.id}/avatar`, {
                 method: 'POST',
                 body: uploadData,
             });
@@ -173,7 +174,7 @@ export default function ProfilePage() {
                                 >
                                     {profile?.avatar_url ? (
                                         <img 
-                                            src={profile.avatar_url?.startsWith('http') || profile.avatar_url?.startsWith('data:') ? profile.avatar_url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${profile.avatar_url}`} 
+                                            src={profile.avatar_url?.startsWith('http') || profile.avatar_url?.startsWith('data:') ? profile.avatar_url : `${API_URL}${profile.avatar_url}`} 
                                             alt="Avatar" 
                                             className="w-full h-full object-cover"
                                         />
