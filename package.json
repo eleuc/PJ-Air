@@ -7,7 +7,7 @@
     "backend"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=frontend & npm run start:dev --workspace=backend",
+    "dev": "dotenv -e .env -- npm run dev --workspace=frontend & dotenv -e .env -- npm run start:dev --workspace=backend",
     "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
     "seed": "ts-node scripts/seed-admin.ts",
     "check-images": "node check-db-images.js",
@@ -19,6 +19,8 @@
     "ssh2": "^1.17.0"
   },
   "devDependencies": {
+    "cross-var": "^1.1.0",
+    "dotenv-cli": "^11.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   }

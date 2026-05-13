@@ -60,14 +60,10 @@ async function runAllTests() {
             if (fs.existsSync(from)) fs.renameSync(from, to);
         };
 
-        const frontendEnvLocal = path.join(FRONTEND_DIR, '.env.local');
-        const backendEnv = path.join(BACKEND_DIR, '.env');
         const rootEnv = path.join(ROOT_DIR, '.env');
 
         try {
-            // Hide all existing env files
-            renameIfExists(frontendEnvLocal, frontendEnvLocal + '.bak');
-            renameIfExists(backendEnv, backendEnv + '.bak');
+            // Hide existing env file
             renameIfExists(rootEnv, rootEnv + '.bak');
 
             // Test 1: Frontend fails without NEXT_PUBLIC_API_URL
@@ -75,7 +71,7 @@ async function runAllTests() {
                 'Frontend fails without NEXT_PUBLIC_API_URL',
                 'npm', ['run', 'dev'],
                 FRONTEND_DIR,
-                {}, // Empty env overrides
+                { FRONTEND_PORT: '3000' }, // Provide fallback since .env is hidden and cross-var doesn't support fallback
                 1
             );
 
@@ -93,7 +89,7 @@ async function runAllTests() {
                 'Frontend starts with NEXT_PUBLIC_API_URL',
                 'npm', ['run', 'dev'],
                 FRONTEND_DIR,
-                { NEXT_PUBLIC_API_URL: 'http://localhost:3001' },
+                { NEXT_PUBLIC_API_URL: 'http://localhost:3001', FRONTEND_PORT: '3000' },
                 0 // Expect it to stay alive
             );
 
@@ -109,9 +105,7 @@ async function runAllTests() {
             console.log('\n🎉 All configuration tests passed successfully!');
             process.exit(0);
         } finally {
-            // Restore all existing env files
-            renameIfExists(frontendEnvLocal + '.bak', frontendEnvLocal);
-            renameIfExists(backendEnv + '.bak', backendEnv);
+            // Restore env file
             renameIfExists(rootEnv + '.bak', rootEnv);
         }
     } catch (err) {

@@ -14,7 +14,7 @@ if (fs.existsSync(envPath)) {
 }
 
 // Sane Defaults
-export const PORT = process.env.PORT || '3001';
+export const PORT = process.env.BACKEND_PORT || '3001';
 export const UPLOAD_PATH = process.env.UPLOAD_PATH || 'uploads';
 
 // Simple Exports

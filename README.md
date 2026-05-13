@@ -21,6 +21,60 @@ This repository is split into two main directory workspaces:
 
 Ensure you have Node.js installed on your machine. Both `frontend` and `backend` directories contain their respective `package.json` with dependency lists.
 
+#### 🪟 Windows Compatibility (Native Dependency Compilation)
+
+If you are running on Windows and encounter errors compiling native C++ dependencies (like `better-sqlite3` or `sqlite3`), it is because `node-gyp` requires Python and Visual C++ compiler workloads to compile from source.
+
+You can install these easily using **Windows Package Manager (`winget`)** from an elevated **Administrator PowerShell** window:
+
+1. **Install Python**:
+
+   ```powershell
+   winget install -e --id Python.Python.3.11
+   ```
+
+2. **Install VS Build Tools (C++ Workload)**:
+
+   ```powershell
+   winget install -e --id Microsoft.VisualStudio.2022.BuildTools --override "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.Windows11SDK.22621 --passive"
+   ```
+
+3. **Restart your Terminal & IDE** to reload your environment variables.
+
+4. **(Optional)** If npm still fails to find Python, link it manually:
+   ```powershell
+   npm config set python "C:\Program Files\Python311\python.exe"
+   ```
+
+_Note: I tried this fix and did not work, stopped seeing this error by ignoring npm scripts, but for new installations with this issue, update this section with the complete fix._
+
+### ⚙️ Configuration & Environment Variables
+
+This project uses a unified configuration model to manage environment variables across both frontend and backend workspaces.
+
+1. **Centralized Root `.env`**: All configurations are housed in a single `.env` file located in the root of the repository. No local environment files should be committed in sub-directories.
+2. **Generating/Synchronizing Configuration (`update-env`)**:
+   We provide a utility script to merge local environment parameters and automatically inject overrides for remote environments:
+   * **Local Development (Default)**:
+     ```bash
+     npm run update-env
+     ```
+   * **Staging Server Overrides**:
+     ```bash
+     npm run update-env -- --staging
+     ```
+   * **Production Server Overrides**:
+     ```bash
+     npm run update-env -- --prod
+     ```
+3. **Ports Decoupling**:
+   * **Backend**: Bound to `BACKEND_PORT` (defaults to `3001`).
+   * **Frontend**: Bound to `FRONTEND_PORT` (defaults to `3000`), managed using `cross-var` inside `frontend/package.json` for cross-platform expansion.
+4. **Local Startup**:
+   Running `npm run dev` at the root automatically wraps the child execution using `dotenv-cli` to feed the root `.env` values directly into the workspace processes.
+
+---
+
 ### 2. Start the Development Environment
 
 Follow these steps to clean ports and spin up both servers locally:
