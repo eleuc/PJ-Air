@@ -103,7 +103,6 @@ async function runAllTests() {
             );
 
             console.log('\n🎉 All configuration tests passed successfully!');
-            process.exit(0);
         } finally {
             // Restore env file
             renameIfExists(rootEnv + '.bak', rootEnv);

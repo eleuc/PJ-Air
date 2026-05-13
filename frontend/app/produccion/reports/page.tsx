@@ -4,8 +4,8 @@ import { Suspense, useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import ProduccionSidebar from '@/components/layout/ProduccionSidebar';
-import { 
 import { API_URL } from '@/lib/config';
+import { 
     Calendar as CalendarIcon, 
     Printer, 
     Search, 
