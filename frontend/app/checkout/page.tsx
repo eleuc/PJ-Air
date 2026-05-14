@@ -291,8 +291,10 @@ export default function CheckoutPage() {
     const router = useRouter();
 
     const [deliveryDate, setDeliveryDate] = useState('');
+    const [minDeliveryDate, setMinDeliveryDate] = useState('');
     const [paymentDate, setPaymentDate] = useState('');
     const [isBeforeCutoff, setIsBeforeCutoff] = useState(true);
+    const [dateError, setDateError] = useState<string | null>(null);
     const [showMinAmountModal, setShowMinAmountModal] = useState(false);
 
     const [addresses, setAddresses] = useState<any[]>([]);
@@ -346,16 +348,51 @@ export default function CheckoutPage() {
         const daysToAdd = before ? 2 : 3;
         const delDate = new Date(nowNY);
         delDate.setDate(nowNY.getDate() + daysToAdd);
+
+        const formatDateForInput = (date: Date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+        const formatDateForDisplay = (date: Date) => date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
+
+        const minDateStr = formatDateForInput(delDate);
+        setMinDeliveryDate(minDateStr);
+        setDeliveryDate(minDateStr);
+        setIsBeforeCutoff(before);
+
         const payDate = new Date(delDate);
         payDate.setDate(delDate.getDate() + 6);
-        setIsBeforeCutoff(before);
-        setDeliveryDate(delDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' }));
-        setPaymentDate(payDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' }));
+        setPaymentDate(formatDateForDisplay(payDate));
     }, []);
+
+    // ── Delivery date handler ───────────────────────────────────────────
+    const handleDeliveryDateChange = (newDate: string) => {
+        setDeliveryDate(newDate);
+        
+        if (newDate < minDeliveryDate) {
+            setDateError(locale === 'en' ? 'Please select a date after the minimum allowed delivery date.' : 'Por favor selecciona una fecha posterior a la fecha mínima de entrega.');
+            return;
+        }
+        setDateError(null);
+
+        const [year, month, day] = newDate.split('-').map(Number);
+        const selectedDate = new Date(year, month - 1, day);
+        const payDate = new Date(selectedDate);
+        payDate.setDate(selectedDate.getDate() + 6);
+        
+        setPaymentDate(payDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' }));
+    };
 
     // ── Submit ────────────────────────────────────────────────────────────────
     const handleSubmit = async () => {
         if (!user || cart.length === 0) return;
+
+        if (dateError || !deliveryDate) {
+            alert(dateError || (locale === 'en' ? 'Please select a delivery date.' : 'Por favor selecciona una fecha de entrega.'));
+            return;
+        }
 
         // Minimum order amount check ($500)
         if (finalTotal < MIN_ORDER_AMOUNT) {
@@ -408,7 +445,10 @@ export default function CheckoutPage() {
                 deliveryAddressText,
                 total: finalTotal,
                 status: 'Pedido Enviado',
-                deliveryDate,
+                deliveryDate: (() => {
+                    const [year, month, day] = deliveryDate.split('-').map(Number);
+                    return new Date(year, month - 1, day).toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
+                })(),
                 paymentDueDate: paymentDate,
                 items: cart.map(item => {
                     let unitPrice = item.originalPrice || item.price;
@@ -616,17 +656,39 @@ export default function CheckoutPage() {
                                         <h3 className="text-xl font-bold text-white mb-3">
                                             {lbl('Fecha de Entrega Estimada', 'Estimated Delivery Date')}
                                         </h3>
-                                        <div className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full mb-3 ${
-                                            isBeforeCutoff
-                                                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                                : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                                        }`}>
-                                            <Clock size={12} />
-                                            {isBeforeCutoff
-                                                ? lbl('Pedido antes de la 1:00 PM hora NY → entrega en 2 días', 'Order before 1:00 PM NY → delivery in 2 days')
-                                                : lbl('Pedido después de la 1:00 PM hora NY → entrega en 3 días', 'Order after 1:00 PM NY → delivery in 3 days')}
-                                        </div>
-                                        <p className="text-3xl font-black text-white capitalize">{deliveryDate}</p>
+                                         <div className="flex flex-col items-start gap-4">
+                                             <div className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full mb-3 ${
+                                                 isBeforeCutoff
+                                                     ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                                     : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                                             }`}>
+                                                 <Clock size={12} />
+                                                 {isBeforeCutoff
+                                                     ? lbl('Pedido antes de la 1:00 PM hora NY → entrega en 2 días', 'Order before 1:00 PM NY → delivery in 2 days')
+                                                     : lbl('Pedido después de la 1:00 PM hora NY → entrega en 3 días', 'Order after 1:00 PM NY → delivery in 3 days')}
+                                             </div>
+                                             <div className="w-full max-w-md">
+                                                 <div className="relative group">
+                                                     <input 
+                                                         type="date" 
+                                                         value={deliveryDate} 
+                                                         min={minDeliveryDate} 
+                                                         onChange={e => handleDeliveryDateChange(e.target.value)}
+                                                         className={`block w-full bg-white/10 text-3xl font-black text-white capitalize outline-none cursor-pointer border-b-2 transition-all p-2 ${
+                                                             dateError ? 'border-red-500 focus:border-red-600' : 'border-white/20 focus:border-primary'
+                                                         }`}
+                                                     />
+                                                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+                                                         <Calendar size={20} className="text-white" />
+                                                     </div>
+                                                 </div>
+                                                 {dateError && (
+                                                     <p className="text-red-400 text-[10px] font-bold uppercase tracking-widest mt-2 flex items-center gap-1.5">
+                                                         <AlertCircle size={12} /> {dateError}
+                                                     </p>
+                                                 )}
+                                             </div>
+                                         </div>
                                         <p className="text-xs text-white/40 mt-3 leading-relaxed">
                                             {lbl(
                                                 'Pedidos recibidos antes de la 1:00 PM (hora Nueva York) se entregan en 2 días. Pedidos recibidos a partir de la 1:00 PM se entregan en 3 días.',
@@ -649,7 +711,27 @@ export default function CheckoutPage() {
                                         <h3 className="text-xl font-bold text-white mb-1">
                                             {lbl('Fecha de Disponibilidad Estimada', 'Estimated Ready Date')}
                                         </h3>
-                                        <p className="text-3xl font-black text-white capitalize">{deliveryDate}</p>
+                                         <div className="w-full max-w-md">
+                                             <div className="relative group">
+                                                 <input 
+                                                     type="date" 
+                                                     value={deliveryDate} 
+                                                     min={minDeliveryDate} 
+                                                     onChange={e => handleDeliveryDateChange(e.target.value)}
+                                                     className={`block w-full bg-white/10 text-3xl font-black text-white capitalize outline-none cursor-pointer border-b-2 transition-all p-2 ${
+                                                         dateError ? 'border-red-500 focus:border-red-600' : 'border-white/20 focus:border-primary'
+                                                     }`}
+                                                 />
+                                                 <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+                                                     <Calendar size={20} className="text-white" />
+                                                 </div>
+                                             </div>
+                                             {dateError && (
+                                                 <p className="text-red-400 text-[10px] font-bold uppercase tracking-widest mt-2 flex items-center gap-1.5">
+                                                     <AlertCircle size={12} /> {dateError}
+                                                 </p>
+                                             )}
+                                         </div>
                                         <p className="text-xs text-white/40 mt-2">
                                             {lbl('Tu pedido estará listo para recoger en tienda.', 'Your order will be ready for pickup at our store.')}
                                         </p>

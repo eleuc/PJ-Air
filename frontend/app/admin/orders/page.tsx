@@ -255,6 +255,12 @@ export default function AdminOrdersPage() {
             return `${idx > 0 ? '<tr style="height:6px"><td colspan="2" style="border:none"></td></tr>' : ''}<tr class="cat"><td colspan="2">${cat}</td></tr>${rows}`;
         }).join('');
         const fecha = new Date(order.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        let fechaEntrega = '';
+        if (order.delivery_date) {
+            const date = new Date(order.delivery_date);
+            date.setFullYear(new Date().getFullYear());
+            fechaEntrega = date.toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
         const clientName = order.user?.profile?.full_name || 'Anónimo';
         const clientPhone = order.user?.profile?.phone || '';
         const addr = order.address?.address || '';
@@ -299,6 +305,7 @@ ${clientPhone ? `<div><span class="lb">Tel:</span><span>${clientPhone}</span></d
 <div><span class="lb">Entrega:</span><span>${deliveryLabel}</span></div>
 ${addressInfo ? `<div><span class="lb">${deliveryLabel}:</span><span>${addressInfo}</span></div>` : ''}
 <div><span class="lb">Estado:</span><span>${order.status}</span></div>
+${fechaEntrega ? `<div><span class="lb">Fecha de Entrega:</span><span>${fechaEntrega}</span></div>` : ''}
 </div>
 <table><thead><tr><th>Producto</th><th style="text-align:right">Cant</th></tr></thead><tbody>${categoryRows}</tbody></table>
 <div style="border-top:1px solid #333; margin-top:7px; padding-top:4px; text-align:right; font-weight:bold; font-size:11px">
