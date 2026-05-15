@@ -5,6 +5,14 @@ import { AppModule } from '../src/app.module';
 
 describe('Role-Based Access Guard (e2e)', () => {
   let app: INestApplication;
+  let standardUserToken: string;
+
+  const standardUser = {
+    email: `std_user_${Date.now()}@example.com`,
+    password: 'Password123!',
+    full_name: 'Standard User',
+    username: `stduser_${Date.now()}`
+  };
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -13,13 +21,30 @@ describe('Role-Based Access Guard (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+
+    // 1. Signup a standard user
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send(standardUser)
+      .expect(201);
+
+    // 2. Login to get a valid token
+    const loginRes = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: standardUser.email,
+        password: standardUser.password
+      })
+      .expect(201);
+
+    standardUserToken = loginRes.body.session.access_token;
   });
 
   afterAll(async () => {
     await app.close();
   });
 
-  it.skip('should return 403 Forbidden when a standard user attempts to access admin product endpoints', async () => {
+  it('should return 403 Forbidden when a standard user attempts to access admin product endpoints', async () => {
     const response = await request(app.getHttpServer())
       .post('/products')
       .send({
@@ -29,19 +54,17 @@ describe('Role-Based Access Guard (e2e)', () => {
         category: 'e2e-category',
         stock: 50
       })
-      .set('Authorization', 'Bearer standard-user-token');
+      .set('Authorization', `Bearer ${standardUserToken}`);
       
-    // Expect 403 if roles guard is implemented correctly
-    expect([403]).toContain(response.status);
+    expect(response.status).toBe(403);
   });
 
-  it.skip('should return 403 Forbidden when a standard user attempts to access admin user management endpoints', async () => {
+  it('should return 403 Forbidden when a standard user attempts to access admin user management endpoints', async () => {
     const response = await request(app.getHttpServer())
-      .patch('/users/1/role')
+      .patch('/users/some-uuid/role')
       .send({ role: 'admin' })
-      .set('Authorization', 'Bearer standard-user-token');
+      .set('Authorization', `Bearer ${standardUserToken}`);
       
-    // Expect 403 if roles guard is implemented correctly
-    expect([403]).toContain(response.status);
+    expect(response.status).toBe(403);
   });
 });

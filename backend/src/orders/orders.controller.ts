@@ -1,7 +1,11 @@
-import { Controller, Post, Get, Body, Param, Patch, Query } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Patch, Query, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
@@ -12,6 +16,7 @@ export class OrdersController {
   }
 
   @Get()
+  @Roles('admin')
   async findAll() {
     return this.ordersService.findAll();
   }
@@ -22,6 +27,7 @@ export class OrdersController {
   }
 
   @Get('reports/range')
+  @Roles('admin')
   async findInRange(
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
@@ -36,16 +42,19 @@ export class OrdersController {
   }
 
   @Patch(':id/status')
+  @Roles('admin')
   async updateStatus(@Param('id') id: string, @Body('status') status: string) {
     return this.ordersService.updateStatus(id, status);
   }
 
   @Patch(':id/assign')
+  @Roles('admin')
   async assignDelivery(@Param('id') id: string, @Body('deliveryUserId') deliveryUserId: string) {
     return this.ordersService.assignDelivery(id, deliveryUserId);
   }
 
   @Patch(':id')
+  @Roles('admin')
   async update(@Param('id') id: string, @Body() body: any) {
     return this.ordersService.update(id, body);
   }

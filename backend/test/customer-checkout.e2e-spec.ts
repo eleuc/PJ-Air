@@ -2,9 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { UsersService } from './../src/users/users.service';
 
 describe('Customer Checkout Flow (e2e)', () => {
   let app: INestApplication;
+
+  let jwtToken: string;
+  let adminToken: string;
+  let anotherUserJwtToken: string;
+  let currentUserId: string;
+  let anotherUserId: string;
+  let addressId: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -13,6 +21,31 @@ describe('Customer Checkout Flow (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+
+    // Setup an admin user for product creation
+    const adminUser = {
+      email: `admin_${Date.now()}@test.com`,
+      password: 'AdminPassword123!',
+      full_name: 'Admin User',
+      username: `admin_${Date.now()}`
+    };
+
+    await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send(adminUser)
+      .expect(201);
+
+    // Promote to admin using the service directly (bypass RBAC for setup)
+    const usersService = moduleFixture.get<UsersService>(UsersService);
+    const user = await usersService.findByEmail(adminUser.email);
+    await usersService.updateRole(user.id, 'admin');
+
+    const adminLogin = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: adminUser.email, password: adminUser.password })
+      .expect(201);
+    
+    adminToken = adminLogin.body.session.access_token;
   });
 
   afterAll(async () => {
@@ -39,12 +72,6 @@ describe('Customer Checkout Flow (e2e)', () => {
       { productId: 1, quantity: 2, price: 50.0 }
     ]
   };
-
-  let jwtToken: string;
-  let anotherUserJwtToken: string;
-  let currentUserId: string;
-  let anotherUserId: string;
-  let addressId: string;
 
   it('should successfully register a new user', async () => {
     const res = await request(app.getHttpServer())
@@ -177,6 +204,7 @@ describe('Customer Checkout Flow (e2e)', () => {
     // 0. Create a test product to satisfy foreign key constraints
     const productRes = await request(app.getHttpServer())
       .post('/products')
+      .set('Authorization', `Bearer ${adminToken}`)
       .send({
         name: 'E2E Checkout Product',
         name_en: 'E2E Checkout Product EN',

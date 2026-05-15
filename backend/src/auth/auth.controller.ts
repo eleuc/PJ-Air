@@ -1,4 +1,5 @@
-import { Controller, Post, Body, UnauthorizedException, BadRequestException, Patch } from '@nestjs/common';
+import { Controller, Post, Body, UnauthorizedException, BadRequestException, Patch, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -41,6 +42,7 @@ export class AuthController {
   }
 
   @Patch('change-password')
+  @UseGuards(AuthGuard('jwt'))
   async changePassword(@Body() body: any) {
     const { userId, currentPassword, newPassword } = body;
     if (!userId || !currentPassword || !newPassword) {

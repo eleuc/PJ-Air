@@ -1,7 +1,12 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { DevtoolsService } from './devtools.service';
 
 @Controller('devtools')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('admin')
 export class DevtoolsController {
   constructor(private devtoolsService: DevtoolsService) {}
 

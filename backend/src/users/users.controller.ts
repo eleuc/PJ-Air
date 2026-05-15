@@ -1,4 +1,7 @@
-import { Controller, Get, Patch, Post, Param, Body, NotFoundException, UseInterceptors, UploadedFile, BadRequestException, Delete } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Param, Body, NotFoundException, UseInterceptors, UploadedFile, BadRequestException, Delete, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -6,10 +9,12 @@ import { extname, join } from 'path';
 import * as fs from 'fs';
 
 @Controller('users')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @Roles('admin')
   async findAll() {
     return this.usersService.findAll();
   }
@@ -25,6 +30,7 @@ export class UsersController {
   }
 
   @Patch(':id/role')
+  @Roles('admin')
   async updateRole(@Param('id') id: string, @Body() body: { role: string }) {
     return this.usersService.updateRole(id, body.role);
   }
@@ -73,11 +79,13 @@ export class UsersController {
   }
 
   @Patch(':id/general-discount')
+  @Roles('admin')
   async updateGeneralDiscount(@Param('id') id: string, @Body() body: { discount: number }) {
     return this.usersService.updateGeneralDiscount(id, body.discount);
   }
 
   @Patch(':id/delivery-fee')
+  @Roles('admin')
   async updateDeliveryFee(@Param('id') id: string, @Body() body: { fee: number }) {
     return this.usersService.updateDeliveryFee(id, body.fee);
   }
@@ -88,6 +96,7 @@ export class UsersController {
   }
 
   @Post(':id/product-discounts')
+  @Roles('admin')
   async setProductDiscount(@Param('id') id: string, @Body() body: { productId: number; discount_percentage?: number; special_price?: number }) {
     return this.usersService.setProductDiscount(id, body.productId, {
       discount_percentage: body.discount_percentage,
@@ -96,6 +105,7 @@ export class UsersController {
   }
 
   @Delete('product-discounts/:discountId')
+  @Roles('admin')
   async deleteProductDiscount(@Param('discountId') discountId: string) {
     return this.usersService.deleteProductDiscount(discountId);
   }

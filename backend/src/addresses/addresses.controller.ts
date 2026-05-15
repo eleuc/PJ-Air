@@ -1,7 +1,9 @@
-import { Controller, Post, Body, Get, Param, Delete, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Delete, Patch, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { AddressesService } from './addresses.service';
 
 @Controller('addresses')
+@UseGuards(AuthGuard('jwt'))
 export class AddressesController {
   constructor(private readonly addressesService: AddressesService) {}
 
