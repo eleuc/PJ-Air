@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { UnauthorizedException, ConflictException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import * as bcrypt from 'bcryptjs';
 
 jest.mock('nodemailer');
 
@@ -12,8 +13,7 @@ describe('AuthService', () => {
 
   const mockUsersService = {
     findByEmail: jest.fn(),
-    findByIdentifier: jest.fn(),
-    findByEmailWithRole: jest.fn(),
+    findForAuth: jest.fn(),
     create: jest.fn(),
     createProfile: jest.fn(),
     findOne: jest.fn(),
@@ -57,13 +57,13 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should throw UnauthorizedException for invalid credentials', async () => {
-      mockUsersService.findByEmailWithRole.mockResolvedValue(null);
-      mockUsersService.findByIdentifier.mockResolvedValue(null);
+      mockUsersService.findForAuth.mockResolvedValue(null);
       await expect(service.login('test@example.com', 'wrongpassword')).rejects.toThrow(UnauthorizedException);
     });
 
     it('should return session on successful login', async () => {
-      mockUsersService.findByEmailWithRole.mockResolvedValue({ id: '1', email: 'test@example.com', password: 'password' });
+      const hashedPassword = bcrypt.hashSync('password', 10);
+      mockUsersService.findForAuth.mockResolvedValue({ id: '1', email: 'test@example.com', password: hashedPassword });
       const result = await service.login('test@example.com', 'password');
       expect(result).toHaveProperty('session');
       expect(result.session.access_token).toContain('local-test-token-1');
@@ -72,13 +72,12 @@ describe('AuthService', () => {
 
   describe('recoverPassword', () => {
     it('should throw UnauthorizedException if user not found', async () => {
-      mockUsersService.findByEmail.mockResolvedValue(null);
-      mockUsersService.findByIdentifier.mockResolvedValue(null);
+      mockUsersService.findForAuth.mockResolvedValue(null);
       await expect(service.recoverPassword('test@example.com')).rejects.toThrow(UnauthorizedException);
     });
 
     it('should trigger recovery email with correct context', async () => {
-      mockUsersService.findByEmail.mockResolvedValue({ id: '1', email: 'test@example.com', password: 'mypassword' });
+      mockUsersService.findForAuth.mockResolvedValue({ id: '1', email: 'test@example.com', password: 'mypassword' });
       
       const mockSendMail = jest.fn().mockResolvedValue({ messageId: '123' });
       const mockVerify = jest.fn().mockResolvedValue(true);
@@ -89,22 +88,64 @@ describe('AuthService', () => {
 
       const result = await service.recoverPassword('test@example.com');
       expect(mockSendMail).toHaveBeenCalled();
-      expect(mockSendMail.mock.calls[0][0].text).toContain('mypassword');
+      expect(mockSendMail.mock.calls[0][0].text).toContain('reset-password?token=');
       expect(result).toHaveProperty('message');
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('should throw UnauthorizedException if token is invalid', async () => {
+      await expect(service.resetPassword('invalid_token', 'newpassword')).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should update password with valid token', async () => {
+      mockUsersService.findForAuth.mockResolvedValue({ id: '1', email: 'test@example.com', password: 'mypassword' });
+      
+      const mockSendMail = jest.fn().mockResolvedValue({ messageId: '123' });
+      (nodemailer.createTransport as jest.Mock).mockReturnValue({
+        verify: jest.fn().mockResolvedValue(true),
+        sendMail: mockSendMail,
+      });
+
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'test';
+      
+      const recoverResult = await service.recoverPassword('test@example.com');
+      const token = (recoverResult as any).resetToken;
+      
+      process.env.NODE_ENV = originalEnv;
+      
+      expect(token).toBeDefined();
+
+      mockUsersService.updatePassword.mockResolvedValue(true);
+      const resetResult = await service.resetPassword(token, 'newpassword');
+      
+      expect(mockUsersService.updatePassword).toHaveBeenCalledWith('1', expect.any(String));
+      expect(resetResult).toEqual({ message: 'Password has been successfully reset' });
     });
   });
 
   describe('changePassword', () => {
     it('should throw UnauthorizedException if current password is wrong', async () => {
-      mockUsersService.findOne.mockResolvedValue({ id: '1', password: 'oldpassword' });
+      const oldHashedPassword = bcrypt.hashSync('oldpassword', 10);
+      mockUsersService.findForAuth.mockResolvedValue({ id: '1', password: oldHashedPassword });
       await expect(service.changePassword('1', 'wrongpassword', 'newpassword')).rejects.toThrow(UnauthorizedException);
     });
 
     it('should update password and return success message', async () => {
-      mockUsersService.findOne.mockResolvedValue({ id: '1', password: 'oldpassword' });
+      const oldHashedPassword = bcrypt.hashSync('oldpassword', 10);
+      mockUsersService.findForAuth.mockResolvedValue({ id: '1', password: oldHashedPassword });
       mockUsersService.updatePassword.mockResolvedValue(true);
+      
       const result = await service.changePassword('1', 'oldpassword', 'newpassword');
-      expect(mockUsersService.updatePassword).toHaveBeenCalledWith('1', 'newpassword');
+      
+      // We expect the service to call updatePassword with a new hash
+      expect(mockUsersService.updatePassword).toHaveBeenCalledWith('1', expect.any(String));
+      
+      // We can also verify it's a valid bcrypt hash
+      const passedHash = mockUsersService.updatePassword.mock.calls[0][1];
+      expect(bcrypt.compareSync('newpassword', passedHash)).toBe(true);
+      
       expect(result).toEqual({ message: 'Password updated successfully' });
     });
   });

@@ -44,22 +44,30 @@ export class UsersService {
   async findByEmail(email: string): Promise<User | null> {
     return this.userRepository.findOne({ 
       where: { email },
-      select: ['id', 'email', 'password', 'role'],
       relations: ['profile']
     });
   }
 
-  async findByIdentifier(identifier: string): Promise<User | null> {
-    // Check email
-    const userByEmail = await this.findByEmail(identifier);
-    if (userByEmail) return userByEmail;
+  async findForAuth(criteria: { id?: string; identifier?: string }): Promise<User | null> {
+    const select = ['id', 'email', 'password', 'role'] as any;
+    const relations = ['profile'];
 
-    // Check username
-    return this.userRepository.findOne({
-      where: { profile: { username: identifier } },
-      select: ['id', 'email', 'password', 'role'],
-      relations: ['profile']
-    });
+    if (criteria.id) {
+      return this.userRepository.findOne({ where: { id: criteria.id }, select, relations });
+    }
+
+    if (criteria.identifier) {
+      const userByEmail = await this.userRepository.findOne({ where: { email: criteria.identifier }, select, relations });
+      if (userByEmail) return userByEmail;
+
+      return this.userRepository.findOne({
+        where: { profile: { username: criteria.identifier } },
+        select,
+        relations
+      });
+    }
+
+    return null;
   }
 
   async create(userData: any): Promise<User> {
@@ -89,14 +97,6 @@ export class UsersService {
     user.role = role;
     const result = await this.userRepository.save(user);
     return Array.isArray(result) ? result[0] : result;
-  }
-
-  async findByEmailWithRole(email: string): Promise<User | null> {
-    return this.userRepository.findOne({ 
-      where: { email },
-      select: ['id', 'email', 'password', 'role'],
-      relations: ['profile']
-    });
   }
 
   async updatePassword(userId: string, newPassword: string): Promise<void> {

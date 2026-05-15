@@ -2,9 +2,13 @@ import { Injectable, UnauthorizedException, ConflictException, InternalServerErr
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
 import * as nodemailer from 'nodemailer';
+import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
+  private resetTokens = new Map<string, { userId: string; expiresAt: number }>();
+
   constructor(private usersService: UsersService) {}
 
   async signup(body: any) {
@@ -13,10 +17,16 @@ export class AuthService {
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) throw new ConflictException('Email already registered');
 
+    if (password && password.length > 72) {
+      throw new ConflictException('Password is too long (maximum 72 characters)');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Create user
     const userResult = await this.usersService.create({
       email,
-      password,
+      password: hashedPassword,
     });
     const user = Array.isArray(userResult) ? userResult[0] : userResult;
 
@@ -53,11 +63,19 @@ export class AuthService {
   async login(identifierInput: string, password: string) {
     const identifier = identifierInput.trim().toLowerCase();
     
-    // Search by email or find by username
-    const user = await this.usersService.findByEmailWithRole(identifier) ||
-                 await this.usersService.findByIdentifier(identifier);
+    const user = await this.usersService.findForAuth({ identifier });
     
-    if (!user || (user as any).password !== password) {
+    if (!user) {
+      throw new UnauthorizedException('Invalid login credentials');
+    }
+
+    const userPassword = (user as any).password;
+    let isPasswordValid = false;
+    if (password && userPassword) {
+      isPasswordValid = await bcrypt.compare(password, userPassword);
+    }
+
+    if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid login credentials');
     }
 
@@ -84,8 +102,7 @@ export class AuthService {
   }
 
   async recoverPassword(identifier: string) {
-    const user = await this.usersService.findByEmail(identifier) ||
-                 await this.usersService.findByIdentifier(identifier);
+    const user = await this.usersService.findForAuth({ identifier });
                  
     if (!user) {
       throw new UnauthorizedException(
@@ -96,6 +113,14 @@ export class AuthService {
     const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
 
     try {
+      // Generate a secure reset token (15 min expiration)
+      const plainToken = crypto.randomBytes(32).toString('hex');
+      const hashedToken = crypto.createHash('sha256').update(plainToken).digest('hex');
+      this.resetTokens.set(hashedToken, {
+        userId: user.id,
+        expiresAt: Date.now() + 15 * 60 * 1000,
+      });
+
       // SMTP configuration - use env vars if available, fallback to Ethereal for dev
       let transporterParams: any;
 
@@ -144,11 +169,12 @@ export class AuthService {
         from: process.env.SMTP_USER ? `"Jhoanes Bakery, Order System" <${process.env.SMTP_USER}>` : '"Jhoanes Bakery, Order System" <noresponder@jhpanesbakery.com>',
         to: user.email,
         subject: "Password Recovery",
-        text: `Estimado cliente, su contraseña es: ${user.password}\n\nIr a la tienda: ${siteUrl}/auth/login`,
+        text: `Estimado cliente, para restablecer su contraseña use el siguiente enlace: ${siteUrl}/auth/reset-password?token=${plainToken}\n\nIr a la tienda: ${siteUrl}/auth/login`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h2 style="color: #333;">Password Recovery</h2>
-            <p>Estimado cliente, su contraseña es: <strong>${user.password}</strong></p>
+            <p>Estimado cliente, para restablecer su contraseña, haga clic en el siguiente enlace:</p>
+            <p><a href="${siteUrl}/auth/reset-password?token=${plainToken}">${siteUrl}/auth/reset-password?token=${plainToken}</a></p>
             <br/>
             <p>
               <a href="${siteUrl}/auth/login" 
@@ -162,10 +188,14 @@ export class AuthService {
       console.log("Message sent: %s", info.messageId);
       console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info as any));
 
-      return {
-        message: `Gracias, su contraseña se ha enviado al correo ${user.email}`,
+      const response: any = {
+        message: `Gracias, se ha enviado un enlace de recuperación al correo ${user.email}`,
         email: user.email,
       };
+      if (process.env.NODE_ENV === 'test') {
+        response.resetToken = plainToken;
+      }
+      return response;
     } catch (error) {
       console.error('Error sending email:', error);
       throw new InternalServerErrorException('Error al enviar el correo de recuperación');
@@ -173,11 +203,48 @@ export class AuthService {
   }
 
   async changePassword(userId: string, currentPassword: string, newPassword: string) {
-    const user = await this.usersService.findOne(userId);
-    if (!user || user.password !== currentPassword) {
+    const user = await this.usersService.findForAuth({ id: userId });
+    if (!user) {
       throw new UnauthorizedException('Invalid current password');
     }
-    await this.usersService.updatePassword(userId, newPassword);
+
+    let isPasswordValid = false;
+    if (currentPassword && user.password) {
+      isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    }
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid current password');
+    }
+
+    if (newPassword && newPassword.length > 72) {
+      throw new ConflictException('Password is too long (maximum 72 characters)');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.usersService.updatePassword(userId, hashedPassword);
     return { message: 'Password updated successfully' };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    if (!token || typeof token !== 'string') {
+      throw new UnauthorizedException('Invalid reset token');
+    }
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const entry = this.resetTokens.get(hashedToken);
+    
+    if (!entry || Date.now() > entry.expiresAt) {
+      throw new UnauthorizedException('Invalid or expired reset token');
+    }
+
+    if (newPassword && newPassword.length > 72) {
+      throw new ConflictException('Password is too long (maximum 72 characters)');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.usersService.updatePassword(entry.userId, hashedPassword);
+    this.resetTokens.delete(hashedToken);
+
+    return { message: 'Password has been successfully reset' };
   }
 }

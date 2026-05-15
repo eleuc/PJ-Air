@@ -87,17 +87,57 @@ describe('Customer Checkout Flow (e2e)', () => {
     currentUserId = res.body.user.id;
   });
 
-  it('should complete password recovery HTTP flow', async () => {
-    // 1. Request recovery
-    await request(app.getHttpServer())
+  it('should complete password recovery HTTP flow and verify new password works', async () => {
+    // 1. Request recovery and get reset token
+    const recoverRes = await request(app.getHttpServer())
       .post('/auth/recover-password')
       .send({ identifier: testUser.email })
       .expect(201);
 
-    // 2. Change password (simulated with standard payload)
-    // Note: Assuming a simple reset flow for e2e testing purposes
-    // In reality, this might require intercepting the recovery token.
-  }, 15000);
+    const resetToken = recoverRes.body.resetToken;
+    expect(resetToken).toBeDefined();
+
+    // 2. Reset password using the token
+    const newPassword = 'NewPassword456!';
+    await request(app.getHttpServer())
+      .post('/auth/reset-password')
+      .send({
+        token: resetToken,
+        newPassword: newPassword,
+      })
+      .expect(201); // Created or 200 depending on framework defaults for POST, Nest POST is 201 by default
+
+    // 3. Verify that the new password works
+    const loginRes = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: testUser.email,
+        password: newPassword,
+      })
+      .expect(201);
+
+    expect(loginRes.body.session).toHaveProperty('access_token');
+      
+    // 4. Verify the original password no longer works
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: testUser.email,
+        password: testUser.password,
+      })
+      .expect(401);
+
+    // 5. Change back to the original password for subsequent tests
+    await request(app.getHttpServer())
+      .patch('/auth/change-password')
+      .set('Authorization', `Bearer ${loginRes.body.session.access_token}`)
+      .send({
+        userId: loginRes.body.user.id,
+        currentPassword: newPassword,
+        newPassword: testUser.password,
+      })
+      .expect(200); // Controller returns { message: '...' } which usually maps to 200 for PATCH
+  }, 30000);
 
   it.skip('should ensure users can only fetch and modify their own addresses (isolation)', async () => {
     // 1. Setup a second user

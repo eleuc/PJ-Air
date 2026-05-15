@@ -32,7 +32,10 @@ yarn-error.log*
 
 # Git
 .agent/
+.opencode/
 recursos/
+/diff
+/commit
 
 # Large / temporary files
 *.zip
