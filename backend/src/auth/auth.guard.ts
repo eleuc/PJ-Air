@@ -1,10 +1,5 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { AuthGuard as NestAuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
-    async canActivate(context: ExecutionContext): Promise<boolean> {
-        // Auth is handled at the frontend level via localStorage session.
-        // This guard is a passthrough for now.
-        return true;
-    }
-}
+export class AuthGuard extends NestAuthGuard('jwt') {}

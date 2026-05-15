@@ -4,12 +4,17 @@ import { User } from '../users/user.entity';
 import * as nodemailer from 'nodemailer';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
   private resetTokens = new Map<string, { userId: string; expiresAt: number }>();
 
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
 
   async signup(body: any) {
     const { email, password, full_name, username, phone, company_name } = body;
@@ -39,6 +44,9 @@ export class AuthService {
       company_name,
     });
 
+    const payload: JwtPayload = { sub: user.id, email: user.email, role: 'client' };
+    const accessToken = this.jwtService.sign(payload);
+
     // Return session for auto-login
     return {
       message: 'User registered successfully',
@@ -51,7 +59,7 @@ export class AuthService {
         created_at: new Date().toISOString(),
       },
       session: {
-        access_token: 'local-test-token-' + user.id,
+        access_token: accessToken,
         refresh_token: 'local-test-refresh-' + user.id,
         expires_in: 3600,
         token_type: 'bearer',
@@ -79,6 +87,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid login credentials');
     }
 
+    const payload: JwtPayload = { 
+      sub: user.id, 
+      email: user.email, 
+      role: (user as any).role || 'client' 
+    };
+    const accessToken = this.jwtService.sign(payload);
+
     return {
       user: {
         id: user.id,
@@ -92,7 +107,7 @@ export class AuthService {
         created_at: new Date().toISOString(),
       },
       session: {
-        access_token: 'local-test-token-' + user.id,
+        access_token: accessToken,
         refresh_token: 'local-test-refresh-' + user.id,
         expires_in: 3600,
         token_type: 'bearer',

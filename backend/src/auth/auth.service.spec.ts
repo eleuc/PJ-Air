@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { UnauthorizedException, ConflictException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as nodemailer from 'nodemailer';
 import * as bcrypt from 'bcryptjs';
 
@@ -25,6 +26,12 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: UsersService, useValue: mockUsersService },
+        {
+          provide: JwtService,
+          useValue: {
+            sign: jest.fn().mockReturnValue('mocked.jwt.token'),
+          },
+        },
       ],
     }).compile();
 
@@ -66,7 +73,8 @@ describe('AuthService', () => {
       mockUsersService.findForAuth.mockResolvedValue({ id: '1', email: 'test@example.com', password: hashedPassword });
       const result = await service.login('test@example.com', 'password');
       expect(result).toHaveProperty('session');
-      expect(result.session.access_token).toContain('local-test-token-1');
+      // In TDD phase, we expect a real JWT format (header.payload.signature)
+      expect(result.session.access_token).toMatch(/^[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$/);
     });
   });
 
