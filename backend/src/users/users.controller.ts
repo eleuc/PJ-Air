@@ -7,6 +7,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import * as fs from 'fs';
+import { CurrentUser } from '../auth/user.decorator';
 
 @Controller('users')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -20,13 +21,15 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  async findOne(@CurrentUser() currentUser: any, @Param('id') id: string) {
+    const targetId = currentUser.role === 'admin' ? id : currentUser.id;
+    return this.usersService.findOne(targetId);
   }
 
   @Patch(':id/profile')
-  async updateProfile(@Param('id') id: string, @Body() profileData: any) {
-    return this.usersService.updateProfile(id, profileData);
+  async updateProfile(@CurrentUser() currentUser: any, @Param('id') id: string, @Body() profileData: any) {
+    const targetId = currentUser.role === 'admin' ? id : currentUser.id;
+    return this.usersService.updateProfile(targetId, profileData);
   }
 
   @Patch(':id/role')
@@ -57,9 +60,10 @@ export class UsersController {
       }),
     }),
   )
-  async uploadAvatar(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+  async uploadAvatar(@CurrentUser() currentUser: any, @Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+    const targetId = currentUser.role === 'admin' ? id : currentUser.id;
     console.log('--- Avatar Upload Request ---');
-    console.log('User ID:', id);
+    console.log('User ID:', targetId);
     if (!file) {
       console.error('No file received in request');
       throw new BadRequestException('No file uploaded');
@@ -69,7 +73,7 @@ export class UsersController {
     
     const avatarUrl = `/uploads/avatars/${file.filename}`;
     try {
-      const result = await this.usersService.updateAvatar(id, avatarUrl);
+      const result = await this.usersService.updateAvatar(targetId, avatarUrl);
       console.log('Profile updated successfully');
       return result;
     } catch (error) {
@@ -91,8 +95,9 @@ export class UsersController {
   }
 
   @Get(':id/product-discounts')
-  async getProductDiscounts(@Param('id') id: string) {
-    return this.usersService.getProductDiscounts(id);
+  async getProductDiscounts(@CurrentUser() currentUser: any, @Param('id') id: string) {
+    const targetId = currentUser.role === 'admin' ? id : currentUser.id;
+    return this.usersService.getProductDiscounts(targetId);
   }
 
   @Post(':id/product-discounts')

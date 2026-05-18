@@ -33,19 +33,21 @@ describe('AddressesController', () => {
   });
 
   describe('routing for addresses', () => {
+    const mockUser = { id: '1', role: 'client' };
+
     it('should create an address', async () => {
       const addressData = { street: 'Main St' };
       const body = { userId: '1', ...addressData };
       mockAddressesService.create.mockResolvedValue({ id: '10', ...body });
 
-      const result = await controller.create(body);
+      const result = await controller.create(mockUser, body);
       expect(service.create).toHaveBeenCalledWith('1', addressData);
       expect(result).toEqual({ id: '10', userId: '1', street: 'Main St' });
     });
 
     it('should fetch addresses by user', async () => {
       mockAddressesService.findByUser.mockResolvedValue([{ id: '10' }]);
-      const result = await controller.findByUser('1');
+      const result = await controller.findByUser(mockUser, '1');
       expect(service.findByUser).toHaveBeenCalledWith('1');
       expect(result).toEqual([{ id: '10' }]);
     });
@@ -53,15 +55,15 @@ describe('AddressesController', () => {
     it('should edit an address', async () => {
       const body = { street: 'Second St' };
       mockAddressesService.update.mockResolvedValue({ id: '10', ...body });
-      const result = await controller.update('10', body);
-      expect(service.update).toHaveBeenCalledWith('10', body);
+      const result = await controller.update(mockUser, '10', body);
+      expect(service.update).toHaveBeenCalledWith('10', body, '1');
       expect(result).toEqual({ id: '10', street: 'Second St' });
     });
 
     it('should delete an address', async () => {
       mockAddressesService.delete.mockResolvedValue({ id: '10' });
-      const result = await controller.delete('10');
-      expect(service.delete).toHaveBeenCalledWith('10');
+      const result = await controller.delete(mockUser, '10');
+      expect(service.delete).toHaveBeenCalledWith('10', '1');
       expect(result).toEqual({ id: '10' });
     });
   });

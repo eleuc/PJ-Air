@@ -42,6 +42,7 @@ describe('OrdersController', () => {
 
   describe('create', () => {
     it('should extract userId and orderData and call service.create', async () => {
+      const mockUser = { id: 'user-123', role: 'client' };
       const body = {
         userId: 'user-123',
         total: 100,
@@ -55,7 +56,7 @@ describe('OrdersController', () => {
 
       mockOrdersService.create.mockResolvedValue('mock-order');
 
-      const result = await controller.create(body);
+      const result = await controller.create(mockUser, body);
 
       expect(service.create).toHaveBeenCalledWith('user-123', expectedOrderData);
       expect(result).toBe('mock-order');

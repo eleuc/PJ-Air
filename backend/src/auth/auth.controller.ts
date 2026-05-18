@@ -1,6 +1,7 @@
 import { Controller, Post, Body, UnauthorizedException, BadRequestException, Patch, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -43,11 +44,11 @@ export class AuthController {
 
   @Patch('change-password')
   @UseGuards(AuthGuard('jwt'))
-  async changePassword(@Body() body: any) {
-    const { userId, currentPassword, newPassword } = body;
-    if (!userId || !currentPassword || !newPassword) {
+  async changePassword(@CurrentUser() currentUser: any, @Body() body: any) {
+    const { currentPassword, newPassword } = body;
+    if (!currentPassword || !newPassword) {
       throw new BadRequestException('All fields are required');
     }
-    return this.authService.changePassword(userId, currentPassword, newPassword);
+    return this.authService.changePassword(currentUser.id, currentPassword, newPassword);
   }
 }

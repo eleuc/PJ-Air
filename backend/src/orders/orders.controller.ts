@@ -1,8 +1,9 @@
-import { Controller, Post, Get, Body, Param, Patch, Query, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Patch, Query, UseGuards, NotFoundException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { OrdersService } from './orders.service';
+import { CurrentUser } from '../auth/user.decorator';
 
 @Controller('orders')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -10,9 +11,9 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  async create(@Body() body: any) {
+  async create(@CurrentUser() currentUser: any, @Body() body: any) {
     const { userId, ...orderData } = body;
-    return this.ordersService.create(userId, orderData);
+    return this.ordersService.create(currentUser.id, orderData);
   }
 
   @Get()
@@ -22,7 +23,10 @@ export class OrdersController {
   }
 
   @Get('user/:userId')
-  async findByUser(@Param('userId') userId: string) {
+  async findByUser(@CurrentUser() currentUser: any, @Param('userId') userId: string) {
+    if (currentUser.role !== 'admin' && currentUser.id !== userId) {
+      throw new NotFoundException('User not found');
+    }
     return this.ordersService.findByUser(userId);
   }
 
@@ -37,8 +41,9 @@ export class OrdersController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(id);
+  async findOne(@CurrentUser() currentUser: any, @Param('id') id: string) {
+    const userId = currentUser.role === 'admin' ? undefined : currentUser.id;
+    return this.ordersService.findOne(id, userId);
   }
 
   @Patch(':id/status')

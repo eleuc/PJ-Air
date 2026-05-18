@@ -86,14 +86,14 @@ describe('AuthController', () => {
 
   describe('changePassword', () => {
     it('should throw BadRequestException if fields are missing', async () => {
-      await expect(controller.changePassword({ userId: '1', currentPassword: 'password' })).rejects.toThrow(BadRequestException);
+      await expect(controller.changePassword({ id: '1' }, { currentPassword: 'password' })).rejects.toThrow(BadRequestException);
     });
 
     it('should call authService.changePassword and return result', async () => {
       const expectedResult = { message: 'Password updated successfully' };
       jest.spyOn(authService, 'changePassword').mockResolvedValue(expectedResult);
 
-      const result = await controller.changePassword({ userId: '1', currentPassword: 'old', newPassword: 'new' });
+      const result = await controller.changePassword({ id: '1' }, { currentPassword: 'old', newPassword: 'new' });
       expect(authService.changePassword).toHaveBeenCalledWith('1', 'old', 'new');
       expect(result).toEqual(expectedResult);
     });

@@ -46,17 +46,19 @@ describe('UsersController', () => {
     });
 
     it('should find one user', async () => {
+      const mockUser = { id: '1', role: 'client' };
       mockUsersService.findOne.mockResolvedValue({ id: '1' });
-      expect(await controller.findOne('1')).toEqual({ id: '1' });
+      expect(await controller.findOne(mockUser, '1')).toEqual({ id: '1' });
       expect(service.findOne).toHaveBeenCalledWith('1');
     });
   });
 
   describe('Profile updates', () => {
     it('should update profile', async () => {
+      const mockUser = { id: '1', role: 'client' };
       const data = { full_name: 'John' };
       mockUsersService.updateProfile.mockResolvedValue(data);
-      expect(await controller.updateProfile('1', data)).toEqual(data);
+      expect(await controller.updateProfile(mockUser, '1', data)).toEqual(data);
       expect(service.updateProfile).toHaveBeenCalledWith('1', data);
     });
 
@@ -75,8 +77,9 @@ describe('UsersController', () => {
     });
 
     it('should get product discounts', async () => {
+      const mockUser = { id: '1', role: 'client' };
       mockUsersService.getProductDiscounts.mockResolvedValue([]);
-      expect(await controller.getProductDiscounts('1')).toEqual([]);
+      expect(await controller.getProductDiscounts(mockUser, '1')).toEqual([]);
       expect(service.getProductDiscounts).toHaveBeenCalledWith('1');
     });
 

@@ -28,16 +28,20 @@ export class AddressesService {
     return this.addressRepository.save(address);
   }
 
-  async update(id: string, addressData: any) {
+  async update(id: string, addressData: any, userId?: string) {
     const address = await this.addressRepository.findOne({ where: { id } });
-    if (!address) throw new NotFoundException('Address not found');
+    if (!address || (userId && address.user_id !== userId)) {
+      throw new NotFoundException('Address not found');
+    }
     Object.assign(address, addressData);
     return this.addressRepository.save(address);
   }
 
-  async delete(id: string) {
+  async delete(id: string, userId?: string) {
     const address = await this.addressRepository.findOne({ where: { id } });
-    if (!address) throw new NotFoundException('Address not found');
+    if (!address || (userId && address.user_id !== userId)) {
+      throw new NotFoundException('Address not found');
+    }
     return this.addressRepository.remove(address);
   }
 }
