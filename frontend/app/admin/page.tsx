@@ -8,8 +8,6 @@ import { ShoppingBag, Layers, Users, TrendingUp, ArrowRight, Loader2, FileText, 
 import { api } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
 export default function AdminDashboardPage() {
     const { t } = useLanguage();
     const router = useRouter();
@@ -50,10 +48,7 @@ export default function AdminDashboardPage() {
                 const start = new Date();
                 const endStr = end.toISOString().split('T')[0] + ' 23:59:59';
                 const startStr = start.toISOString().split('T')[0] + ' 00:00:00';
-                const url = `${API_URL}/orders/reports/range?startDate=${startStr}&endDate=${endStr}`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error();
-                const data = await res.json();
+                const data = await api.get(`/orders/reports/range?startDate=${encodeURIComponent(startStr)}&endDate=${encodeURIComponent(endStr)}`);
                 setHistoryOrders(Array.isArray(data) ? data : []);
             } catch {
                 console.error('Error fetching history');

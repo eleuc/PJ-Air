@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Terminal, Github, Key, MapPin, Database, Zap, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { api } from '@/lib/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 
 export default function DevTools() {
     const { user, profile, signOut } = useAuth();
@@ -14,13 +15,8 @@ export default function DevTools() {
 
     const testPing = async () => {
         setStatus('Pinging backend...');
-        try {
-            const res = await fetch(`${API_URL}/api`); // Base backend URL
-            if (res.ok) setStatus('Pong! Backend is alive.');
-            else setStatus('Error: Backend returned ' + res.status);
-        } catch (e) {
-            setStatus('Error connecting to backend: ' + (e as any).message);
-        }
+        const alive = await api.ping('/api');
+        setStatus(alive ? 'Pong! Backend is alive.' : 'Error connecting to backend: Backend unreachable.');
     };
 
     const testAuthDebug = async () => {

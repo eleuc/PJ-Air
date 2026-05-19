@@ -6,7 +6,7 @@ import {
     LayoutGrid, List, Plus, Search, Edit2, Trash2, X,
     Loader2, AlertCircle, Save, Package, Upload, CheckCircle2
 } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api, API_URL } from '@/lib/api';
 
 interface Product {
     id: number;
@@ -30,7 +30,7 @@ interface ProductForm {
 }
 
 const LS_CATS_KEY = 'admin_custom_categories';
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 
 const emptyForm: ProductForm = {
     name: '',
@@ -134,13 +134,7 @@ export default function AdminProductsPage() {
             const formData = new FormData();
             formData.append('file', file);
 
-            const res = await fetch(`${API_BASE}/products/upload-image`, {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!res.ok) throw new Error('Error al subir imagen');
-            const data = await res.json();
+            const data = await api.upload('/products/upload-image', formData) as { url: string };
             // Replace local preview with server path
             setForm(f => ({ ...f, image: data.url }));
         } catch (err: any) {
@@ -273,7 +267,7 @@ export default function AdminProductsPage() {
                             <div key={product.id} className="bg-card rounded-2xl border border-border overflow-hidden hover:shadow-lg transition-all group">
                                 <div className="h-40 overflow-hidden relative bg-muted/30">
                                     {product.image ? (
-                                        <img src={product.image?.startsWith('http') ? product.image : `${API_BASE}${product.image}`} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                        <img src={product.image?.startsWith('http') ? product.image : `${API_URL}${product.image}`} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-muted-foreground/30"><Package size={40} /></div>
                                     )}
@@ -317,7 +311,7 @@ export default function AdminProductsPage() {
                                     <tr key={product.id} className="hover:bg-muted/40 transition-colors">
                                         <td className="px-6 py-4">
                                             {product.image ? (
-                                                <img src={product.image?.startsWith('http') ? product.image : `${API_BASE}${product.image}`} className="w-12 h-12 rounded-xl object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                                <img src={product.image?.startsWith('http') ? product.image : `${API_URL}${product.image}`} className="w-12 h-12 rounded-xl object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                                             ) : (
                                                 <div className="w-12 h-12 rounded-xl bg-muted/30 flex items-center justify-center text-muted-foreground/30"><Package size={20} /></div>
                                             )}
@@ -433,7 +427,7 @@ export default function AdminProductsPage() {
                                     {/* Image preview */}
                                     {form.image && (
                                         <div className="mb-3 w-full h-40 rounded-xl overflow-hidden border border-border bg-muted/30 relative">
-                                            <img src={form.image?.startsWith('http') || form.image?.startsWith('blob:') ? form.image : `${API_BASE}${form.image}`} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                            <img src={form.image?.startsWith('http') || form.image?.startsWith('blob:') ? form.image : `${API_URL}${form.image}`} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                                         </div>
                                     )}
 

@@ -69,20 +69,9 @@ export default function ProfilePage() {
         uploadData.append('file', file);
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/users/${user.id}/avatar`, {
-                method: 'POST',
-                body: uploadData,
-            });
-            
-            if (response.ok) {
-                const updatedProfile = await response.json();
-                setProfile(updatedProfile);
-                setMessage({ type: 'success', text: t.profile.avatarSuccess });
-            } else {
-                const errorData = await response.json().catch(() => ({}));
-                console.error('Upload failed:', response.status, errorData);
-                throw new Error(errorData.message || (t.profile.avatarError));
-            }
+            const updatedProfile = await api.upload(`/users/${user.id}/avatar`, uploadData);
+            setProfile(updatedProfile);
+            setMessage({ type: 'success', text: t.profile.avatarSuccess });
         } catch (err: any) {
             console.error('Error uploading avatar:', err);
             setMessage({ type: 'error', text: err.message || t.profile.avatarError });

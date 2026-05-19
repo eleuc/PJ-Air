@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import AdminSidebar from '@/components/layout/AdminSidebar';
+import { api } from '@/lib/api';
 import { 
     Calendar as CalendarIcon, 
     Printer, 
@@ -47,7 +48,7 @@ interface CategoryBlock {
 
 // ─── Inner Component (needs Suspense because of useSearchParams) ─────────────
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 
 const getProductionDate = (dateStr: string) => {
     if (!dateStr) return '';
@@ -116,10 +117,7 @@ function ReportsPageContent() {
             start.setFullYear(end.getFullYear() - 1);
             const endStr = end.toISOString().split('T')[0] + ' 23:59:59';
             const startStr = start.toISOString().split('T')[0] + ' 00:00:00';
-            const url = `${API_URL}/orders/reports/range?startDate=${encodeURIComponent(startStr)}&endDate=${encodeURIComponent(endStr)}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error();
-            const data = await res.json();
+            const data = await api.get(`/orders/reports/range?startDate=${encodeURIComponent(startStr)}&endDate=${encodeURIComponent(endStr)}`);
             setHistoryOrders(Array.isArray(data) ? data : []);
         } catch { console.error('Error fetching history'); }
         finally { setLoadingHistory(false); }
@@ -127,9 +125,7 @@ function ReportsPageContent() {
 
     const fetchClients = async () => {
         try {
-            const res = await fetch(`${API_URL}/users`);
-            if (!res.ok) throw new Error();
-            const data = await res.json();
+            const data = await api.get('/users') as any[];
             setClients(data.filter((u: any) => u.role === 'client'));
         } catch { console.error('Error fetching clients'); }
     };
@@ -152,11 +148,9 @@ function ReportsPageContent() {
             const startParam = encodeURIComponent(startD.toISOString().split('T')[0] + ' 00:00:00');
             const endParam = encodeURIComponent(endD.toISOString().split('T')[0] + ' 23:59:59');
 
-            let url = `${API_URL}/orders/reports/range?startDate=${startParam}&endDate=${endParam}`;
-            if (viewMode === 'specific-client' && cid) url += `&userId=${cid}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('Error al obtener datos del reporte');
-            const rawData = await res.json();
+            let path = `/orders/reports/range?startDate=${startParam}&endDate=${endParam}`;
+            if (viewMode === 'specific-client' && cid) path += `&userId=${cid}`;
+            const rawData = await api.get(path);
             
             const validOrders = (Array.isArray(rawData) ? rawData : []).filter(order => {
                 const prodDate = getProductionDate(order.created_at || order.delivery_date || '');

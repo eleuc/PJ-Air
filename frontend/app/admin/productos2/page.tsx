@@ -5,7 +5,7 @@ import AdminSidebar from '@/components/layout/AdminSidebar';
 import {
     Search, Plus, Edit2, Trash2, X, Loader2, Save, Package, Upload, Image as ImageIcon
 } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api, API_URL } from '@/lib/api';
 
 /* ─── Types ─── */
 interface Product {
@@ -29,7 +29,7 @@ interface ProductForm {
     category_min_qty: string;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 
 const emptyForm: ProductForm = {
     name: '',
@@ -138,12 +138,7 @@ export default function Productos2Page() {
         try {
             const fd = new FormData();
             fd.append('file', file);
-            const res = await fetch(`${API_BASE}/products/upload-image`, {
-                method: 'POST',
-                body: fd,
-            });
-            if (!res.ok) throw new Error('Upload failed');
-            const data = await res.json();
+            const data = await api.upload('/products/upload-image', fd) as { url: string };
             // Replace preview with real server path
             setForm(f => ({ ...f, image: data.url }));
             setImagePreview(data.url);
@@ -301,7 +296,7 @@ export default function Productos2Page() {
                                         <div className="relative aspect-square bg-muted/30 overflow-hidden">
                                             {product.image ? (
                                                 <img
-                                                    src={product.image?.startsWith('http') ? product.image : `${API_BASE}${product.image}`}
+                                                    src={product.image?.startsWith('http') ? product.image : `${API_URL}${product.image}`}
                                                     alt={product.name}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                     onError={e => {
@@ -380,7 +375,7 @@ export default function Productos2Page() {
                                         <div className="w-28 h-28 rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden flex items-center justify-center shrink-0 relative">
                                             {(imagePreview || form.image) ? (
                                                 <img
-                                                    src={imagePreview?.startsWith('http') || imagePreview?.startsWith('blob:') ? imagePreview : `${API_BASE}${imagePreview}`}
+                                                    src={imagePreview?.startsWith('http') || imagePreview?.startsWith('blob:') ? imagePreview : `${API_URL}${imagePreview}`}
                                                     className="w-full h-full object-cover"
                                                     onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
                                                 />
