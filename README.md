@@ -34,8 +34,7 @@ Stop-Process -Id (Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyCont
 2.  **Start the Backend API Server**:
 
 ```bash
-cd backend
-npm run start:dev
+npm run start:dev -w backend
 ```
 
 The server will start on [http://localhost:3001](http://localhost:3001).
@@ -43,8 +42,7 @@ The server will start on [http://localhost:3001](http://localhost:3001).
 3.  **Start the Frontend Client**:
 
 ```bash
-cd frontend
-npm run dev
+npm run dev -w frontend
 ```
 
 The UI client will run on [http://localhost:3000](http://localhost:3000).
@@ -53,50 +51,15 @@ The UI client will run on [http://localhost:3000](http://localhost:3000).
 
 ## 🧪 Running Tests
 
-All automated tests are structured using the Jest framework and are located inside the `backend` directory. For detail on testing strategies, see the complete [.agent/plan.md](.agent/plan.md).
+- All tests: `npm run test` (disabled?)
+- Backend unit tests: `npm run test:unit -w backend`
+- Backend integration: `npm run test:e2e -w backend`
+- Backend coverage report: `npm run test:cov -w backend`
+- Frontend unit tests: `npm run test -w frontend`
+- Frontend coverage report: `npm run test:coverage -w frontend`
+- Configuration check: `node scripts/test-startup-config.js` (unimplemented)
 
-Navigate to the `backend` folder first:
-
-```bash
-cd backend
-```
-
-### Unit & Integration Tests
-
-Runs tests targeting services, controllers, and TypeORM entities:
-
-```bash
-# Run all unit/integration tests
-npm run test
-
-# Run tests in live watch mode
-npm run test:watch
-
-# Generate test coverage reports
-npm run test:cov
-```
-
-### End-to-End (E2E) Tests
-
-Runs tests validating complete request-response flows with a test database:
-
-```bash
-npm run test:e2e
-```
-
-### Run Specific Test Files
-
-To target a specific test suite or matching case description:
-
-```bash
-# Run a single file
-npx jest src/users/users.service.spec.ts
-
-# Run matching tests by pattern
-npx jest -t "should calculate product price"
-```
-
-## Future Work
+# Future Work
 
 ## Setup
 
@@ -132,19 +95,15 @@ There is a lot of important local configuration to setup, depending on the setup
 
 Errores reportados en produccion:
 
-- Agregar fecha de entrega configurable en checkout.
 - Todo el programa mezcla ingles y español por tolao.
 - Recuperar Contraseña no funciona.
-- En profile/adresses/new, el mapa embedido muestra el mensaje "This page can't load Google Maps correctly.", pero el mapa si funciona
 - En checkout, la cantidad de un producto no es modificable a mano, solo con los botones de + y -
   - En la lista de productos si se puede modificar. Se deben combinar ambos como el mismo componente.
 - Estoy seguro de que la seleccion de mapa en checkout "Other Address" es diferente que la de addresses/new. Tambien deben compartir componente.
-- Contraseñas se guardan sin hashear.
 - El pdf generado al imprimir reporte incluye el mismo boton de imprimir.
 - En el panel de informacion de usuario en admin/users, un pedido sin procesar muestra "Pedido Enviado".Buscar otra terminologia para evitar confusiones.
 - El boton "Ver Detalle" de pedido en la info de usuarios en admin no funciona bien.
 - Usuarios tipo produccion y delivery no tienen dashboard.
-- No se puede subir foto de avatar. Se muestra como un archivo roto.
 - En admin/users al agregar descuento por producto, se muestran las dos opciones de precio fijo y descuento a la vez. Deberia verse una sola porque es confuso.
 - Los descuentos o precios adicionales registrados al usuario no se aplican. Ni en el checkout, ni en la orden final.
 - Hacer configuable los tipos de flota.
@@ -158,27 +117,26 @@ Errores reportados en produccion:
 - Unificar componentes de tablas en cada categoria en admin.
 - Eliminar categoria de clientes en admin, es redundante.
 
-## Authentication Context (JWT `userId` Inference)
+## Security
 
-Currently, several backend endpoints expect the `userId` to be provided explicitly in the request body or URL parameters instead of securely inferring it from the authenticated user's JWT session. This bypasses proper tenant isolation and could theoretically allow unauthorized access if a user supplies another user's ID.
+### Current State
 
-The following endpoints need to be refactored to extract `req.user.id` via an `AuthGuard`:
+Authentication is enforced via JWT (`AuthGuard('jwt')`) and role-based access via `RolesGuard` + `@Roles()`. All user-scoped resources consistently derive identity from the signed token through `@CurrentUser()`, and tenant isolation is validated by the passing E2E suite (`resource-ownership.e2e-spec.ts`, `customer-checkout.e2e-spec.ts`).
 
-- **Users Module**: Most profile endpoints (`PATCH /users/:id/profile`, `POST /users/:id/avatar`, `PATCH /users/:id/role`, `PATCH /users/:id/general-discount`) fully trust the `:id` URL parameter.
-- **Auth Module**: `PATCH /auth/change-password` expects `userId` inside the JSON body payload.
-- **Addresses Module**: `POST /addresses` expects `userId` in the body payload, and `GET /addresses/user/:userId` expects it in the URL.
-- **Orders Module**: `POST /orders` expects `userId` in the body payload, and `GET /orders/user/:userId` expects it in the URL.
+### Remaining Concerns
 
-_Note: For administrative workflows, an override option to pass a specific `userId` can be preserved (e.g. `GET /orders/reports/range?userId=xxx`), but standard user operations must default strictly to their own authenticated session context._
+A codebase audit identified several patterns that are currently non-breaking but represent technical debt and latent risk:
 
-## Security & Authorization Testing Gaps
+- **`userId` accepted in request bodies and silently discarded.** `POST /orders` and `POST /addresses` accept a `userId` field from the client but ignore it in favour of `currentUser.id`. This is secure today, but if that destructuring is ever removed during a refactor, it becomes a direct IDOR vulnerability — a client could set any user's ID as the owner of a new resource. The `userId` field should be removed from the accepted body schema entirely.
+- **Ownership enforcement in the controller layer.** The `GET /orders/user/:userId` and `GET /addresses/user/:userId` handlers perform the ownership check (`currentUser.id !== userId`) inside the controller. If the underlying service method is ever called from a second route, the check is silently bypassed. Ownership policy must be enforced inside the service.
+- **No typed contract for the JWT principal.** All handlers declare `currentUser: any`. If the JWT payload shape ever changes, failures will be silent runtime errors. An `AuthenticatedUser` interface should be introduced and used everywhere.
+- **Inconsistent guard placement in `ProductsController`.** All other controllers apply guards at the class level; `ProductsController` applies them per-route. A future developer adding a new route may omit the guard by accident.
+- **No audit trail for admin mutations.** Admin write operations on products and orders carry no actor identity into the service, making it impossible to log which admin performed a destructive action.
 
-While the project has an extensive testing plan, several critical security validation tests are currently skipped or unimplemented:
+### Open Testing Gaps
 
-- **Tenant Isolation Boundaries**: Tests preventing users from accessing or modifying other users' addresses or orders (`resource-ownership.e2e-spec.ts`) are currently bypassed (`it.skip`).
-- **Role-Based Access Control (RBAC)**: Tests ensuring standard users cannot access administrative product and user management endpoints (`roles-guard.e2e-spec.ts`) are currently bypassed (`it.skip`).
-- **Production Environment Hardening**: The validation to ensure potentially dangerous `Devtools` wiping and seeding endpoints are strictly disabled in production is not actively enforced.
-- **Bootstrapping Security**: Integration validations for Cross-Origin Resource Sharing (CORS) configurations are currently missing.
+- **Production Environment Hardening**: The validation ensuring that `Devtools` wipe/seed endpoints are disabled in production is not actively enforced by a test.
+- **Bootstrapping Security**: Integration validation for CORS configuration is currently missing.
 
 ---
 
