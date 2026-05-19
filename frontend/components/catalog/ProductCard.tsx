@@ -2,147 +2,126 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Minus, Plus, ShoppingCart, Info, Check, Edit3 } from 'lucide-react';
-import { Product } from '@/lib/products';
+import { ShoppingCart, Check, Info } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import QuantitySelector from '@/components/ui/QuantitySelector';
 
 interface ProductCardProps {
-    product: Product;
+    product: any;
     quantity: number | string;
     isInCart?: number;
     isJustAdded: boolean;
     onIncrement: (id: number) => void;
     onDecrement: (id: number) => void;
-    onUpdateQuantity: (id: number, val: string) => void;
-    onAddToCart: (product: Product) => void;
-    animationDelay?: string;
+    onQuantityChange: (id: number, val: string) => void;
+    onAddToCart: (product: any) => void;
+    profile?: any;
 }
 
-export const ProductCard = ({
+export default function ProductCard({
     product,
     quantity,
     isInCart,
     isJustAdded,
     onIncrement,
     onDecrement,
-    onUpdateQuantity,
+    onQuantityChange,
     onAddToCart,
-    animationDelay
-}: ProductCardProps) => {
+    profile,
+}: ProductCardProps) {
     const { t, locale } = useLanguage();
-    const categoryLabel = locale === 'en'
-        ? ((product as any).category_en || product.category)
-        : product.category;
+
+    // Calculate dynamic price
+    const originalPrice = Number(product.price) || 0;
+    let finalPrice = originalPrice;
+    let hasDiscount = false;
+
+    if (profile?.productDiscounts) {
+        const pd = profile.productDiscounts.find((d: any) => Number(d.product_id) === Number(product.id));
+        if (pd) {
+            hasDiscount = true;
+            if (pd.special_price) finalPrice = Number(pd.special_price);
+            else if (pd.discount_percentage) finalPrice = originalPrice * (1 - Number(pd.discount_percentage) / 100);
+        }
+    }
+    
+    if (!hasDiscount && profile?.general_discount > 0) {
+        hasDiscount = true;
+        finalPrice = originalPrice * (1 - Number(profile.general_discount) / 100);
+    }
+
     return (
-        <div 
-            className="group jhoanes-card bg-white/40 p-6 border-transparent hover:border-primary/10 hover:bg-white animate-slide-in flex flex-col h-full"
-            style={{ animationDelay }}
-        >
-            {/* Image Section */}
-            <Link href={`/catalog/${product.id}`} className="relative w-full mb-5 overflow-hidden rounded-[2.5rem] aspect-square bg-muted/30 flex items-center justify-center">
+        <div className="group bg-white rounded-3xl border border-border/50 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col overflow-hidden w-full h-full">
+            {/* Image */}
+            <Link
+                href={`/catalog/${product.id}`}
+                className="relative w-full overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 block"
+                style={{ aspectRatio: '1/1' }}
+            >
                 <img
                     src={product.image?.startsWith('http') ? product.image : `${process.env.NEXT_PUBLIC_API_URL}${product.image}`}
                     alt={product.name}
-                    className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=800';
+                        (e.target as HTMLImageElement).src =
+                            'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?q=80&w=400';
                     }}
                 />
-                <div className="absolute top-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary shadow-2xl">
-                        <Info size={20} />
+                {!!isInCart && (
+                    <span className="absolute top-2 right-2 bg-green-500 text-white text-[9px] font-black px-2 py-1 rounded-full flex items-center gap-1 shadow">
+                        <Check size={9} strokeWidth={3} /> {isInCart}
+                    </span>
+                )}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <div className="w-10 h-10 bg-white/90 rounded-2xl flex items-center justify-center shadow-lg">
+                        <Info size={17} className="text-primary" />
                     </div>
                 </div>
             </Link>
 
-            {/* Info Section */}
-            <div className="flex-1 flex flex-col">
-                <div className="flex items-center gap-2 mb-3">
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/60 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10">{categoryLabel}</span>
+            {/* Details */}
+            <div className="p-3 sm:p-4 flex flex-col gap-2 flex-1">
+                <h3 className="font-bold text-sm leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2 min-h-[36px]">
+                    {product.name}
+                </h3>
+                <div className="flex flex-wrap items-baseline gap-2">
+                    <p className="text-lg font-black text-foreground tracking-tight">${finalPrice.toFixed(2)}</p>
+                    {hasDiscount && (
+                        <p className="text-[10px] font-bold text-muted-foreground/60 line-through decoration-primary/40 decoration-2">${originalPrice.toFixed(2)}</p>
+                    )}
                 </div>
-                <h3 className="text-2xl font-bold font-serif mb-3 tracking-tighter group-hover:text-primary transition-colors leading-tight">{product.name}</h3>
-                
-                {/* Price and Quantity Side by Side */}
-                <div className="flex items-center justify-between gap-4 mt-auto mb-5 bg-muted/20 p-4 rounded-3xl border border-border/30">
-                    <div className="flex flex-col">
-                        <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">{t.product.price}</span>
-                        <span className="text-2xl font-semibold text-foreground tracking-tight">${product.price}</span>
-                        {(product as any).category_min_qty > 1 && (
-                            <span className="text-[8px] font-black text-amber-600 uppercase tracking-tighter mt-1">Min: {(product as any).category_min_qty}</span>
-                        )}
-                    </div>
-
-                    <div className="h-10 w-[1px] bg-border/40 invisible sm:visible" />
-
-                    <div className="flex flex-col items-end">
-                        <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1 flex items-center gap-1">
-                            {t.product.quantity} <Edit3 size={8} />
+                {product.category_min_qty > 1 && (
+                    <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
+                        <Info size={10} strokeWidth={3} />
+                        <span className="text-[9px] font-black uppercase tracking-tight">
+                            {locale === 'en' ? `Min: ${product.category_min_qty} units` : `Mínimo: ${product.category_min_qty} unidades`}
                         </span>
-                        <div className="flex items-center bg-white border-2 border-neutral-200 rounded-2xl p-1 shadow-sm overflow-hidden focus-within:ring-4 focus-within:ring-primary/10 focus-within:border-primary/30 transition-all w-36 h-12">
-                            <button 
-                                onClick={() => {
-                                    const min = (product as any).category_min_qty || 1;
-                                    if (Number(quantity) > min) onDecrement(product.id);
-                                }}
-                                className="flex-1 h-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
-                                aria-label="Disminuir cantidad"
-                            >
-                                <Minus size={16} strokeWidth={2.5} />
-                            </button>
-                            <input 
-                                type="number" 
-                                min={(product as any).category_min_qty || 1}
-                                value={quantity} 
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    const min = (product as any).category_min_qty || 1;
-                                    if (val !== '' && Number(val) < min) return;
-                                    onUpdateQuantity(product.id, val);
-                                }}
-                                onFocus={(e) => {
-                                    const min = (product as any).category_min_qty || 1;
-                                    if (quantity === min || quantity === String(min)) {
-                                        onUpdateQuantity(product.id, '');
-                                    }
-                                    e.target.select();
-                                }}
-                                title="Haga clic para editar cantidad"
-                                className="w-12 h-full bg-transparent text-center font-bold text-lg outline-none text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none cursor-pointer focus:bg-primary/5 border-x border-neutral-100" 
-                            />
-                            <button 
-                                onClick={() => onIncrement(product.id)}
-                                className="flex-1 h-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
-                                aria-label="Aumentar cantidad"
-                            >
-                                <Plus size={16} strokeWidth={2.5} />
-                            </button>
-                        </div>
                     </div>
-                </div>
-            </div>
-
-            {/* In Cart Indicator */}
-            {isInCart && (
-                <div className="flex items-center justify-center gap-2 mb-4 animate-fade-in">
-                    <div className="h-[1px] flex-1 bg-green-500/20" />
-                    <span className="text-[9px] font-black text-green-600 uppercase tracking-widest bg-green-50 px-3 py-1 rounded-full border border-green-200 flex items-center gap-1">
-                        <Check size={10} strokeWidth={3} /> {t.product.inCart}: {isInCart}
-                    </span>
-                    <div className="h-[1px] flex-1 bg-green-500/20" />
-                </div>
-            )}
-
-            {/* Action Button at the Bottom */}
-            <button 
-                onClick={() => onAddToCart(product)}
-                className={`w-full premium-button h-14 text-[10px] font-black uppercase tracking-[0.2em] gap-3 transition-all duration-500 rounded-2xl ${isJustAdded ? 'bg-green-500 text-white translate-y-[-2px] shadow-lg shadow-green-200' : 'jhoanes-gradient text-white hover:shadow-xl shadow-primary/20'}`}
-            >
-                {isJustAdded ? (
-                    <><Check size={18} strokeWidth={3} /> {t.product.added}</>
-                ) : (
-                    <><ShoppingCart size={18} strokeWidth={2.5} /> {t.product.addToOrder}</>
                 )}
-            </button>
+
+                {/* Quantity */}
+                <QuantitySelector
+                    quantity={quantity}
+                    onIncrement={() => onIncrement(product.id)}
+                    onDecrement={() => onDecrement(product.id)}
+                    onManualChange={(val) => onQuantityChange(product.id, val)}
+                    variant="card"
+                />
+
+                {/* Cart button */}
+                <button
+                    onClick={() => onAddToCart(product)}
+                    className={`mt-auto w-full flex items-center justify-center gap-1.5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+                        isJustAdded
+                            ? 'bg-green-500 text-white scale-95'
+                            : 'bg-primary text-white hover:bg-primary/90 active:scale-95'
+                    }`}
+                >
+                    {isJustAdded
+                        ? <><Check size={12} strokeWidth={3} /> {t.product.added}</>
+                        : <><ShoppingCart size={12} /> {t.product.addToOrder}</>}
+                </button>
+            </div>
         </div>
     );
-};
+}

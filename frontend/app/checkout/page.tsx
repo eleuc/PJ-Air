@@ -13,6 +13,7 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { api } from '@/lib/api';
+import QuantitySelector from '@/components/ui/QuantitySelector';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 
 const MIN_ORDER_AMOUNT = 500;
@@ -792,21 +793,12 @@ export default function CheckoutPage() {
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-4 shrink-0">
-                                                <div className="flex items-center gap-2 bg-white rounded-xl border border-border/60 p-1 shadow-sm">
-                                                    <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                        className="w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
-                                                    >
-                                                        <Minus size={12} />
-                                                    </button>
-                                                    <span className="text-xs font-black min-w-[1rem] text-center">{item.quantity}</span>
-                                                    <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                        className="w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
-                                                    >
-                                                        <Plus size={12} />
-                                                    </button>
-                                                </div>
+                                                <QuantitySelector
+                                                    quantity={item.quantity}
+                                                    onIncrement={() => updateQuantity(item.id, item.quantity + 1)}
+                                                    onDecrement={() => updateQuantity(item.id, item.quantity - 1)}
+                                                    variant="checkout"
+                                                />
                                                 <span className="text-xs font-black text-primary min-w-[50px] text-right">
                                                     ${(unitPrice * item.quantity).toFixed(2)}
                                                 </span>

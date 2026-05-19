@@ -8,60 +8,10 @@ import { useLanguage } from '@/context/LanguageContext';
 import { ArrowLeft, Tag, Search, ShoppingCart, Check, Plus, Minus, Info } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import ProductCard from '@/components/catalog/ProductCard';
 
-function ProductCard({
-    product, quantity, isInCart, isJustAdded, onIncrement, onDecrement, onQuantityChange, onAddToCart,
-}: {
-    product: any; quantity: number | string; isInCart?: number; isJustAdded: boolean;
-    onIncrement: (id: number) => void; onDecrement: (id: number) => void; 
-    onQuantityChange: (id: number, val: string) => void;
-    onAddToCart: (p: any) => void;
-}) {
-    const { t, locale } = useLanguage();
-    return (
-        <div className="group bg-white rounded-3xl border border-border/50 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col overflow-hidden">
-            <Link href={`/catalog/${product.id}`} className="relative w-full aspect-square overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 block">
-                <img src={product.image?.startsWith('http') ? product.image : `${process.env.NEXT_PUBLIC_API_URL}${product.image}`} alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?q=80&w=400'; }} />
-                {isInCart ? (
-                    <div className="absolute top-2 right-2 bg-green-500 text-white text-[9px] font-black px-2 py-1 rounded-full flex items-center gap-1">
-                        <Check size={9} /> {isInCart}
-                    </div>
-                ) : null}
-            </Link>
-            <div className="p-4 flex flex-col gap-2 flex-1">
-                <h3 className="font-bold text-sm leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2 min-h-[40px]">{product.name}</h3>
-                <p className="text-xl font-black text-foreground">${product.price}</p>
-                {product.category_min_qty > 1 && (
-                    <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
-                        <Info size={10} />
-                        <span className="text-[9px] font-black uppercase tracking-tight">{locale === 'en' ? `Min: ${product.category_min_qty} units` : `Mínimo: ${product.category_min_qty} unidades`}</span>
-                    </div>
-                )}
-                <div className="flex items-center bg-muted/60 rounded-xl overflow-hidden border border-border/30">
-                    <button onClick={() => onDecrement(product.id)} className="px-3 py-2 text-muted-foreground hover:text-primary transition-all active:scale-90"><Minus size={13} /></button>
-                    <input 
-                        type="number" 
-                        value={quantity}
-                        onChange={(e) => {
-                            const val = e.target.value;
-                            if (val === '' || (Number(val) >= 1 && Number(val) <= 999)) {
-                                onQuantityChange(product.id, val);
-                            }
-                        }}
-                        className="w-10 bg-transparent text-center text-sm font-bold outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <button onClick={() => onIncrement(product.id)} className="px-3 py-2 text-muted-foreground hover:text-primary transition-all active:scale-90"><Plus size={13} /></button>
-                </div>
-                <button onClick={() => onAddToCart(product)}
-                    className={`w-full flex items-center justify-center gap-1.5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${isJustAdded ? 'bg-green-500 text-white scale-95' : 'bg-primary text-white hover:bg-primary/90'}`}>
-                    {isJustAdded ? <><Check size={12} /> {t.product.added}</> : <><ShoppingCart size={12} /> {t.product.addToOrder}</>}
-                </button>
-            </div>
-        </div>
-    );
-}
+
 
 export default function CategoryPage() {
     const params = useParams();
@@ -69,6 +19,7 @@ export default function CategoryPage() {
 
     const { addToCart, cart } = useCart();
     const { t, locale } = useLanguage();
+    const { profile } = useAuth();
 
     const [products, setProducts] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -233,6 +184,7 @@ export default function CategoryPage() {
                                 onDecrement={handleDecrement}
                                 onQuantityChange={handleQuantityChange}
                                 onAddToCart={handleAddToCart}
+                                profile={profile}
                             />
                         ))}
                     </div>

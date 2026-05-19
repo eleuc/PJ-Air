@@ -97,8 +97,6 @@ Errores reportados en produccion:
 
 - Todo el programa mezcla ingles y español por tolao.
 - Recuperar Contraseña no funciona.
-- En checkout, la cantidad de un producto no es modificable a mano, solo con los botones de + y -
-  - En la lista de productos si se puede modificar. Se deben combinar ambos como el mismo componente.
 - Estoy seguro de que la seleccion de mapa en checkout "Other Address" es diferente que la de addresses/new. Tambien deben compartir componente.
 - El pdf generado al imprimir reporte incluye el mismo boton de imprimir.
 - En el panel de informacion de usuario en admin/users, un pedido sin procesar muestra "Pedido Enviado".Buscar otra terminologia para evitar confusiones.
