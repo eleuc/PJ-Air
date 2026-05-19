@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
 import * as nodemailer from 'nodemailer';
@@ -9,6 +9,7 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   private resetTokens = new Map<string, { userId: string; expiresAt: number }>();
 
   constructor(
@@ -74,6 +75,7 @@ export class AuthService {
     const user = await this.usersService.findForAuth({ identifier });
     
     if (!user) {
+      this.logger.warn(`Failed login attempt: User not found for identifier "${identifier}"`);
       throw new UnauthorizedException('Invalid login credentials');
     }
 
@@ -84,6 +86,7 @@ export class AuthService {
     }
 
     if (!isPasswordValid) {
+      this.logger.warn(`Failed login attempt: Invalid password for identifier "${identifier}"`);
       throw new UnauthorizedException('Invalid login credentials');
     }
 
