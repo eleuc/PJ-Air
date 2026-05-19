@@ -48,13 +48,13 @@ export default function DeliveryPage() {
             // Show orders assigned to me regardless of readiness to give visibility
             const myOrders = Array.isArray(data) ? data.filter(o => 
                 o.delivery_user_id === user?.id && 
-                ['pending', 'Pedido', 'En Producción', 'Finalizado', 'En camino', 'En Entrega'].includes(o.status)
+                ['pending', 'production', 'ready', 'shipping', 'delivering'].includes(o.status)
             ) : [];
             console.log('My Assigned Orders:', myOrders);
             setOrders(myOrders);
             
             // Check if there's an ongoing delivery
-            const ongoing = myOrders.find(o => ['En camino', 'En Entrega'].includes(o.status));
+            const ongoing = myOrders.find(o => ['shipping', 'delivering'].includes(o.status));
             if (ongoing) setActiveDelivery(ongoing);
         } catch (err) {
             console.error('Error fetching delivery orders:', err);
@@ -66,10 +66,10 @@ export default function DeliveryPage() {
     const handleUpdateStatus = async (orderId: string, newStatus: string) => {
         try {
             const updated = await api.patch(`/orders/${orderId}/status`, { status: newStatus }) as any;
-            if (newStatus === 'En camino') {
+            if (newStatus === 'shipping') {
                 setActiveDelivery(updated);
                 showToast('🚀 El pedido está ahora En Camino');
-            } else if (newStatus === 'Entregado') {
+            } else if (newStatus === 'delivered') {
                 setActiveDelivery(null);
                 showToast('✅ Entrega completada con éxito');
             }
@@ -92,7 +92,7 @@ export default function DeliveryPage() {
         try {
             // Simulate processing/uploading
             await new Promise(r => setTimeout(r, 2000));
-            await handleUpdateStatus(activeDelivery.id, 'Entregado');
+            await handleUpdateStatus(activeDelivery.id, 'delivered');
         } finally {
             setIsCapturing(false);
         }
@@ -128,12 +128,12 @@ export default function DeliveryPage() {
                                 <p className="text-sm text-slate-400 mt-2">Relájate o revisa con el administrador</p>
                             </div>
                         )}
-                        {orders.filter(o => o.status !== 'En Entrega').map(order => (
-                            <div key={order.id} className={`bg-white rounded-[2.5rem] border border-border p-8 shadow-sm transition-all group ${['Finalizado'].includes(order.status) ? 'hover:shadow-xl hover:-translate-y-1' : 'opacity-70'}`}>
+                        {orders.filter(o => o.status !== 'delivering').map(order => (
+                            <div key={order.id} className={`bg-white rounded-[2.5rem] border border-border p-8 shadow-sm transition-all group ${['ready'].includes(order.status) ? 'hover:shadow-xl hover:-translate-y-1' : 'opacity-70'}`}>
                                 <div className="flex justify-between items-start mb-6">
                                     <div className="flex items-center gap-4">
                                         <span className="text-lg font-black text-primary bg-primary/5 px-4 py-1.5 rounded-xl block">#{order.id.slice(0, 8)}</span>
-                                        {order.status === 'Finalizado' ? (
+                                        {order.status === 'ready' ? (
                                             <span className="text-[10px] font-black uppercase text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100 tracking-widest">Listo para Despacho</span>
                                         ) : (
                                             <span className="text-[10px] font-black uppercase text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 tracking-widest">En Preparación / Horno</span>
@@ -172,9 +172,9 @@ export default function DeliveryPage() {
                                     </div>
                                 </div>
 
-                                {order.status === 'Finalizado' ? (
+                                {order.status === 'ready' ? (
                                     <button
-                                        onClick={() => handleUpdateStatus(order.id, 'En camino')}
+                                        onClick={() => handleUpdateStatus(order.id, 'shipping')}
                                         className="w-full py-5 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/30 hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-3 group"
                                     >
                                         <Truck size={18} className="group-hover:translate-x-1 group-hover:-rotate-6 transition-transform" />

@@ -67,9 +67,9 @@ describe('OrdersController', () => {
     it('should extract id and status and call service.updateStatus', async () => {
       mockOrdersService.updateStatus.mockResolvedValue('mock-updated-order');
 
-      const result = await controller.updateStatus('order-123', 'shipped');
+      const result = await controller.updateStatus('order-123', 'shipping');
 
-      expect(service.updateStatus).toHaveBeenCalledWith('order-123', 'shipped');
+      expect(service.updateStatus).toHaveBeenCalledWith('order-123', 'shipping');
       expect(result).toBe('mock-updated-order');
     });
   });

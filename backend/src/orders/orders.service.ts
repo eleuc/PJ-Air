@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './order.entity';
@@ -89,6 +89,12 @@ export class OrdersService {
   }
 
   async updateStatus(id: string, status: string): Promise<Order> {
+    const ALLOWED_STATUSES = [
+      'pending', 'production', 'ready', 'shipping', 'delivering', 'delivered', 'cancelled'
+    ];
+    if (!ALLOWED_STATUSES.includes(status)) {
+      throw new BadRequestException(`Invalid status. Allowed: ${ALLOWED_STATUSES.join(', ')}`);
+    }
     const order = await this.findOne(id);
     order.status = status;
     return this.orderRepository.save(order);
@@ -102,7 +108,7 @@ export class OrdersService {
 
   async update(id: string, updateData: any): Promise<Order> {
     const order = await this.findOne(id);
-    const { status, total, delivery_date, address_id, motivo, items } = updateData;
+    const { total, delivery_date, address_id, motivo, items } = updateData;
     
     // Si hay motivo, registramos el cambio en notas
     if (motivo) {
@@ -114,8 +120,6 @@ export class OrdersService {
       
       order.notes = auditLog + (order.notes || '');
     }
-
-    if (status) order.status = status;
     if (total !== undefined) order.total = total;
     if (delivery_date) order.delivery_date = delivery_date;
     if (address_id) order.address_id = address_id;

@@ -31,10 +31,10 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
     }, [orderId]);
 
     const steps = [
-        { key: 'Pedido Enviado', ...t.orders.steps.pending },
-        { key: 'En Producción', ...t.orders.steps.processing },
-        { key: 'En Delivery', ...t.orders.steps.delivering },
-        { key: 'Entregado', ...t.orders.steps.delivered }
+        { key: 'pending', ...t.orders.steps.pending },
+        { key: 'production', ...t.orders.steps.processing },
+        { key: 'delivering', ...t.orders.steps.delivering },
+        { key: 'delivered', ...t.orders.steps.delivered }
     ];
 
     if (isLoading) {

@@ -445,7 +445,7 @@ export default function CheckoutPage() {
                 deliveryType,
                 deliveryAddressText,
                 total: finalTotal,
-                status: 'Pedido Enviado',
+                status: 'pending',
                 deliveryDate: (() => {
                     const [year, month, day] = deliveryDate.split('-').map(Number);
                     return new Date(year, month - 1, day).toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });

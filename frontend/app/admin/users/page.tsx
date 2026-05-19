@@ -7,6 +7,7 @@ import {
     CheckCircle2, X, MapPin, ShoppingBag, ChevronRight, Package, Clock, Edit, Truck, Trash2
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { STATUS_COLORS, DEFAULT_STATUS_COLOR, statusLabel } from '@/lib/order-status';
 
 interface Address { id: string; address: string; city: string; state?: string; zip_code?: string; country?: string; is_default?: boolean; }
 interface OrderItem { 
@@ -32,12 +33,7 @@ const ROLE_STYLES: Record<string, string> = {
     client:     'bg-muted text-muted-foreground border-border',
 };
 
-const STATUS_COLORS: Record<string, string> = {
-    pending:   'bg-yellow-100 text-yellow-700',
-    confirmed: 'bg-blue-100 text-blue-700',
-    delivered: 'bg-green-100 text-green-700',
-    cancelled: 'bg-red-100 text-red-700',
-};
+
 
 export default function AdminUsersPage() {
     const [users, setUsers] = useState<UserRecord[]>([]);
@@ -452,8 +448,8 @@ export default function AdminUsersPage() {
                                             <div key={order.id} className="bg-muted/40 rounded-2xl p-4 text-sm">
                                                 <div className="flex justify-between items-center mb-2">
                                                     <span className="font-mono text-xs text-muted-foreground">#{order.id.slice(0, 8)}</span>
-                                                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${STATUS_COLORS[order.status] || STATUS_COLORS.pending}`}>
-                                                        {order.status}
+                                                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${STATUS_COLORS[order.status] || DEFAULT_STATUS_COLOR}`}>
+                                                        {statusLabel(order.status)}
                                                     </span>
                                                 </div>
                                                 <div className="flex justify-between items-center">

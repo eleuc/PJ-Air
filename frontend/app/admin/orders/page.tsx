@@ -9,6 +9,7 @@ import {
     Plus, Minus, Trash2, CalendarDays, Printer
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { ORDER_STATUSES, STATUS_COLORS, DEFAULT_STATUS_COLOR, statusLabel } from '@/lib/order-status';
 
 interface OrderItem {
     id: string;
@@ -39,20 +40,7 @@ interface DeliveryUser {
     profile?: { full_name?: string; };
 }
 
-const STATUS_OPTIONS = [
-    'Pedido', 'En Producción', 'Finalizado', 'En camino', 'En Entrega', 'Entregado', 'Cancelado'
-];
 
-const STATUS_COLORS: Record<string, string> = {
-    'Pedido':        'bg-blue-50 text-blue-600 border-blue-100',
-    'En Producción': 'bg-violet-50 text-violet-600 border-violet-100',
-    'Finalizado':    'bg-teal-50 text-teal-600 border-teal-100',
-    'En camino':      'bg-orange-50 text-orange-600 border-orange-100',
-    'En Entrega':    'bg-indigo-50 text-indigo-600 border-indigo-100',
-    'Entregado':     'bg-green-50 text-green-600 border-green-100',
-    'Cancelado':     'bg-red-50 text-red-600 border-red-100',
-    'pending':       'bg-slate-50 text-slate-600 border-slate-100',
-};
 
 export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
@@ -188,10 +176,10 @@ export default function AdminOrdersPage() {
         if (!selectedOrder) return;
         try {
             setSaving(true);
-            const updated = await api.patch(`/orders/${selectedOrder.id}`, { status }) as Order;
+            const updated = await api.patch(`/orders/${selectedOrder.id}/status`, { status }) as Order;
             setOrders(prev => prev.map(o => o.id === selectedOrder.id ? updated : o));
             setSelectedOrder(updated);
-            showToast(`✅ Estado cambiado a: ${status}`);
+            showToast(`✅ Estado cambiado a: ${statusLabel(status)}`);
         } catch (err) {
             showToast('❌ Error al cambiar estado', 'error');
         } finally {
@@ -304,7 +292,7 @@ td:nth-child(2){text-align:right}
 ${clientPhone ? `<div><span class="lb">Tel:</span><span>${clientPhone}</span></div>` : ''}
 <div><span class="lb">Entrega:</span><span>${deliveryLabel}</span></div>
 ${addressInfo ? `<div><span class="lb">${deliveryLabel}:</span><span>${addressInfo}</span></div>` : ''}
-<div><span class="lb">Estado:</span><span>${order.status}</span></div>
+<div><span class="lb">Estado:</span><span>${statusLabel(order.status)}</span></div>
 ${fechaEntrega ? `<div><span class="lb">Fecha de Entrega:</span><span>${fechaEntrega}</span></div>` : ''}
 </div>
 <table><thead><tr><th>Producto</th><th style="text-align:right">Cant</th></tr></thead><tbody>${categoryRows}</tbody></table>
@@ -349,8 +337,8 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                 onChange={(e) => setStatusFilter(e.target.value)}
                                 className="flex-1 md:w-52 px-4 py-2.5 bg-muted/30 border border-border rounded-xl outline-none font-bold text-slate-700 cursor-pointer"
                             >
-                                <option>Todos</option>
-                                {STATUS_OPTIONS.map(s => <option key={s}>{s}</option>)}
+                                <option value="Todos">Todos</option>
+                                {ORDER_STATUSES.map(s => <option key={s} value={s}>{statusLabel(s)}</option>)}
                             </select>
                         </div>
                     </div>
@@ -418,8 +406,8 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                             <p className="text-xs text-muted-foreground font-medium truncate max-w-[180px]">{order.user?.email}</p>
                                         </td>
                                         <td className="px-8 py-5">
-                                            <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border shadow-sm transition-all group-hover:scale-105 inline-block ${STATUS_COLORS[order.status] || STATUS_COLORS.pending}`}>
-                                                {order.status}
+                                             <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border shadow-sm transition-all group-hover:scale-105 inline-block ${STATUS_COLORS[order.status] || DEFAULT_STATUS_COLOR}`}>
+                                                {statusLabel(order.status)}
                                             </span>
                                         </td>
                                         <td className="px-8 py-5">
@@ -507,21 +495,21 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                             <section className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm transition-all hover:shadow-md">
                                 <div className="flex justify-between items-center mb-6">
                                     <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
-                                        <History size={14} className="text-primary" /> Línea de Tiempo del Pedido
+                                        <History size={14} className="text-primary" /> Estado del Pedido
                                     </h3>
-                                    <span className={`text-[10px] font-black px-4 py-1.5 rounded-full border shadow-sm ${STATUS_COLORS[selectedOrder.status] || STATUS_COLORS.pending}`}>
-                                        {selectedOrder.status}
+                                    <span className={`text-[10px] font-black px-4 py-1.5 rounded-full border shadow-sm ${STATUS_COLORS[selectedOrder.status] || DEFAULT_STATUS_COLOR}`}>
+                                        {statusLabel(selectedOrder.status)}
                                     </span>
                                 </div>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                    {STATUS_OPTIONS.map(status => (
+                                    {ORDER_STATUSES.map(status => (
                                         <button 
                                             key={status}
                                             onClick={() => handleUpdateStatus(status)}
                                             disabled={saving}
                                             className={`px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-tight transition-all border ${selectedOrder.status === status ? 'bg-primary text-white border-primary shadow-xl scale-105 active:scale-95' : 'bg-slate-50 text-slate-400 border-transparent hover:border-slate-200 hover:text-slate-600'}`}
                                         >
-                                            {status}
+                                            {statusLabel(status)}
                                         </button>
                                     ))}
                                 </div>

@@ -7,10 +7,11 @@ import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
+import { statusLabel } from '@/lib/order-status';
 
 const getClientStatusOptions = (t: any) => [
-    { value: 'Pedido Enviado',  label: t.orders.orderShipped },
-    { value: 'Pedido Recibido', label: t.orders.markAsReceived },
+    { value: 'pending',   label: t.orders.orderShipped },
+    { value: 'delivered', label: t.orders.markAsReceived },
 ];
 
 export default function ClientOrdersPage() {
@@ -50,16 +51,15 @@ export default function ClientOrdersPage() {
 
     const getStatusIcon = (status: string) => {
         const s = (status || '').toLowerCase();
-        if (s.includes('enviado')) return <Clock className="text-blue-500" />;
-        if (s.includes('producción') || s.includes('processing')) return <Package className="text-orange-500" />;
-        if (s.includes('delivery') || s.includes('camino')) return <Truck className="text-purple-500" />;
-        if (s.includes('recibido') || s.includes('entregado')) return <CheckCircle2 className="text-green-500" />;
+        if (s === 'pending') return <Clock className="text-blue-500" />;
+        if (s === 'production' || s === 'ready') return <Package className="text-orange-500" />;
+        if (s === 'shipping' || s === 'delivering') return <Truck className="text-purple-500" />;
+        if (s === 'delivered') return <CheckCircle2 className="text-green-500" />;
         return <AlertCircle className="text-muted-foreground" />;
     };
 
     const isClientEditable = (status: string) => {
-        const s = (status || '').toLowerCase();
-        return s.includes('enviado') || s.includes('delivery') || s.includes('camino');
+        return status === 'pending' || status === 'shipping';
     };
 
     return (
@@ -88,11 +88,11 @@ export default function ClientOrdersPage() {
                                             <div className="flex items-center gap-2 mb-1">
                                                 <h3 className="text-xl font-bold">{t.orders.orderNumber} #{order.id.slice(0, 8)}</h3>
                                                 <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
-                                                    (order.status || '').toLowerCase().includes('recibido') || (order.status || '').toLowerCase().includes('entregado')
+                                                    order.status === 'delivered'
                                                         ? 'bg-green-100 text-green-700'
                                                         : 'bg-primary/10 text-primary'
                                                 }`}>
-                                                    {order.status === 'Pedido Recibido' ? t.orders.delivered : (order.status === 'Pedido Enviado' ? t.orders.shipping : order.status)}
+                                                    {statusLabel(order.status)}
                                                 </span>
                                             </div>
                                             <p className="text-sm text-muted-foreground font-medium">{t.orders.orderedOn} {new Date(order.created_at).toLocaleDateString()}</p>
@@ -136,7 +136,7 @@ export default function ClientOrdersPage() {
                                     </div>
                                 </div>
 
-                                {((order.status || '').toLowerCase().includes('recibido') || (order.status || '').toLowerCase().includes('entregado')) && order.payment_due_date && (
+                                {order.status === 'delivered' && order.payment_due_date && (
                                     <div className="bg-primary/5 px-8 py-4 border-t border-primary/10 flex justify-between items-center">
                                         <p className="text-xs font-bold text-primary flex items-center gap-2">
                                             <Clock size={14} /> {t.orders.paymentDueNotice} <span className="underline uppercase">{order.payment_due_date}</span>

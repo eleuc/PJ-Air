@@ -99,7 +99,6 @@ Errores reportados en produccion:
 - Recuperar Contraseña no funciona.
 - Estoy seguro de que la seleccion de mapa en checkout "Other Address" es diferente que la de addresses/new. Tambien deben compartir componente.
 - El pdf generado al imprimir reporte incluye el mismo boton de imprimir.
-- En el panel de informacion de usuario en admin/users, un pedido sin procesar muestra "Pedido Enviado".Buscar otra terminologia para evitar confusiones.
 - El boton "Ver Detalle" de pedido en la info de usuarios en admin no funciona bien.
 - Usuarios tipo produccion y delivery no tienen dashboard.
 - En admin/users al agregar descuento por producto, se muestran las dos opciones de precio fijo y descuento a la vez. Deberia verse una sola porque es confuso.
@@ -107,8 +106,6 @@ Errores reportados en produccion:
 - Hacer configuable los tipos de flota.
 - admin/orders
   - no se puede asignar.
-  - info de pedido muestra "Linea de Tiempo" cuando deberia ser "Estado".
-  - estado por defecto es "Pedido Enviado", que no aparece en la lista de estados disponibles, y de paso es bien confuso.
   - En info, logistica de entrega, deberia ser asignable tambien, no solo en la lista principal.
   - Linea de Productos no muestra el titulo del producto, sino el default "Articulo Invitado".
   - WTF es "Archivar Cierre"? el boton no hace nada. Probablemente deberia ser "Eliminar Orden", con sus respectivos chequeos de seguridad.

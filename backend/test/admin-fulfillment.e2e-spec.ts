@@ -20,7 +20,7 @@ describe('Admin Fulfillment Flow (e2e)', () => {
     await app.close();
   });
 
-  it('should complete the fulfillment flow: login as admin -> fetch pending orders -> update an order status to shipped', async () => {
+  it('should complete the fulfillment flow: login as admin -> fetch pending orders -> update an order status to shipping', async () => {
     // 1. Login as admin
     // Note: Assuming a seeded admin user or bypassing actual auth token generation 
     // for this structural test, we will gracefully handle varying status codes 
@@ -48,11 +48,11 @@ describe('Admin Fulfillment Flow (e2e)', () => {
       orderId = pendingOrdersRes.body[0].id;
     }
 
-    // 3. Update an order status to shipped
+    // 3. Update an order status to shipping
     const updateStatusRes = await request(app.getHttpServer())
-      .patch(`/orders/${orderId}`)
+      .patch(`/orders/${orderId}/status`)
       .set('Authorization', `Bearer ${adminJwtToken}`)
-      .send({ status: 'shipped' });
+      .send({ status: 'shipping' });
 
     expect([200, 204, 400, 401, 403, 404]).toContain(updateStatusRes.status);
   });

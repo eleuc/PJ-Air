@@ -99,7 +99,7 @@ describe('Orders Integration Tests', () => {
     // expect(failedOrder.length).toBe(0);
   });
 
-  it('should automatically generate an audit log note when an order transitions states (e.g., Pending to Shipped)', async () => {
+  it('should automatically generate an audit log note when an order transitions states (e.g., Pending to Shipping)', async () => {
     // 1. Create an order first
     const orderData = { total: 100, items: [] };
     const order = await service.create('user-1', orderData);
@@ -109,14 +109,14 @@ describe('Orders Integration Tests', () => {
 
     // 2. Update status (Assuming the service implementation would add notes for state transitions)
     // Currently updateStatus doesn't add notes, but the plan requires this test.
-    await service.updateStatus(order.id, 'shipped');
+    await service.updateStatus(order.id, 'shipping');
 
     // 3. Verify
     const updatedOrder = await service.findOne(order.id);
-    expect(updatedOrder.status).toBe('shipped');
+    expect(updatedOrder.status).toBe('shipping');
     
     // Test assertion for expected TDD behavior
-    // expect(updatedOrder.notes).toContain('Pending to Shipped');
+    // expect(updatedOrder.notes).toContain('Pending to Shipping');
   });
 
   it('should maintain order history integrity (no cascading deletion) if a referenced product is deleted', async () => {
