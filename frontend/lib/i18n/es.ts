@@ -258,7 +258,6 @@ const es: Translations = {
     products: 'Productos',
     categories: 'Categorías',
     users: 'Usuarios',
-    clients: 'Clientes',
     routes: 'Rutas',
     orders: 'Pedidos',
     reports: 'Reportes',
