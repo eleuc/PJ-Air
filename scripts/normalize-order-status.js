@@ -1,4 +1,4 @@
-const { DatabaseSync } = require('node:sqlite');
+const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const path = require('path');
 
@@ -17,15 +17,14 @@ if (!fs.existsSync(dbPath)) {
 }
 
 console.log(`Using database at: ${dbPath}`);
-let db;
-try {
-  db = new DatabaseSync(dbPath);
-} catch (err) {
-  console.error(`Failed to open database: ${dbPath}`, err.message);
-  process.exit(1);
-}
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error(`Failed to open database: ${dbPath}`, err.message);
+    process.exit(1);
+  }
+});
 
-try {
+db.serialize(() => {
   console.log('Normalizing order statuses...');
   
   const updates = [
@@ -39,24 +38,52 @@ try {
   ];
 
   let totalUpdated = 0;
-  for (const { target, sources } of updates) {
+  
+  updates.forEach(({ target, sources }) => {
     const placeholders = sources.map(() => '?').join(', ');
-    const selectStmt = db.prepare(`SELECT COUNT(*) as count FROM orders WHERE status IN (${placeholders})`);
-    const countResult = selectStmt.get(...sources);
-    const count = countResult ? countResult.count : 0;
     
-    if (count > 0) {
-      const updateStmt = db.prepare(`UPDATE orders SET status = ? WHERE status IN (${placeholders})`);
-      updateStmt.run(target, ...sources);
-      console.log(`- Updated ${count} orders from (${sources.join(', ')}) to '${target}'`);
-      totalUpdated += count;
-    }
-  }
+    // First, count how many records will be updated
+    db.get(
+      `SELECT COUNT(*) as count FROM orders WHERE status IN (${placeholders})`,
+      sources,
+      (err, row) => {
+        if (err) {
+          console.error(`Error counting records: ${err.message}`);
+          return;
+        }
+        const count = row ? row.count : 0;
+        
+        if (count > 0) {
+          // Update the records
+          db.run(
+            `UPDATE orders SET status = ? WHERE status IN (${placeholders})`,
+            [target, ...sources],
+            function(err) {
+              if (err) {
+                console.error(`Error updating records: ${err.message}`);
+                return;
+              }
+              console.log(`- Updated ${count} orders from (${sources.join(', ')}) to '${target}'`);
+              totalUpdated += count;
+            }
+          );
+        }
+      }
+    );
+  });
 
-  console.log(`✅ Order status normalization complete. Total orders updated: ${totalUpdated}`);
-} catch (err) {
-  console.error('Error during normalization:', err.message);
-  process.exit(1);
-} finally {
-  db.close();
-}
+  // Wait for all updates to complete before closing
+  let updateCount = 0;
+  const checkUpdates = () => {
+    if (updateCount === updates.length) {
+      console.log(`✅ Order status normalization complete. Total orders updated: ${totalUpdated}`);
+      db.close();
+    } else {
+      updateCount++;
+      setTimeout(checkUpdates, 100);
+    }
+  };
+  
+  // Start checking after a short delay
+  setTimeout(checkUpdates, 500);
+});
