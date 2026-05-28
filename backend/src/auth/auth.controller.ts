@@ -1,5 +1,7 @@
 import { Controller, Post, Body, UnauthorizedException, BadRequestException, Patch, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './user.decorator';
 
@@ -30,7 +32,17 @@ export class AuthController {
     if (!body.identifier) {
       throw new BadRequestException('Identifier is required');
     }
-    return this.authService.recoverPassword(body.identifier);
+    return this.authService.requestPasswordReset(body.identifier);
+  }
+
+  @Post('recover-password-admin')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  async recoverPasswordAdmin(@Body() body: { identifier: string }) {
+    if (!body.identifier) {
+      throw new BadRequestException('Identifier is required');
+    }
+    return this.authService.requestPasswordReset(body.identifier, true);
   }
 
   @Post('reset-password')

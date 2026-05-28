@@ -11,7 +11,7 @@ describe('AuthController', () => {
     const mockAuthService = {
       signup: jest.fn(),
       login: jest.fn(),
-      recoverPassword: jest.fn(),
+      requestPasswordReset: jest.fn(),
       changePassword: jest.fn(),
     };
 
@@ -74,12 +74,12 @@ describe('AuthController', () => {
       await expect(controller.recoverPassword({ identifier: '' })).rejects.toThrow(BadRequestException);
     });
 
-    it('should call authService.recoverPassword and return result', async () => {
+    it('should call authService.requestPasswordReset and return result', async () => {
       const expectedResult = { message: 'Success', email: 'test@example.com' };
-      jest.spyOn(authService, 'recoverPassword').mockResolvedValue(expectedResult);
+      jest.spyOn(authService, 'requestPasswordReset').mockResolvedValue(expectedResult);
 
       const result = await controller.recoverPassword({ identifier: 'test@example.com' });
-      expect(authService.recoverPassword).toHaveBeenCalledWith('test@example.com');
+      expect(authService.requestPasswordReset).toHaveBeenCalledWith('test@example.com', false);
       expect(result).toEqual(expectedResult);
     });
   });

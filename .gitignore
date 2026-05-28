@@ -43,3 +43,4 @@ recursos/
 *.sqlite
 check-users.js
 backend/uploads/*
+backend/sessions.json

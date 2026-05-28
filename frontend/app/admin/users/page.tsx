@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 import {
     Users, Search, Loader2, AlertCircle, Shield, User, Mail, Phone,
-    CheckCircle2, X, MapPin, ShoppingBag, ChevronRight, Package, Clock, Edit, Truck, Trash2
+    CheckCircle2, X, MapPin, ShoppingBag, ChevronRight, Package, Clock, Edit, Truck, Trash2, KeyRound, RefreshCw
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { STATUS_COLORS, DEFAULT_STATUS_COLOR, statusLabel } from '@/lib/order-status';
@@ -61,6 +61,8 @@ export default function AdminUsersPage() {
     const [isSavingDiscount, setIsSavingDiscount] = useState(false);
     const [deliveryFee, setDeliveryFee] = useState<number>(0);
     const [isSavingFee, setIsSavingFee] = useState(false);
+    const [resettingPassword, setResettingPassword] = useState(false);
+    const [resetLink, setResetLink] = useState<string | null>(null);
 
     useEffect(() => { 
         fetchUsers(); 
@@ -205,6 +207,21 @@ export default function AdminUsersPage() {
             setProductDiscounts(prev => prev.filter(d => d.id !== id));
             showToast('✅ Descuento eliminado');
         } catch (err: any) { showToast(`❌ ${err.message}`); }
+    };
+
+    const handleResetPassword = async () => {
+        if (!selectedUser) return;
+        setResettingPassword(true);
+        setResetLink(null);
+        try {
+            const result = await api.post(`/auth/reset-password-admin`, {identifier: selectedUser.id});
+            setResetLink((result as any).resetLink);
+            showToast('✅ Enlace de recuperación generado');
+        } catch (err: any) {
+            showToast(`❌ ${err.message}`);
+        } finally {
+            setResettingPassword(false);
+        }
     };
 
     const filtered = users.filter(u => {
@@ -516,6 +533,67 @@ export default function AdminUsersPage() {
                                         ))}
                                     </div>
                                 )}
+                            </section>
+
+                             {/* Password Reset Section (Admin Only) */}
+                             <section className="pt-8 border-t border-border">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-4 flex items-center gap-2">
+                                    <KeyRound size={14} />Acceso y Seguridad
+                                </h3>
+                                
+                                <div className="bg-muted/40 rounded-2xl p-5 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm font-semibold">Restablecer Contraseña</p>
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                Genera un enlace de recuperación para que el usuario pueda restablecer su contraseña
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={handleResetPassword}
+                                            disabled={resettingPassword}
+                                            className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-xl text-xs font-bold uppercase hover:bg-primary/20 transition-all disabled:opacity-50"
+                                        >
+                                            {resettingPassword ? <Loader2 size={14} className="animate-spin" /> : <KeyRound size={14} />}
+                                            {resettingPassword ? 'Generando...' : 'Generar Enlace'}</button>
+                                    </div>
+                                    
+                                    {resetLink && (
+                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 space-y-3">
+                                                <div className="flex items-start gap-3">
+                                                    <RefreshCw size={16} className="text-primary mt-0.5 shrink-0" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-xs font-bold text-primary mb-1">Enlace de Recuperación</p>
+                                                        <p className="text-xs text-muted-foreground break-all font-mono bg-background/50 p-2 rounded-lg">
+                                                            {resetLink}
+                                                        </p>
+                                                        <div className="flex gap-2 mt-3">
+                                                            <a
+                                                                href={resetLink}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="flex items-center gap-1 px-3 py-1.5 bg-primary text-white text-[10px] font-bold uppercase rounded-lg hover:bg-primary/90 transition-all"
+                                                            >
+                                                                <RefreshCw size={12} />
+                                                                Probar Enlace
+                                                            </a>
+                                                            <button
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(resetLink);
+                                                                    showToast('✅ Enlace copiado al portapapeles');
+                                                                }}
+                                                                className="flex items-center gap-1 px-3 py-1.5 bg-muted text-muted-foreground text-[10px] font-bold uppercase rounded-lg hover:bg-muted-foreground/10 transition-all"
+                                                            >
+                                                                Copiar Enlace
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </section>
 
                              {/* Discounts Section (Only for Clients) */}

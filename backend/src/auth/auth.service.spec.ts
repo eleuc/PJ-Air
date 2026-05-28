@@ -78,10 +78,10 @@ describe('AuthService', () => {
     });
   });
 
-  describe('recoverPassword', () => {
+  describe('requestPasswordReset', () => {
     it('should throw UnauthorizedException if user not found', async () => {
       mockUsersService.findForAuth.mockResolvedValue(null);
-      await expect(service.recoverPassword('test@example.com')).rejects.toThrow(UnauthorizedException);
+      await expect(service.requestPasswordReset('test@example.com', false)).rejects.toThrow(UnauthorizedException);
     });
 
     it('should trigger recovery email with correct context', async () => {
@@ -94,10 +94,25 @@ describe('AuthService', () => {
         sendMail: mockSendMail,
       });
 
-      const result = await service.recoverPassword('test@example.com');
+      const result = await service.requestPasswordReset('test@example.com', false);
       expect(mockSendMail).toHaveBeenCalled();
       expect(mockSendMail.mock.calls[0][0].text).toContain('reset-password?token=');
       expect(result).toHaveProperty('message');
+    });
+
+    it('should return reset link for admin', async () => {
+      mockUsersService.findForAuth.mockResolvedValue({ id: '1', email: 'test@example.com', password: 'mypassword' });
+      
+      const mockSendMail = jest.fn().mockResolvedValue({ messageId: '123' });
+      const mockVerify = jest.fn().mockResolvedValue(true);
+      (nodemailer.createTransport as jest.Mock).mockReturnValue({
+        verify: mockVerify,
+        sendMail: mockSendMail,
+      });
+
+      const result = await service.requestPasswordReset('test@example.com', true);
+      expect(result).toHaveProperty('resetLink');
+      expect(result.resetLink).toContain('reset-password?token=');
     });
   });
 
@@ -118,7 +133,7 @@ describe('AuthService', () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'test';
       
-      const recoverResult = await service.recoverPassword('test@example.com');
+      const recoverResult = await service.requestPasswordReset('test@example.com', false);
       const token = (recoverResult as any).resetToken;
       
       process.env.NODE_ENV = originalEnv;
