@@ -1,3 +1,11 @@
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 /**
@@ -36,7 +44,7 @@ async function handleResponse(response: Response) {
   }
 
   if (!response.ok) {
-    throw new Error((data as any).message || 'Error en la petición');
+    throw new ApiError((data as any).message || 'Error en la petición', response.status);
   }
   return data;
 }
@@ -83,7 +91,7 @@ export const api = {
       try {
         data = text ? JSON.parse(text) : { message: '' };
       } catch (e) {}
-      throw new Error(data.message || 'Error en la petición');
+      throw new ApiError(data.message || 'Error en la petición', response.status);
     }
     return true;
   },

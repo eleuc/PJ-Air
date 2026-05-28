@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 
 interface AuthContextType {
     user: User | null;
@@ -41,8 +41,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 delivery_fee: data?.delivery_fee || 0,
                 productDiscounts: data?.productDiscounts || [],
             });
-        } catch {
-            if (fallbackMeta) setProfile(fallbackMeta);
+        } catch (err: any) {
+            if (err instanceof ApiError && err.status === 401) {
+                // Token is invalid/expired — the users controller is JWT-guarded
+                console.warn('Token invalid or expired, clearing session');
+                localStorage.removeItem('local_session');
+                setUser(null);
+                setSession(null);
+                setProfile(null);
+            } else if (fallbackMeta) {
+                setProfile(fallbackMeta);
+            }
         }
     };
 
@@ -53,13 +62,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 const { user, session } = JSON.parse(savedSession);
                 setUser(user);
                 setSession(session);
-                // Fetch live profile + role from backend
-                fetchUserProfile(user.id, user?.user_metadata);
+
+                // Fetch user profile — the users controller is JWT-guarded,
+                // so a 401 inside fetchUserProfile means the token is invalid/expired
+                // and will clear the session automatically.
+                fetchUserProfile(user.id, user?.user_metadata).finally(() => {
+                    setIsLoading(false);
+                });
             } catch (e) {
                 console.error('Error parsing local session:', e);
+                setIsLoading(false);
             }
+        } else {
+            setIsLoading(false);
         }
-        setIsLoading(false);
     }, []);
 
     const updateLocalSession = (data: { user: any, session: any }) => {
