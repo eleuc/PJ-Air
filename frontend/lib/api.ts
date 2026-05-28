@@ -1,25 +1,25 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-let activeToken: string | null = null;
-
 /**
- * Sets the active JWT bearer token for authenticating outgoing requests.
- * 
- * Called by the following client-side execution sites in AuthContext:
- * 1. Mount initialization: when restoring session from localStorage on app boot.
- * 2. updateLocalSession: immediately after user login or registration.
- * 3. signOut: on user logout to clear the active token.
- * 
- * @param token - The raw JWT access token or null to clear authentication headers.
+ * Gets the JWT token directly from localStorage to avoid race conditions.
+ * This synchronous access prevents authentication issues during page refresh.
  */
-export function setApiToken(token: string | null) {
-  activeToken = token;
+function getTokenFromStorage(): string | null {
+  try {
+    const saved = localStorage.getItem('local_session');
+    if (!saved) return null;
+    const { session } = JSON.parse(saved);
+    return session?.access_token || null;
+  } catch {
+    return null;
+  }
 }
 
 function getHeaders(extraHeaders: Record<string, string> = {}): Record<string, string> {
   const headers: Record<string, string> = { ...extraHeaders };
-  if (activeToken) {
-    headers['Authorization'] = `Bearer ${activeToken}`;
+  const token = getTokenFromStorage();
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   }
   return headers;
 }

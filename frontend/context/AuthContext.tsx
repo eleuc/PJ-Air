@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { api, setApiToken } from '@/lib/api';
+import { api } from '@/lib/api';
 
 interface AuthContextType {
     user: User | null;
@@ -51,9 +51,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (savedSession) {
             try {
                 const { user, session } = JSON.parse(savedSession);
-                if (session?.access_token) {
-                    setApiToken(session.access_token);
-                }
                 setUser(user);
                 setSession(session);
                 // Fetch live profile + role from backend
@@ -66,9 +63,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const updateLocalSession = (data: { user: any, session: any }) => {
-        if (data.session?.access_token) {
-            setApiToken(data.session.access_token);
-        }
         setUser(data.user);
         setSession(data.session);
         localStorage.setItem('local_session', JSON.stringify(data));
@@ -77,7 +71,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const signOut = async () => {
-        setApiToken(null);
         setUser(null);
         setSession(null);
         setProfile(null);

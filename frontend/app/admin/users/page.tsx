@@ -214,7 +214,7 @@ export default function AdminUsersPage() {
         setResettingPassword(true);
         setResetLink(null);
         try {
-            const result = await api.post(`/auth/reset-password-admin`, {identifier: selectedUser.id});
+            const result = await api.post(`/auth/recover-password-admin`, {identifier: selectedUser.email});
             setResetLink((result as any).resetLink);
             showToast('✅ Enlace de recuperación generado');
         } catch (err: any) {

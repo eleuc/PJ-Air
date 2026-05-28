@@ -36,7 +36,7 @@ export class AuthController {
   }
 
   @Post('recover-password-admin')
-  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('admin')
   async recoverPasswordAdmin(@Body() body: { identifier: string }) {
     if (!body.identifier) {
