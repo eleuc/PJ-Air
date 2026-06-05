@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 import {
     LayoutGrid, List, Plus, Search, Edit2, Trash2, X,
-    Loader2, AlertCircle, Save, Package, Upload, CheckCircle2
+    Loader2, AlertCircle, Save, Package, Upload, CheckCircle2, EyeOff, Eye
 } from 'lucide-react';
 import { api, API_URL } from '@/lib/api';
 
@@ -17,6 +17,7 @@ interface Product {
     description: string;
     image: string;
     category_min_qty?: number;
+    visible: boolean;
 }
 
 interface ProductForm {
@@ -40,6 +41,7 @@ const emptyForm: ProductForm = {
     description: '',
     image: '',
     category_min_qty: '1',
+    visible: true,
 };
 
 function getDynamicCategories(products: Product[]): string[] {
@@ -56,6 +58,7 @@ function getDynamicCategories(products: Product[]): string[] {
 export default function AdminProductsPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [searchQuery, setSearchQuery] = useState('');
+    const [showHidden, setShowHidden] = useState(false);
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
@@ -90,7 +93,7 @@ export default function AdminProductsPage() {
         try {
             setLoading(true);
             setError(null);
-            const data = await api.get('/products') as Product[];
+            const data = await api.get('/products', { includeHidden: 'true' }) as Product[];
             const list = data || [];
             setProducts(list);
             setCategories(getDynamicCategories(list));
@@ -118,6 +121,7 @@ export default function AdminProductsPage() {
             description: p.description || '',
             image: p.image || '',
             category_min_qty: (p.category_min_qty || 1).toString(),
+            visible: p.visible ?? true,
         });
         setFormError(null);
         setShowModal(true);
@@ -173,6 +177,7 @@ export default function AdminProductsPage() {
                 description: form.description.trim(),
                 image: form.image.trim(),
                 category_min_qty: minQty,
+                visible: form.visible,
             };
 
             if (editingProduct) {
@@ -207,9 +212,19 @@ export default function AdminProductsPage() {
         }
     };
 
+    const toggleVisibility = async (product: Product) => {
+        try {
+            const updated = await api.patch(`/products/${product.id}`, { visible: !product.visible }) as Product;
+            setProducts(prev => prev.map(p => p.id === product.id ? { ...p, ...updated } : p));
+        } catch (err: any) {
+            showToast(err.message || 'Error al cambiar visibilidad', 'error');
+        }
+    };
+
     const filtered = products.filter(p =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.category.toLowerCase().includes(searchQuery.toLowerCase())
+        (p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.category.toLowerCase().includes(searchQuery.toLowerCase())) &&
+        (showHidden || p.visible)
     );
 
     return (
@@ -242,9 +257,18 @@ export default function AdminProductsPage() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
-                    <div className="flex items-center bg-muted p-1 rounded-xl">
-                        <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white shadow text-primary' : 'text-muted-foreground'}`}><LayoutGrid size={20} /></button>
-                        <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white shadow text-primary' : 'text-muted-foreground'}`}><List size={20} /></button>
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center bg-muted p-1 rounded-xl">
+                            <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white shadow text-primary' : 'text-muted-foreground'}`}><LayoutGrid size={20} /></button>
+                            <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white shadow text-primary' : 'text-muted-foreground'}`}><List size={20} /></button>
+                        </div>
+                        <button
+                            onClick={() => setShowHidden(!showHidden)}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${showHidden ? 'bg-primary text-white' : 'text-muted-foreground hover:bg-muted'}`}
+                            title={showHidden ? 'Ocultar productos ocultos' : 'Mostrar productos ocultos'}
+                        >
+                            <EyeOff size={18} />
+                        </button>
                     </div>
                 </div>
 
@@ -271,6 +295,11 @@ export default function AdminProductsPage() {
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-muted-foreground/30"><Package size={40} /></div>
                                     )}
+                                    {!product.visible && (
+                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                            <EyeOff size={48} className="text-white/80" />
+                                        </div>
+                                    )}
                                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                                         <button onClick={() => openEdit(product)} className="p-2.5 bg-white rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-lg"><Edit2 size={16} /></button>
                                         <button onClick={() => setDeleteConfirm(product)} className="p-2.5 bg-white rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-lg"><Trash2 size={16} /></button>
@@ -283,6 +312,9 @@ export default function AdminProductsPage() {
                                     <div className="flex justify-between items-center mt-3">
                                         <span className="font-bold text-primary text-lg">${Number(product.price).toFixed(2)}</span>
                                         <div className="flex gap-1">
+                                            <button onClick={() => toggleVisibility(product)} className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all" title={product.visible ? 'Ocultar producto' : 'Mostrar producto'}>
+                                                {product.visible ? <EyeOff size={14} /> : <Eye size={14} />}
+                                            </button>
                                             <button onClick={() => openEdit(product)} className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all"><Edit2 size={14} /></button>
                                             <button onClick={() => setDeleteConfirm(product)} className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={14} /></button>
                                         </div>
@@ -308,13 +340,20 @@ export default function AdminProductsPage() {
                             </thead>
                             <tbody className="divide-y divide-border">
                                 {filtered.map(product => (
-                                    <tr key={product.id} className="hover:bg-muted/40 transition-colors">
+                                    <tr key={product.id} className={`hover:bg-muted/40 transition-colors ${!product.visible ? 'bg-muted/30' : ''}`}>
                                         <td className="px-6 py-4">
-                                            {product.image ? (
-                                                <img src={product.image?.startsWith('http') ? product.image : `${API_URL}${product.image}`} className="w-12 h-12 rounded-xl object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                                            ) : (
-                                                <div className="w-12 h-12 rounded-xl bg-muted/30 flex items-center justify-center text-muted-foreground/30"><Package size={20} /></div>
-                                            )}
+                                            <div className="relative w-12 h-12 rounded-xl overflow-hidden">
+                                                {product.image ? (
+                                                    <img src={product.image?.startsWith('http') ? product.image : `${API_URL}${product.image}`} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-muted-foreground/30"><Package size={20} /></div>
+                                                )}
+                                                {!product.visible && (
+                                                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                                        <EyeOff size={24} className="text-white/80" />
+                                                    </div>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <p className="font-semibold">{product.name}</p>
@@ -324,6 +363,9 @@ export default function AdminProductsPage() {
                                         <td className="px-6 py-4 font-bold text-primary">${Number(product.price).toFixed(2)}</td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex justify-end gap-2">
+                                                <button onClick={() => toggleVisibility(product)} className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl transition-all" title={product.visible ? 'Ocultar producto' : 'Mostrar producto'}>
+                                                    {product.visible ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                </button>
                                                 <button onClick={() => openEdit(product)} className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl transition-all"><Edit2 size={18} /></button>
                                                 <button onClick={() => setDeleteConfirm(product)} className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={18} /></button>
                                             </div>
@@ -414,6 +456,19 @@ export default function AdminProductsPage() {
                                         placeholder="1"
                                         className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
                                     />
+                                </div>
+                                <div className="col-span-2">
+                                    <div className="flex items-center justify-between">
+                                        <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Visible en tienda</label>
+                                        <button
+                                            type="button"
+                                            onClick={() => setForm(f => ({ ...f, visible: !f.visible }))}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${form.visible ? 'bg-primary' : 'bg-muted'}`}
+                                        >
+                                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${form.visible ? 'translate-x-6' : 'translate-x-1'}`} />
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-1">Los productos no visibles no aparecerán en la tienda pública</p>
                                 </div>
                                 <div className="col-span-2">
                                     <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Descripción</label>

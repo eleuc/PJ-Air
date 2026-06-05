@@ -25,4 +25,7 @@ export class Product {
 
   @Column({ default: 1 })
   category_min_qty: number;
+
+  @Column({ default: true })
+  visible: boolean;
 }

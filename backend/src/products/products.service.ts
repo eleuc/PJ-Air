@@ -66,16 +66,28 @@ export class ProductsService {
     });
   }
 
-  async findAll() {
-    return this.productRepository.find();
+  async findAll(visible: boolean = true) {
+    const where: any = {};
+    if (visible) {
+      where.visible = true;
+    }
+    return this.productRepository.find({ where });
   }
 
-  async findByCategory(category: string) {
-    return this.productRepository.find({ where: { category } });
+  async findByCategory(category: string, visible: boolean = true) {
+    const where: any = { category };
+    if (visible) {
+      where.visible = true;
+    }
+    return this.productRepository.find({ where });
   }
 
-  async findOne(id: number) {
-    return this.productRepository.findOne({ where: { id } });
+  async findOne(id: number, visible: boolean = true) {
+    const where: any = { id };
+    if (visible) {
+      where.visible = true;
+    }
+    return this.productRepository.findOne({ where });
   }
 
   async create(product: Partial<Product>) {

@@ -72,8 +72,12 @@ export const api = {
     return handleResponse(response);
   },
 
-  async get(path: string) {
-    const response = await fetch(`${API_URL}${path}`, {
+  async get(path: string, params?: Record<string, string>) {
+    const url = new URL(`${API_URL}${path}`);
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value));
+    }
+    const response = await fetch(url.toString(), {
       headers: getHeaders(),
     });
     return handleResponse(response);

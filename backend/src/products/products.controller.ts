@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, Patch, Delete, UseInterceptors, UploadedFiles, UploadedFile } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Patch, Delete, UseInterceptors, UploadedFiles, UploadedFile, Query } from '@nestjs/common';
 import { FilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
@@ -14,18 +14,21 @@ export class ProductsController {
     constructor(private readonly productsService: ProductsService) { }
 
     @Get()
-    async findAll() {
-        return this.productsService.findAll();
+    async findAll(@Query('includeHidden') includeHidden?: string) {
+        const visible = includeHidden !== 'true';
+        return this.productsService.findAll(visible);
     }
 
     @Get('category/:category')
-    async findByCategory(@Param('category') category: string) {
-        return this.productsService.findByCategory(category);
+    async findByCategory(@Param('category') category: string, @Query('includeHidden') includeHidden?: string) {
+        const visible = includeHidden !== 'true';
+        return this.productsService.findByCategory(category, visible);
     }
 
     @Get(':id')
-    async findOne(@Param('id') id: string) {
-        return this.productsService.findOne(parseInt(id));
+    async findOne(@Param('id') id: string, @Query('includeHidden') includeHidden?: string) {
+        const visible = includeHidden !== 'true';
+        return this.productsService.findOne(parseInt(id), visible);
     }
 
     @Post()
