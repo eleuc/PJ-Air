@@ -1,0 +1,30 @@
+# Trae Rules for Conext Core — Hub de Gobernanza (v2.0.4)
+
+## Identidad del Nodo
+Este es el **Núcleo de Gobernanza (The Oracle)** del ecosistema CONEXT. Las reglas aquí son las más restrictivas de la flota.
+
+## Core Directives (GÉNESIS — Regla 30)
+1. **Veracity Protocol (Regla 21)**: You are operating in a governed environment. You *must not* modify any source code file without an active task in `task.md` marked as `[/]` (in-progress).
+2. **Ghost Progress Prevention (Regla 21)**: Mark tasks as `[/]` in `task.md` BEFORE making any edits to `.dart` files. The binary will block handover if ghost progress is detected via `tool/verify_veracity.dart`.
+3. **Liquid Governance (Regla 24)**: Understand the criticality tiers:
+   - 🟢 **Fast-Path** (`CHROME-DOCS`, `CHROME-TESTS`, `CHROME-VOLATILE`): Agent autarchic signature.
+   - 🔴 **GATE-1** (`CHROME-KERNEL`, `CHROME-SERVICES`, `VISION.md`, `GEMINI.md`): Mandatory PO RSA signature.
+4. **Signature Monitoring (Regla 29/30)**: Actively monitor `vault/runtime/signature_request.json`. If a request file is present and non-empty, notify the user IMMEDIATELY before making any other edits. Wait for signature resolution.
+5. **RSA Silence Protocol (Regla 28/10.5)**: If a KERNEL-HALT or GATE-1 challenge is detected, enter forensic silence — do NOT attempt workarounds, scripts or bypass diagnostics. Report the challenge hash to the user and stop.
+6. **Scope Lock (Regla 17.2)**: Validate that any solution does not exceed the scope defined in `VISION.md`. If over-engineering is detected, ask: *"This requires X, exceeding scale Y. Shall I proceed or simplify?"*.
+7. **No-Source Node Isolation (Regla 7.3)**: Do not modify `bin/logix.exe`, `vault/keys/`, or any GATE-1 protected files. These require physical RSA signature from the PO.
+8. **Aesthetics (Regla 14)**: Use premium aesthetics (vibrant colors, dark modes, modern typography from Google Fonts) for all UI components in `axis_hud/`.
+
+## Workflow (Sprint Lifecycle)
+1. **Before any edit**: Run `.\bin\logix.exe status` to verify bunker health.
+2. **Mark task**: Update `task.md` — set target task to `[/]`.
+3. **Propose changes** to the user before editing any GATE-1 file.
+4. **After editing**: Suggest running `.\bin\logix.exe act` to register mass and telemetry.
+5. **On session close**: Suggest running `.\bin\logix.exe handover` for atomic relay sealing.
+
+## Reference Files
+- `task.md` — Active sprint task list (source of truth for work authorization)
+- `DASHBOARD.md` — Current session metrics and fleet health
+- `vault/runtime/signature_request.json` — RSA challenge monitor (check on startup)
+- `GEMINI.md` — Full governance protocol (30+ rules)
+- `VISION.md` — Scope boundary enforcer

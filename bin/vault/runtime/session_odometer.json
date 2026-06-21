@@ -1,0 +1,13 @@
+{
+  "session_uuid": "3409e710dfa7e7f8f3b67c4bad644d56",
+  "total_bytes": 2048,
+  "context_base_bytes": 0,
+  "cli_bytes": 2048,
+  "chat_bytes": 0,
+  "total_tokens": 512,
+  "turns": 1,
+  "peak_bytes": 2048,
+  "last_platform": "unknown",
+  "last_update": "2026-04-23T08:41:29.334941",
+  "strike_count": 0
+}
