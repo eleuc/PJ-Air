@@ -1,6 +1,6 @@
-# VISION.md — Pedidos Jhoanes (PJ-AIR) (0.1.0)
+# VISION.md — Pedidos Jhoanes (PJ-AIR) (2.2.11)
 
-**Versión de Producto**: 0.1.0
+**Versión de Producto**: 2.2.11
 **Versión de Gobernanza (Kernel)**: 2.2.11
 
 ## 1. Filosofía Central: Canal Digital de Distribución Directa (Pedidos Jhoanes)

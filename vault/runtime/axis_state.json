@@ -1,0 +1,146 @@
+{
+  "timestamp": "2026-06-21T22:21:10.500028",
+  "kernel": {
+    "version": "2.2.11",
+    "status": "CHALLENGED",
+    "dna_intact": true,
+    "saturation_level": 1,
+    "pulse_breakdown": {
+      "session_cp": 1.14486,
+      "historical_pressure": 0.3,
+      "rule_pressure": 0.0,
+      "immediate_spike": 0.0,
+      "total_computed": 1.14486
+    },
+    "bhi": 0.0,
+    "odometer_bytes": 6912,
+    "odometer_budget": 2000000,
+    "last_audit": "N/A"
+  },
+  "backlog": {
+    "current_sprint": "N/A",
+    "sprint_name": "N/A",
+    "active_task": "N/A",
+    "version": "2.2.11",
+    "pending_tasks": []
+  },
+  "session": {
+    "uuid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+    "role": "GENERAL",
+    "agent_id": "ANONYMOUS"
+  },
+  "challenge": {
+    "id": "GATE-GOLD-AUTH-PJ_AIR-20260621T222055-YYNeFAI4zPtTxjy1AM6Rkk8OVqUbqNkrMZSSJ6VcBMU",
+    "level": "GATE-1",
+    "expires_at": "2026-06-21T23:20:56.161199",
+    "deviations": [
+      {
+        "file": "CHROME-KERNEL",
+        "chrome": "CHROME-KERNEL",
+        "reason": "GATE-1",
+        "severity": "CRITICAL"
+      }
+    ]
+  },
+  "dna": {
+    "last_signature_at": "2026-06-21T18:01:09.412148",
+    "signed_project": "KERNEL-CORE",
+    "chromosomes": [
+      {
+        "name": "CHROME-KERNEL",
+        "status": "DEVIATED"
+      },
+      {
+        "name": "CHROME-SCRIPTS",
+        "status": "INTACT"
+      },
+      {
+        "name": "CHROME-DOCS",
+        "status": "INTACT"
+      },
+      {
+        "name": "CHROME-VOLATILE",
+        "status": "INTACT"
+      },
+      {
+        "name": "CHROME-INFRA",
+        "status": "INTACT"
+      }
+    ]
+  },
+  "fleet": [],
+  "federated_states": [],
+  "stream": [],
+  "nexus_summary": {
+    "total_capabilities": 0,
+    "nodes_indexed": []
+  },
+  "forensic_ledger": [
+    {
+      "id": 6,
+      "timestamp": "2026-06-21T22:20:55.745395",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "9b8073678f6893f2b231b9d6f30817f248c8e05ee52a82f37e1ecf41bd7cc2e7",
+      "type": "CHALLENGE_ISSUED",
+      "task": "GATE-GOLD-AUTH-PJ_AIR-20260621T222055-YYNeFAI4zPtTxjy1AM6Rkk8OVqUbqNkrMZSSJ6VcBMU",
+      "detail": "Level: GATE-GOLD | Project: PJ_AIR | Nonce: YYNeFAI4zPtTxjy1AM6Rkk8OVqUbqNkrMZSSJ6VcBMU",
+      "hash": "71454c3548fefc2c9c13b7dc82040fee3eee93e2b97351109794fc800dae1e9e"
+    },
+    {
+      "id": 5,
+      "timestamp": "2026-06-21T22:20:54.503857",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "e5dbc4a161c0e77717c189530feee4f2133a534c517fd0a999fbfbccf300bf35",
+      "type": "CHALLENGE_ISSUED",
+      "task": "GATE-GOLD-AUTH-PJ_AIR-20260621T222054-Tup9oJDf9h3WHMaj_mCts4_2ZfGL7YVqd58uLIpZ0uU",
+      "detail": "Level: GATE-GOLD | Project: PJ_AIR | Nonce: Tup9oJDf9h3WHMaj_mCts4_2ZfGL7YVqd58uLIpZ0uU",
+      "hash": "9b8073678f6893f2b231b9d6f30817f248c8e05ee52a82f37e1ecf41bd7cc2e7"
+    },
+    {
+      "id": 4,
+      "timestamp": "2026-06-21T22:20:52.386872",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "379345098d882fa72d5a7511a55cb0687a173e7726e850934963c4103fdfcb61",
+      "type": "CHALLENGE_ISSUED",
+      "task": "GATE-1-AUTH-PJ_AIR-20260621T222052-DDiIkeIYWbr6Ih4aT9chyNvr0ravFXs_dEQI54j95d8",
+      "detail": "Level: GATE-1 | Project: PJ_AIR | Nonce: DDiIkeIYWbr6Ih4aT9chyNvr0ravFXs_dEQI54j95d8",
+      "hash": "e5dbc4a161c0e77717c189530feee4f2133a534c517fd0a999fbfbccf300bf35"
+    },
+    {
+      "id": 3,
+      "timestamp": "2026-06-21T22:20:52.132540",
+      "role": "ARCHITECT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "0937df12d7810ad2bc6be2c8976830fefffaff8fe6123e4df5e36a7a0c7974e8",
+      "type": "TRACE",
+      "task": "TAKEOVER",
+      "detail": "Ejecución administrativa detectada: logix takeover",
+      "hash": "379345098d882fa72d5a7511a55cb0687a173e7726e850934963c4103fdfcb61"
+    },
+    {
+      "id": 2,
+      "timestamp": "2026-06-21T22:20:49.351984",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "c126642eaf49c26d7f1491983116fbfcba45b0ce0a86adf36523a19e6ada2218",
+      "type": "TRACE",
+      "task": "UNKNOWN",
+      "detail": "Ejecución administrativa detectada: logix unknown",
+      "hash": "0937df12d7810ad2bc6be2c8976830fefffaff8fe6123e4df5e36a7a0c7974e8"
+    },
+    {
+      "id": 1,
+      "timestamp": "2026-06-21T18:00:57.608646",
+      "role": "ARCHITECT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "type": "TRACE",
+      "task": "BASELINE",
+      "detail": "Ejecución administrativa detectada: logix baseline",
+      "hash": "c126642eaf49c26d7f1491983116fbfcba45b0ce0a86adf36523a19e6ada2218"
+    }
+  ]
+}

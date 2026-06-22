@@ -1,6 +1,6 @@
 {
   "project": "pj-air",
-  "version": "0.1.0",
+  "version": "2.2.11",
   "kernel_version": "2.2.11",
   "status": "NOMINAL",
   "current_sprint": "S01-INCEPTION",
@@ -17,7 +17,9 @@
           "id": "TASK-01-01",
           "label": "GOV/DOC",
           "desc": "Establecer el búnker de pj-air, llaves públicas, GEMINI.md y la VISION.md funcional inicial.",
-          "status": "DONE"
+          "status": "IN_PROGRESS",
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
         }
       ]
     }

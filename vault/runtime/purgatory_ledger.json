@@ -1,0 +1,58 @@
+[
+  {
+    "timestamp": "2026-06-21T22:20:54.003836",
+    "original_name": "check-db-images.js",
+    "exile_name": "1782094853915_check-db-images.js",
+    "hash": "447BE667BC2932A56B96F6F5CF89C6B8E2242152803E00F9189AE0595D10B7EB",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\check-db-images.js"
+  },
+  {
+    "timestamp": "2026-06-21T22:20:54.013404",
+    "original_name": "DEPLY_REMOTE.md",
+    "exile_name": "1782094854005_DEPLY_REMOTE.md",
+    "hash": "EFA6767E5D33C2E85EFEE4D9F3E24E1C21F265F07D759454601FCAFCE0DF586B",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\DEPLY_REMOTE.md"
+  },
+  {
+    "timestamp": "2026-06-21T22:20:54.020940",
+    "original_name": "ecosystem.config.js",
+    "exile_name": "1782094854014_ecosystem.config.js",
+    "hash": "ECE5C039608FB95B6D140F66F7B0857979E575C55D9364D8655F895909C38F81",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\ecosystem.config.js"
+  },
+  {
+    "timestamp": "2026-06-21T22:20:54.033650",
+    "original_name": "env_usage_report.md",
+    "exile_name": "1782094854028_env_usage_report.md",
+    "hash": "B2D18D40215400523022F42C3325D68042775A83E1615802D6AEA3E680B010FF",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\env_usage_report.md"
+  },
+  {
+    "timestamp": "2026-06-21T22:20:54.056824",
+    "original_name": "nginx.conf",
+    "exile_name": "1782094854043_nginx.conf",
+    "hash": "363597F394BC96A83700A190B5ED514E3706A60D47273C87759D08E7488BCE5A",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\nginx.conf"
+  },
+  {
+    "timestamp": "2026-06-21T22:20:54.086357",
+    "original_name": "package-lock.json",
+    "exile_name": "1782094854059_package-lock.json",
+    "hash": "3F81035A53BA4FB88634900BBB613B448139E2533138E086DD045EF79EB29107",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\package-lock.json"
+  },
+  {
+    "timestamp": "2026-06-21T22:20:54.097480",
+    "original_name": "package.json",
+    "exile_name": "1782094854093_package.json",
+    "hash": "6CFC7CA963A898C5ABA1179EE6CD3CD90986AB07FFEB9C9BE694AA4214DB8768",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\package.json"
+  },
+  {
+    "timestamp": "2026-06-21T22:20:54.108038",
+    "original_name": "plan.md",
+    "exile_name": "1782094854101_plan.md",
+    "hash": "F40DB9A8E6B6D7523503D4C2EDF5A469BDADFCD136C01E7550EEE003AC4574B5",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\plan.md"
+  }
+]
