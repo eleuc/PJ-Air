@@ -107,7 +107,9 @@ export default function CategoryPage() {
     }, [products, locale]);
 
     const categoryProducts = useMemo(() =>
-        products.filter(p => p.category?.name === categoryKey)
+        products
+            .filter(p => p.category?.name === categoryKey)
+            .sort((a, b) => a.name.localeCompare(b.name))
     , [products, categoryKey]);
 
     const categoryLabel = useMemo(() => {

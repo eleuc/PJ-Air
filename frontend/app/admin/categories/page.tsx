@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import AdminSidebar from '@/components/layout/AdminSidebar';
-import { Plus, Trash2, Folder, Loader2, AlertCircle, X, Save, Edit2, CheckCircle2, Package, Globe } from 'lucide-react';
+import { Plus, Trash2, Folder, Loader2, AlertCircle, X, Save, Edit2, CheckCircle2, Package, Globe, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -12,6 +12,7 @@ interface CategorySummary {
     name_en: string;    // English name
     count: number;
     min_qty: number;
+    is_active: boolean;
 }
 
 export default function AdminCategoriesPage() {
@@ -26,6 +27,7 @@ export default function AdminCategoriesPage() {
     const [catName, setCatName] = useState('');
     const [catNameEn, setCatNameEn] = useState('');
     const [minQty, setMinQty] = useState<number>(1);
+    const [isActive, setIsActive] = useState<boolean>(true);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
 
@@ -69,6 +71,7 @@ export default function AdminCategoriesPage() {
                     name: c.name,
                     name_en: c.name_en || c.name,
                     min_qty: c.min_qty || 1,
+                    is_active: c.is_active !== false,
                     count: counts[c.id] || 0,
                 })).sort((a, b) => a.name.localeCompare(b.name))
             );
@@ -84,6 +87,7 @@ export default function AdminCategoriesPage() {
         setCatName('');
         setCatNameEn('');
         setMinQty(1);
+        setIsActive(true);
         setFormError(null);
         setShowModal(true);
     };
@@ -93,8 +97,22 @@ export default function AdminCategoriesPage() {
         setCatName(cat.name);
         setCatNameEn(cat.name_en);
         setMinQty(cat.min_qty || 1);
+        setIsActive(cat.is_active);
         setFormError(null);
         setShowModal(true);
+    };
+
+    const handleToggleActive = async (cat: CategorySummary) => {
+        try {
+            const nextStatus = !cat.is_active;
+            await api.patch(`/products/categories/${cat.id}`, {
+                is_active: nextStatus
+            });
+            showToast(locale === 'en' ? `✅ ${cat.name} is now ${nextStatus ? 'Active' : 'Inactive'}` : `✅ ${cat.name} está ahora ${nextStatus ? 'Activa' : 'Inactiva'}`);
+            await fetchCategories();
+        } catch (err: any) {
+            showToast(err.message || 'Error toggling status', 'error');
+        }
     };
 
     const handleSave = async () => {
@@ -115,14 +133,16 @@ export default function AdminCategoriesPage() {
                 await api.patch(`/products/categories/${editingCategory.id}`, {
                     name: trimmedEs,
                     name_en: trimmedEn,
-                    min_qty: minQty
+                    min_qty: minQty,
+                    is_active: isActive
                 });
                 showToast(`✅ Category updated: "${trimmedEs}" (Min: ${minQty})`);
             } else {
                 await api.post('/products/categories', {
                     name: trimmedEs,
                     name_en: trimmedEn,
-                    min_qty: minQty
+                    min_qty: minQty,
+                    is_active: isActive
                 });
                 showToast(`✅ Category "${trimmedEs}" / "${trimmedEn}" created`);
             }
@@ -193,11 +213,26 @@ export default function AdminCategoriesPage() {
                     {!loading && !error && categories.length > 0 && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {categories.map(cat => (
-                                <div key={cat.id} className="bg-card p-8 rounded-[32px] border border-border shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+                                <div key={cat.id} className={`bg-card p-8 rounded-[32px] border shadow-sm hover:shadow-xl transition-all group relative overflow-hidden ${cat.is_active ? 'border-border' : 'border-dashed border-muted-foreground/30 opacity-70'}`}>
                                     <div className="absolute top-0 left-0 w-2 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity rounded-l-[32px]" />
-                                    <div className="w-14 h-14 bg-primary/5 text-primary rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all">
-                                        <Folder size={28} />
+                                    
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="w-14 h-14 bg-primary/5 text-primary rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                                            <Folder size={28} />
+                                        </div>
+                                        <button 
+                                            onClick={() => handleToggleActive(cat)} 
+                                            className={`p-2 rounded-xl border transition-all ${
+                                                cat.is_active 
+                                                    ? 'bg-green-50 border-green-200 text-green-600 hover:bg-green-100' 
+                                                    : 'bg-muted border-border text-muted-foreground hover:bg-primary/5'
+                                            }`}
+                                            title={cat.is_active ? 'Desactivar Categoría' : 'Activar Categoría'}
+                                        >
+                                            {cat.is_active ? <Eye size={16} /> : <EyeOff size={16} />}
+                                        </button>
                                     </div>
+
                                     <div className="mb-1">
                                         <h3 className="text-xl font-bold leading-tight">{cat.name}</h3>
                                         {cat.name_en && cat.name_en !== cat.name && (
@@ -300,6 +335,17 @@ export default function AdminCategoriesPage() {
                                     className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 font-medium"
                                 />
                                 <p className="text-[10px] text-muted-foreground mt-1.5 italic">Garantiza un pedido mínimo para esta categoría.</p>
+                            </div>
+
+                            {/* Active Status Toggle */}
+                            <div className="flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border/40">
+                                <span className="text-xs font-black text-muted-foreground uppercase">Categoría Activa (Visible)</span>
+                                <input 
+                                    type="checkbox" 
+                                    checked={isActive} 
+                                    onChange={e => setIsActive(e.target.checked)} 
+                                    className="w-5 h-5 accent-primary cursor-pointer"
+                                />
                             </div>
 
                             {editingCategory && editingCategory.count > 0 && (

@@ -91,19 +91,63 @@ export class OrdersService {
   }
 
   async findInRange(startDate: string, endDate: string, userId?: string): Promise<Order[]> {
+    console.log('findInRange called with:', { startDate, endDate, userId });
+    
+    // Normalize input to date string: YYYY-MM-DD
+    const rawStart = startDate.split(' ')[0].split('T')[0];
+    const rawEnd = endDate.split(' ')[0].split('T')[0];
+
+    // Widened range query to cover any timezone / production date batch offsets
+    const startD = new Date(rawStart + 'T12:00:00');
+    startD.setDate(startD.getDate() - 2); 
+    const endD = new Date(rawEnd + 'T12:00:00');
+    endD.setDate(endD.getDate() + 2);
+    
+    const queryStart = startD.toISOString().split('T')[0] + 'T00:00:00.000Z';
+    const queryEnd = endD.toISOString().split('T')[0] + 'T23:59:59.999Z';
+
     const qb = this.orderRepository.createQueryBuilder('order')
       .leftJoinAndSelect('order.items', 'items')
       .leftJoinAndSelect('items.product', 'product')
+      .leftJoinAndSelect('product.category', 'category') // LOAD CATEGORY FOR REPORT GROUPING
       .leftJoinAndSelect('order.user', 'user')
       .leftJoinAndSelect('user.profile', 'profile')
-      .where('order.created_at >= :start', { start: startDate })
-      .andWhere('order.created_at <= :end', { end: endDate });
+      .leftJoinAndSelect('order.delivery_user', 'delivery_user')
+      .leftJoinAndSelect('delivery_user.profile', 'delivery_profile')
+      .leftJoinAndSelect('order.address', 'address')
+      .where('order.created_at >= :start', { start: queryStart })
+      .andWhere('order.created_at <= :end', { end: queryEnd });
 
     if (userId) {
       qb.andWhere('order.user_id = :userId', { userId });
     }
 
-    return qb.orderBy('order.created_at', 'DESC').getMany();
+    qb.orderBy('order.created_at', 'DESC');
+    
+    const allMatching = await qb.getMany();
+    
+    // Client-side production date timezone conversion logic
+    const getProductionDate = (dateVal: any) => {
+      if (!dateVal) return '';
+      const d = dateVal instanceof Date ? dateVal : new Date(dateVal);
+      if (isNaN(d.getTime())) return '';
+      const nyDate = new Date(d.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      if (nyDate.getHours() >= 13) {
+        nyDate.setDate(nyDate.getDate() + 1);
+      }
+      const yr = nyDate.getFullYear();
+      const mo = String(nyDate.getMonth() + 1).padStart(2, '0');
+      const da = String(nyDate.getDate()).padStart(2, '0');
+      return `${yr}-${mo}-${da}`;
+    };
+
+    const filtered = allMatching.filter(order => {
+      const prodDate = getProductionDate(order.created_at || order.delivery_date || '');
+      return prodDate >= rawStart && prodDate <= rawEnd;
+    });
+
+    console.log(`findInRange: wider query found ${allMatching.length}, filtered down to ${filtered.length} for ${rawStart} to ${rawEnd}`);
+    return filtered;
   }
 
   async findAll(): Promise<Order[]> {

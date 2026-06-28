@@ -2,9 +2,9 @@
   "project": "pj-air",
   "version": "2.2.11",
   "kernel_version": "2.2.11",
-  "status": "IN_PROGRESS",
-  "current_sprint": "S05-DOMAIN-EVO",
-  "current_task": "TASK-05-03",
+  "status": "COMPLETED",
+  "current_sprint": "S07-UI-UX-REFINEMENT",
+  "current_task": "TASK-07-05",
   "sprints": [
     {
       "id": "S01-INCEPTION",
@@ -136,7 +136,7 @@
     {
       "id": "S06-QA-TESTING",
       "name": "Sprint 06: Batería de Pruebas Exhaustivas (QA/Automáticas)",
-      "status": "TODO",
+      "status": "COMPLETED",
       "start_date": "2026-06-28",
       "goal": "Garantizar cobertura total (unitarias, integración, transversales y UI/UX) post-refactor arquitectónico.",
       "tasks": [
@@ -144,19 +144,58 @@
           "id": "TASK-06-01",
           "label": "TECH/TEST",
           "desc": "Pruebas Unitarias e Integración Backend (Auth, Precios, Archivos).",
-          "status": "TODO"
+          "status": "DONE"
         },
         {
           "id": "TASK-06-02",
           "label": "UI/TEST",
           "desc": "Pruebas UI/UX Automáticas E2E (Playwright).",
-          "status": "TODO"
+          "status": "DONE"
         },
         {
           "id": "TASK-06-03",
           "label": "GOV/TEST",
           "desc": "Auditoría Transversal de Seguridad (Aislamiento y Endpoint Security).",
-          "status": "TODO"
+          "status": "DONE"
+        }
+      ]
+    },
+    {
+      "id": "S07-UI-UX-REFINEMENT",
+      "name": "Sprint 07: Refinamiento UI/UX y Reportes",
+      "status": "COMPLETED",
+      "start_date": "2026-06-28",
+      "goal": "Mejorar navegación de categorías, fidelidad visual en Excel, ordenamiento alfabético y soporte para desactivación de categorías.",
+      "tasks": [
+        {
+          "id": "TASK-07-01",
+          "label": "UI/CLEAN",
+          "desc": "Eliminación de Base de Datos Secundaria (Staging/Test) y todas sus referencias en código y documentación.",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-07-02",
+          "label": "TECH/UI",
+          "desc": "Auditoría y Optimización de la Gestión de Imágenes del Catálogo.",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-07-03",
+          "label": "TECH/UI",
+          "desc": "Fidelidad Visual de Reportes Excel (Pixel-Perfect con exceljs).",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-07-04",
+          "label": "UI/CLEAN",
+          "desc": "Navegación Ágil y Filtros: Categorías -> Productos y Ordenamiento Universal A-Z.",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-07-05",
+          "label": "TECH/DOMAIN",
+          "desc": "Activación y Desactivación de Categorías (Alteración de Esquema de DB Autorizada por PO).",
+          "status": "DONE"
         }
       ]
     }

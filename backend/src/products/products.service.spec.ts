@@ -112,11 +112,17 @@ describe('ProductsService', () => {
 
   describe('CRUD operations', () => {
     it('findAll should query products that are not deleted with category relation', async () => {
-      const products = [{ id: 1, name: 'Test', is_deleted: false }];
+      const products = [
+        { id: 1, name: 'Test Active', is_deleted: false, category: { id: 1, name: 'Cat1', is_active: true } },
+        { id: 2, name: 'Test Inactive', is_deleted: false, category: { id: 2, name: 'Cat2', is_active: false } },
+        { id: 3, name: 'Test No Cat', is_deleted: false, category: null }
+      ];
       mockProductRepository.find.mockResolvedValue(products);
 
       const result = await service.findAll();
-      expect(result).toEqual(products);
+      expect(result).toHaveLength(2);
+      expect(result[0].name).toBe('Test Active');
+      expect(result[1].name).toBe('Test No Cat');
       expect(mockProductRepository.find).toHaveBeenCalledWith({
         where: { is_deleted: false },
         relations: ['category'],
@@ -124,13 +130,17 @@ describe('ProductsService', () => {
     });
 
     it('findByCategory should query products by category name relation', async () => {
-      const products = [{ id: 1, name: 'Test', is_deleted: false }];
+      const products = [
+        { id: 1, name: 'Test Active', is_deleted: false, category: { id: 1, name: 'Cat1', is_active: true } },
+        { id: 2, name: 'Test Inactive', is_deleted: false, category: { id: 1, name: 'Cat1', is_active: false } }
+      ];
       mockProductRepository.find.mockResolvedValue(products);
 
-      const result = await service.findByCategory('Electronics');
-      expect(result).toEqual(products);
+      const result = await service.findByCategory('Cat1');
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Test Active');
       expect(mockProductRepository.find).toHaveBeenCalledWith({
-        where: { category: { name: 'Electronics' }, is_deleted: false },
+        where: { category: { name: 'Cat1' }, is_deleted: false },
         relations: ['category'],
       });
     });

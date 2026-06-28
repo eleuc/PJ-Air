@@ -171,17 +171,19 @@ export class ProductsService implements OnModuleInit {
   }
 
   async findAll() {
-    return this.productRepository.find({
+    const products = await this.productRepository.find({
       where: { is_deleted: false },
       relations: ['category'],
     });
+    return products.filter(p => !p.category || p.category.is_active !== false);
   }
 
   async findByCategory(categoryName: string) {
-    return this.productRepository.find({ 
+    const products = await this.productRepository.find({ 
       where: { category: { name: categoryName }, is_deleted: false },
       relations: ['category']
     });
+    return products.filter(p => !p.category || p.category.is_active !== false);
   }
 
   async findOne(id: number) {
@@ -207,8 +209,41 @@ export class ProductsService implements OnModuleInit {
     return this.productRepository.save(product);
   }
 
-  async syncLocalProducts(products: Product[]) {
-    return this.productRepository.save(products);
+  async syncLocalProducts(products: any[]) {
+    const categoryMap: Record<string, any> = {};
+    const productsToSave = [];
+
+    for (const p of products) {
+      const categoryName = p.category;
+      if (typeof categoryName === 'string') {
+        let cat = categoryMap[categoryName];
+        if (!cat) {
+          const found = await this.categoryRepository.findOne({ where: { name: categoryName } });
+          if (found) {
+            cat = found;
+          } else {
+            const newCat = this.categoryRepository.create({
+              name: categoryName,
+              name_en: categoryName === 'Postres' ? 'Desserts' : categoryName === 'Pasteles' ? 'Cakes' : categoryName,
+              min_qty: 1,
+              is_active: true,
+            });
+            cat = await this.categoryRepository.save(newCat);
+          }
+          categoryMap[categoryName] = cat;
+        }
+        
+        const { category, ...rest } = p;
+        productsToSave.push({
+          ...rest,
+          category: cat,
+        });
+      } else {
+        productsToSave.push(p);
+      }
+    }
+
+    return this.productRepository.save(productsToSave);
   }
 
   async update(id: number, data: any) {

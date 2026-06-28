@@ -15,6 +15,9 @@ export class Category {
   @Column({ default: 1 })
   min_qty: number;
 
+  @Column({ default: true })
+  is_active: boolean;
+
   @OneToMany(() => Product, (product) => product.category)
   products: Product[];
 }

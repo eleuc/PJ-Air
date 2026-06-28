@@ -32,7 +32,7 @@ export class OrdersController {
     @Res() res: any,
   ) {
     const orders = await this.ordersService.findInRange(startDate, endDate);
-    const buffer = this.excelService.exportIndividual(orders);
+    const buffer = await this.excelService.exportIndividual(orders);
     res.set({
       'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': `attachment; filename="ORDENES_INDIVIDUALES.xlsx"`,
@@ -48,7 +48,7 @@ export class OrdersController {
     @Res() res: any,
   ) {
     const orders = await this.ordersService.findInRange(startDate, endDate);
-    const buffer = this.excelService.exportConsolidated(orders);
+    const buffer = await this.excelService.exportConsolidated(orders);
     res.set({
       'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': `attachment; filename="ORDENES_CONSOLIDADO.xlsx"`,

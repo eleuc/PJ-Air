@@ -508,7 +508,7 @@ export default function Home() {
             .map(([key, { labelEn, items }]) => ({
                 key,
                 label: locale === 'en' ? labelEn : key,
-                products: items,
+                products: items.sort((a, b) => a.name.localeCompare(b.name)),
             }));
     }, [products, locale]);
 
@@ -516,11 +516,13 @@ export default function Home() {
     const searchResults = useMemo(() => {
         const q = searchQuery.trim().toLowerCase();
         if (!q) return [];
-        return products.filter(p =>
-            p.name.toLowerCase().includes(q) ||
-            (p.category?.name || '').toLowerCase().includes(q) ||
-            (p.category?.name_en || '').toLowerCase().includes(q)
-        );
+        return products
+            .filter(p =>
+                p.name.toLowerCase().includes(q) ||
+                (p.category?.name || '').toLowerCase().includes(q) ||
+                (p.category?.name_en || '').toLowerCase().includes(q)
+            )
+            .sort((a, b) => a.name.localeCompare(b.name));
     }, [products, searchQuery]);
 
     const isSearching = searchQuery.trim().length > 0;
@@ -559,7 +561,11 @@ export default function Home() {
                     {/* "All" pill — first */}
                     <a
                         href="#top"
-                        onClick={() => setSearchQuery('')}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setSearchQuery('');
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
                         className="shrink-0 px-4 py-2 rounded-full bg-primary text-white text-[11px] font-black uppercase tracking-wider shadow-sm transition-all hover:bg-primary/90"
                     >
                         {locale === 'en' ? 'All' : 'Todos'}

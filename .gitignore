@@ -43,3 +43,8 @@ bin.old/
 scratch/
 **/RESTART_REQUIRED
 *.db
+**/node_modules/
+**/.next/
+dist/
+out/
+*.xlsx

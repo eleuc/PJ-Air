@@ -73,7 +73,7 @@ export default function AdminDashboardPage() {
             if (!date) return;
             if (!days[date]) days[date] = { total: 0 };
             (order.items || []).forEach((item: any) => {
-                const cat = item.product?.category || 'Otros';
+                const cat = item.product?.category?.name || 'Otros';
                 const qty = Number(item.quantity) || 0;
                 days[date][cat] = (days[date][cat] || 0) + qty;
                 days[date].total += qty;
@@ -83,7 +83,7 @@ export default function AdminDashboardPage() {
     }, [historyOrders]);
 
     const allCategories = useMemo(() => {
-        return [...new Set(historyOrders.flatMap(o => (o.items || []).map((it: any) => it.product?.category || 'Otros')))];
+        return [...new Set(historyOrders.flatMap(o => (o.items || []).map((it: any) => it.product?.category?.name || 'Otros')))];
     }, [historyOrders]);
 
     const stats = [
