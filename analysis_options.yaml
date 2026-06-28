@@ -1,0 +1,13 @@
+include: package:lints/recommended.yaml
+analyzer:
+  exclude: [ "**/build/**", "**/.dart_tool/**", "vault/runtime/**" ]
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
+linter:
+  rules:
+    - always_specify_types
+    - unawaited_futures
+    - avoid_relative_lib_imports # Refuerza Regla 15 (Aislamiento)
+    - test_types_in_equals
+    - prefer_const_constructors

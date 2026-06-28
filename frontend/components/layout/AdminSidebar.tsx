@@ -2,24 +2,34 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { LayoutDashboard, ShoppingBag, Layers, Users, Truck, Settings, LogOut, ChevronLeft, ChevronRight, BarChart3, Package } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { LayoutDashboard, ShoppingBag, Layers, Users, Truck, Settings, LogOut, ChevronLeft, ChevronRight, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function AdminSidebar() {
     const pathname = usePathname();
     const router = useRouter();
-    const { signOut } = useAuth();
+    const { signOut, user, profile, isLoading } = useAuth();
     const { t } = useLanguage();
     const [collapsed, setCollapsed] = useState(false);
+
+    useEffect(() => {
+        if (!isLoading) {
+            const localSession = localStorage.getItem('local_session');
+            if (!user && !localSession) {
+                router.push('/auth/login');
+            } else if (profile && profile.role !== 'admin') {
+                router.push('/');
+            }
+        }
+    }, [isLoading, user, profile, router]);
 
     const MENU_ITEMS = [
         { name: t.adminSidebar.dashboard,   icon: LayoutDashboard, href: '/admin' },
         { name: t.adminSidebar.reports,     icon: BarChart3,        href: '/admin/reports' },
         { name: t.adminSidebar.orders,      icon: ShoppingBag,      href: '/admin/orders' },
         { name: t.adminSidebar.products,    icon: ShoppingBag,     href: '/admin/products' },
-        { name: 'Productos 2',              icon: Package,          href: '/admin/productos2' },
         { name: t.adminSidebar.categories,  icon: Layers,           href: '/admin/categories' },
         { name: t.adminSidebar.users,       icon: Users,            href: '/admin/users' },
         { name: t.adminSidebar.clients,     icon: Users,            href: '/admin/clients' },

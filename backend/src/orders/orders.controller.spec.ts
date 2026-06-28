@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
+import { ExcelService } from './excel.service';
 
 describe('OrdersController', () => {
   let controller: OrdersController;
@@ -17,6 +18,11 @@ describe('OrdersController', () => {
     update: jest.fn(),
   };
 
+  const mockExcelService = {
+    exportIndividual: jest.fn(),
+    exportConsolidated: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [OrdersController],
@@ -24,6 +30,10 @@ describe('OrdersController', () => {
         {
           provide: OrdersService,
           useValue: mockOrdersService,
+        },
+        {
+          provide: ExcelService,
+          useValue: mockExcelService,
         },
       ],
     }).compile();

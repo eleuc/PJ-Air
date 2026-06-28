@@ -1,42 +1,45 @@
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
+# https://dart.dev/guides/libraries/private-files
+# Global build and tool artifacts
+**/build/
+**/.dart_tool/
+**/windows/flutter/
+**/*.log
 
-# Testing
-coverage/
+# Project specific
+session.lock
+bin/*.exe
+bin/*.old
+bin/*.bak
+bin/*.sig
+bin/data/
+tool/
+output_baseline.txt
 
-# Next.js
-.next/
-out/
+# Sensitive keys must stay ignored
+vault/po_private.xml
+vault/agent_vanguard.xml
+vault/keys/
 
-# Production
-build/
-dist/
+# Global heavy binary exclusions
+**/*.pdb
+**/ephemeral/
+**/flutter_windows.dll
+release/
+bin/*.dll
 
-# Misc
-.DS_Store
-*.pem
+# Telemetry and Historial rotation
+vault/runtime/
+vault/graveyard/
+# vault/intel is ALLOWED for system knowledge persistence
+!vault/intel/
 
-# Env
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Git
-.agent/
-recursos/
-
-# Large / temporary files
-*.zip
-*.bak
-*.sqlite
-check-users.js
-backend/uploads/*
+*.so
+*.exe.old
+*.exe.bak
+*.exe.update
+bin/vault/runtime/purgatory/
+backups/
+bin.old/
+scratch/
+**/RESTART_REQUIRED
+*.db

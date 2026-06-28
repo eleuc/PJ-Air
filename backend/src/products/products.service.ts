@@ -67,7 +67,8 @@ export class ProductsService {
   }
 
   async findAll() {
-    return this.productRepository.find();
+    const list = await this.productRepository.find();
+    return list.filter(p => p.category !== '_deleted_');
   }
 
   async findByCategory(category: string) {
@@ -94,16 +95,11 @@ export class ProductsService {
   async delete(id: number) {
     const product = await this.productRepository.findOne({ where: { id } });
     if (!product) return null;
-    try {
-      return await this.productRepository.remove(product);
-    } catch (error) {
-      if (error.code === 'SQLITE_CONSTRAINT' || (error.message && error.message.includes('FOREIGN KEY'))) {
-        throw new ConflictException(
-          `Cannot delete product "${product.name}" (ID: ${id}) because it is referenced in existing orders or customer discounts.`,
-        );
-      }
-      throw error;
-    }
+    
+    // Soft delete: set category to '_deleted_' so it is hidden but preserved for history
+    product.category = '_deleted_';
+    product.category_en = '_deleted_';
+    return this.productRepository.save(product);
   }
 
   /** Update category (ES), category_en (EN), and category_min_qty across all products with matching category name */

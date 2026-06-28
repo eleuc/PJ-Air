@@ -2,9 +2,9 @@
   "project": "pj-air",
   "version": "2.2.11",
   "kernel_version": "2.2.11",
-  "status": "NOMINAL",
-  "current_sprint": "S01-INCEPTION",
-  "current_task": "TASK-01-01",
+  "status": "IN_PROGRESS",
+  "current_sprint": "S04-SECURITY-CORE",
+  "current_task": "TASK-04-01",
   "sprints": [
     {
       "id": "S01-INCEPTION",
@@ -17,9 +17,143 @@
           "id": "TASK-01-01",
           "label": "GOV/DOC",
           "desc": "Establecer el búnker de pj-air, llaves públicas, GEMINI.md y la VISION.md funcional inicial.",
-          "status": "IN_PROGRESS",
+          "status": "COMPLETED",
+          "audit_required": false
+        }
+      ]
+    },
+    {
+      "id": "S02-EXCEL-REPORTS",
+      "name": "Sprint 02: Exportación de Reportes a Excel",
+      "status": "COMPLETED",
+      "start_date": "2026-06-22",
+      "goal": "Implementación de exportaciones Excel para reportes individuales y consolidados.",
+      "tasks": [
+        {
+          "id": "TASK-02-01",
+          "label": "TECH/UI",
+          "desc": "Exportación de Libro de Órdenes Individuales (CORTELYOU, 5TH AVE, etc.).",
+          "status": "COMPLETED"
+        },
+        {
+          "id": "TASK-02-02",
+          "label": "TECH/UI",
+          "desc": "Exportación de Libro Consolidado General por categoría.",
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "id": "S03-CATALOG-SECURITY",
+      "name": "Sprint 03: Robustez de Catálogo y Permisos",
+      "status": "COMPLETED",
+      "start_date": "2026-06-23",
+      "goal": "Borrado lógico de catálogo y control de accesos para clientes.",
+      "tasks": [
+        {
+          "id": "TASK-03-01",
+          "label": "TECH/DOMAIN",
+          "desc": "Implementación de Soft Delete en categorías y productos.",
+          "status": "COMPLETED"
+        },
+        {
+          "id": "TASK-03-02",
+          "label": "UI/CLEAN",
+          "desc": "Aislamiento y restricción de accesos avanzados para clientes.",
+          "status": "COMPLETED"
+        }
+      ]
+    },
+    {
+      "id": "S04-SECURITY-CORE",
+      "name": "Sprint 04: Búnker de Seguridad y Lógica Core",
+      "status": "IN_PROGRESS",
+      "start_date": "2026-06-28",
+      "goal": "Blindar el sistema contra vulnerabilidades críticas, autenticación real y estabilizar lógica de negocio.",
+      "tasks": [
+        {
+          "id": "TASK-04-01",
+          "label": "GOV/KERNEL",
+          "desc": "Implementación de Autenticación Segura (JWT & Hashing).",
+          "status": "DONE",
           "audit_required": true,
-          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica.",
+          "veracity_hash": null
+        },
+        {
+          "id": "TASK-04-02",
+          "label": "TECH/DOMAIN",
+          "desc": "Blindaje Financiero en Órdenes (Price Validation).",
+          "status": "DONE",
+          "veracity_hash": null
+        },
+        {
+          "id": "TASK-04-03",
+          "label": "TECH/DOMAIN",
+          "desc": "Sanitización de Carga de Archivos (Anti-RCE).",
+          "status": "DONE",
+          "veracity_hash": null
+        },
+        {
+          "id": "TASK-04-04",
+          "label": "TECH/UI",
+          "desc": "Estabilización de ExcelService.",
+          "status": "DONE",
+          "veracity_hash": null
+        }
+      ]
+    },
+    {
+      "id": "S05-DOMAIN-EVO",
+      "name": "Sprint 05: Evolución de Dominio (Entidad Categoría y UI)",
+      "status": "TODO",
+      "start_date": "2026-06-28",
+      "goal": "Formalizar la entidad Category, corregir borrado lógico y actualizar interfaz.",
+      "tasks": [
+        {
+          "id": "TASK-05-01",
+          "label": "TECH/DOMAIN",
+          "desc": "Entidad Category e Infraestructura DB.",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-05-02",
+          "label": "TECH/UI",
+          "desc": "Migración del CRUD de Categorías en Frontend.",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-05-03",
+          "label": "TECH/UI",
+          "desc": "Adaptación del CRUD de Productos y Filtros.",
+          "status": "TODO"
+        }
+      ]
+    },
+    {
+      "id": "S06-QA-TESTING",
+      "name": "Sprint 06: Batería de Pruebas Exhaustivas (QA/Automáticas)",
+      "status": "TODO",
+      "start_date": "2026-06-28",
+      "goal": "Garantizar cobertura total (unitarias, integración, transversales y UI/UX) post-refactor arquitectónico.",
+      "tasks": [
+        {
+          "id": "TASK-06-01",
+          "label": "TECH/TEST",
+          "desc": "Pruebas Unitarias e Integración Backend (Auth, Precios, Archivos).",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-06-02",
+          "label": "UI/TEST",
+          "desc": "Pruebas UI/UX Automáticas E2E (Playwright).",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-06-03",
+          "label": "GOV/TEST",
+          "desc": "Auditoría Transversal de Seguridad (Aislamiento y Endpoint Security).",
+          "status": "TODO"
         }
       ]
     }

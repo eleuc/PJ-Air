@@ -1,0 +1,63 @@
+{
+  "comment": "POLÍTICA DE VIGILANCIA PASIVA V15 - PUSH-DOWN ACTIVE",
+  "veracity_gate": {
+    "version": "1.0.0",
+    "description": "Configuración de auditoría semántica multi-stack para el búnker autárquico.",
+    "stacks": [
+      {
+        "id": "dart-core",
+        "name": "Dart SDK",
+        "fingerprint": "pubspec.yaml",
+        "command": "dart",
+        "args": ["analyze", "."],
+        "priority": 10
+      },
+      {
+        "id": "flutter-app",
+        "name": "Flutter Framework",
+        "fingerprint": "pubspec.yaml",
+        "command": "flutter",
+        "args": ["test", "--no-pub"],
+        "priority": 20,
+        "contains_string": "sdk: flutter"
+      },
+      {
+        "id": "node-js",
+        "name": "Node.js Environment",
+        "fingerprint": "package.json",
+        "command": "npm",
+        "args": ["test"],
+        "priority": 30
+      },
+      {
+        "id": "dart-sys-daemon",
+        "name": "Dart System Daemon (Serie K)",
+        "fingerprint": "pubspec.yaml",
+        "command": "dart",
+        "args": ["analyze", "lib/src/kernel/"],
+        "priority": 40
+      },
+      {
+        "id": "constellation-sync",
+        "name": "Sincronización de Constelación (Isomorfismo)",
+        "fingerprint": "backlog.json",
+        "command": "dart",
+        "args": ["scripts/verify_constellation.dart"],
+        "priority": 5
+      },
+      {
+        "id": "fleet-parity",
+        "name": "Paridad de Flota (DNA-V15)",
+        "fingerprint": "pubspec.yaml",
+        "command": "dart",
+        "args": ["scripts/verify_fleet_parity.dart"],
+        "priority": 1
+      }
+    ],
+    "policy": {
+      "fail_fast": true,
+      "allow_unsigned_stacks": true,
+      "log_level": "VERBOSE"
+    }
+  }
+}

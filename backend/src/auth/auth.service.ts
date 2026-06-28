@@ -2,7 +2,9 @@ import { Injectable, UnauthorizedException, ConflictException, InternalServerErr
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
 import * as nodemailer from 'nodemailer';
+import * as crypto from 'crypto';
 import { SITE_URL, SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS } from '../config';
+import { hashPassword, verifyPassword, signJwt } from './crypto.util';
 
 @Injectable()
 export class AuthService {
@@ -14,10 +16,11 @@ export class AuthService {
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) throw new ConflictException('Email already registered');
 
-    // Create user
+    // Create user with hashed password
+    const hashedPassword = hashPassword(password);
     const userResult = await this.usersService.create({
       email,
-      password,
+      password: hashedPassword,
     });
     const user = Array.isArray(userResult) ? userResult[0] : userResult;
 
@@ -29,6 +32,9 @@ export class AuthService {
       phone,
       company_name,
     });
+
+    const payload = { id: user.id, email: user.email, role: 'client' };
+    const access_token = signJwt(payload);
 
     // Return session for auto-login
     return {
@@ -42,8 +48,8 @@ export class AuthService {
         created_at: new Date().toISOString(),
       },
       session: {
-        access_token: 'local-test-token-' + user.id,
-        refresh_token: 'local-test-refresh-' + user.id,
+        access_token,
+        refresh_token: signJwt(payload, 7 * 24 * 3600),
         expires_in: 3600,
         token_type: 'bearer',
         user: { id: user.id, email: user.email },
@@ -58,9 +64,30 @@ export class AuthService {
     const user = await this.usersService.findByEmailWithRole(identifier) ||
                  await this.usersService.findByIdentifier(identifier);
     
-    if (!user || (user as any).password !== password) {
+    if (!user) {
       throw new UnauthorizedException('Invalid login credentials');
     }
+
+    let isMatch = false;
+    if (user.password && user.password.includes(':')) {
+      isMatch = verifyPassword(password, user.password);
+    } else {
+      // Fallback and migration for plain-text passwords
+      if (user.password === password) {
+        isMatch = true;
+        const hashedPassword = hashPassword(password);
+        await this.usersService.updatePassword(user.id, hashedPassword);
+        user.password = hashedPassword;
+      }
+    }
+
+    if (!isMatch) {
+      throw new UnauthorizedException('Invalid login credentials');
+    }
+
+    const role = (user as any).role || 'client';
+    const payload = { id: user.id, email: user.email, role };
+    const access_token = signJwt(payload);
 
     return {
       user: {
@@ -69,14 +96,14 @@ export class AuthService {
         app_metadata: {},
         user_metadata: { 
           full_name: user.profile?.full_name,
-          role: (user as any).role || 'client',
+          role,
         },
         aud: 'authenticated',
         created_at: new Date().toISOString(),
       },
       session: {
-        access_token: 'local-test-token-' + user.id,
-        refresh_token: 'local-test-refresh-' + user.id,
+        access_token,
+        refresh_token: signJwt(payload, 7 * 24 * 3600),
         expires_in: 3600,
         token_type: 'bearer',
         user: { id: user.id, email: user.email },
@@ -95,6 +122,11 @@ export class AuthService {
     }
 
     const siteUrl = SITE_URL;
+
+    // Generate a secure temporary password, hash it and save it
+    const tempPassword = crypto.randomBytes(6).toString('hex'); // 12 characters
+    const hashedPassword = hashPassword(tempPassword);
+    await this.usersService.updatePassword(user.id, hashedPassword);
 
     try {
       // SMTP configuration - use env vars if available, fallback to Ethereal for dev
@@ -144,12 +176,13 @@ export class AuthService {
       const info = await transporter.sendMail({
         from: SMTP_USER ? `"Jhoanes Bakery, Order System" <${SMTP_USER}>` : '"Jhoanes Bakery, Order System" <noresponder@jhpanesbakery.com>',
         to: user.email,
-        subject: "Password Recovery",
-        text: `Estimado cliente, su contraseña es: ${user.password}\n\nIr a la tienda: ${siteUrl}/auth/login`,
+        subject: "Password Recovery - Temporary Password",
+        text: `Estimado cliente, su nueva contraseña temporal es: ${tempPassword}\n\nPor seguridad, cambie su contraseña una vez inicie sesión.\n\nIr a la tienda: ${siteUrl}/auth/login`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h2 style="color: #333;">Password Recovery</h2>
-            <p>Estimado cliente, su contraseña es: <strong>${user.password}</strong></p>
+            <p>Estimado cliente, su nueva contraseña temporal es: <strong>${tempPassword}</strong></p>
+            <p style="color: #666; font-size: 14px;">Por seguridad, le recomendamos cambiar su contraseña una vez que inicie sesión.</p>
             <br/>
             <p>
               <a href="${siteUrl}/auth/login" 
@@ -164,7 +197,7 @@ export class AuthService {
       console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info as any));
 
       return {
-        message: `Gracias, su contraseña se ha enviado al correo ${user.email}`,
+        message: `Gracias, su nueva contraseña temporal se ha enviado al correo ${user.email}`,
         email: user.email,
       };
     } catch (error) {
@@ -175,10 +208,24 @@ export class AuthService {
 
   async changePassword(userId: string, currentPassword: string, newPassword: string) {
     const user = await this.usersService.findOne(userId);
-    if (!user || user.password !== currentPassword) {
+    if (!user) {
       throw new UnauthorizedException('Invalid current password');
     }
-    await this.usersService.updatePassword(userId, newPassword);
+
+    let isMatch = false;
+    if (user.password && user.password.includes(':')) {
+      isMatch = verifyPassword(currentPassword, user.password);
+    } else {
+      isMatch = user.password === currentPassword;
+    }
+
+    if (!isMatch) {
+      throw new UnauthorizedException('Invalid current password');
+    }
+
+    const hashedPassword = hashPassword(newPassword);
+    await this.usersService.updatePassword(userId, hashedPassword);
     return { message: 'Password updated successfully' };
   }
 }
+

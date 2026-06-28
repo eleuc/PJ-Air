@@ -46,9 +46,24 @@ export class UsersController {
             .fill(null)
             .map(() => Math.round(Math.random() * 16).toString(16))
             .join('');
-          cb(null, `${randomName}${extname(file.originalname)}`);
+          cb(null, `${randomName}${extname(file.originalname).toLowerCase()}`);
         },
       }),
+      limits: {
+        fileSize: 2 * 1024 * 1024, // 2MB
+      },
+      fileFilter: (req, file, cb) => {
+        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        
+        const ext = extname(file.originalname).toLowerCase();
+        const mime = file.mimetype;
+
+        if (!allowedExtensions.includes(ext) || !allowedMimeTypes.includes(mime)) {
+          return cb(new BadRequestException('Only image files (.jpg, .jpeg, .png, .webp, .gif) are allowed'), false);
+        }
+        cb(null, true);
+      }
     }),
   )
   async uploadAvatar(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
@@ -56,7 +71,7 @@ export class UsersController {
     console.log('User ID:', id);
     if (!file) {
       console.error('No file received in request');
-      throw new BadRequestException('No file uploaded');
+      throw new BadRequestException('No file uploaded or file type not allowed');
     }
     console.log('File Name:', file.filename);
     console.log('File Path:', file.path);

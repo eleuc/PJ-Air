@@ -1,1 +1,1 @@
-{"issuer":"PO","timestamp":"2026-06-21T22:21:16.120387","has_critical":false,"version":"2.2.11","changed_files":[]}
+{"issuer":"AGENT","timestamp":"2026-06-28T04:53:31.577521","has_critical":true,"version":"2.2.11","changed_files":["vault/rules/veracity.json"]}

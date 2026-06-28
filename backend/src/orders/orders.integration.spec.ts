@@ -25,7 +25,7 @@ describe('Orders Integration Tests', () => {
           synchronize: true,
           dropSchema: true,
         }),
-        TypeOrmModule.forFeature([Order, OrderItem]),
+        TypeOrmModule.forFeature([Order, OrderItem, User, Product]),
       ],
       providers: [OrdersService],
     }).compile();

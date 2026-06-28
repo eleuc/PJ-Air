@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ProductsService } from './products.service';
 import { Product } from './product.entity';
@@ -18,13 +17,23 @@ describe('ProductsService', () => {
   const mockProductRepository = {
     find: jest.fn(),
     findOne: jest.fn(),
-    save: jest.fn().mockImplementation((input: unknown) => Promise.resolve(input)),
+    save: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    create: jest.fn().mockImplementation((input: any) => ({ ...input })),
   };
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    mockProductRepository.find.mockReset();
+    mockProductRepository.findOne.mockReset();
+    mockProductRepository.save.mockReset();
+    mockProductRepository.update.mockReset();
+    mockProductRepository.remove.mockReset();
+    mockProductRepository.create.mockReset();
+
+    mockProductRepository.create.mockImplementation((input: any) => ({ ...input }));
+    mockProductRepository.save.mockImplementation((input: unknown) => Promise.resolve(input));
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -75,30 +84,26 @@ describe('ProductsService', () => {
         'Gadget B,Tools,5.50,A handy gadget',
       ].join('\n');
 
+      mockProductRepository.findOne.mockResolvedValue(null);
+
       const result = await service.processCSV(createCsvFile(csv));
 
-      // csv-parser emits each row as a plain object keyed by header names
-      expect(result).toEqual([
-        { name: 'Widget A', category: 'Electronics', price: '19.99', description: 'A nice widget' },
-        { name: 'Gadget B', category: 'Tools', price: '5.50', description: 'A handy gadget' },
-      ]);
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({ name: 'Widget A', category: 'Electronics', price: 19.99, description: 'A nice widget' });
+      expect(result[1]).toMatchObject({ name: 'Gadget B', category: 'Tools', price: 5.50, description: 'A handy gadget' });
 
-      // Repository.save should have been called once with the parsed array
-      expect(mockProductRepository.save).toHaveBeenCalledTimes(1);
-      expect(mockProductRepository.save).toHaveBeenCalledWith(result);
+      expect(mockProductRepository.save).toHaveBeenCalledTimes(2);
     });
 
-    it('should throw a formatted validation error when parsing a CSV missing required columns', async () => {
-      // Simulate a repository that rejects rows lacking required fields.
-      // TypeORM will throw when NOT NULL columns are absent.
+    it('should throw validation error when database save fails', async () => {
+      mockProductRepository.findOne.mockResolvedValue(null);
       mockProductRepository.save.mockRejectedValueOnce(
         new Error('SQLITE_CONSTRAINT: NOT NULL constraint failed: products.name'),
       );
 
-      // CSV with no "name" column — only category and price
       const csv = [
-        'category,price',
-        'Electronics,19.99',
+        'name,category,price,description',
+        'Widget A,Electronics,19.99,A nice widget',
       ].join('\n');
 
       await expect(service.processCSV(createCsvFile(csv))).rejects.toThrow(
@@ -106,28 +111,20 @@ describe('ProductsService', () => {
       );
     });
 
-    it('should handle and log errors gracefully for specific rows with invalid data types during CSV parsing', async () => {
-      // Simulate a repository rejecting due to a type mismatch on save
+    it('should throw mismatch error when database price parsing fails', async () => {
+      mockProductRepository.findOne.mockResolvedValue(null);
       mockProductRepository.save.mockRejectedValueOnce(
         new Error('SQLITE_CONSTRAINT: datatype mismatch for column price'),
       );
 
       const csv = [
         'name,category,price,description',
-        'Valid Product,Tools,10.00,Good',
         'Bad Product,Tools,not-a-number,Bad data',
       ].join('\n');
 
       await expect(service.processCSV(createCsvFile(csv))).rejects.toThrow(
         /datatype mismatch/,
       );
-
-      // Even though the promise rejects, the rows should have been parsed
-      // and forwarded to repository.save (the error comes from the DB layer)
-      expect(mockProductRepository.save).toHaveBeenCalledTimes(1);
-      const savedRows = mockProductRepository.save.mock.calls[0][0] as Record<string, string>[];
-      expect(savedRows).toHaveLength(2);
-      expect(savedRows[1]).toMatchObject({ name: 'Bad Product', price: 'not-a-number' });
     });
   });
 
@@ -135,12 +132,15 @@ describe('ProductsService', () => {
   // CRUD delegation sanity checks
   // -----------------------------------------------------------------------
   describe('CRUD operations', () => {
-    it('findAll should delegate to repository.find', async () => {
-      const products = [{ id: 1, name: 'Test' }];
+    it('findAll should delegate to repository.find and filter deleted', async () => {
+      const products = [
+        { id: 1, name: 'Test', category: 'Electronics' },
+        { id: 2, name: 'Deleted', category: '_deleted_' }
+      ];
       mockProductRepository.find.mockResolvedValue(products);
 
       const result = await service.findAll();
-      expect(result).toEqual(products);
+      expect(result).toEqual([{ id: 1, name: 'Test', category: 'Electronics' }]);
       expect(mockProductRepository.find).toHaveBeenCalledTimes(1);
     });
 
@@ -178,19 +178,24 @@ describe('ProductsService', () => {
 
       const result = await service.delete(999);
       expect(result).toBeNull();
-      expect(mockProductRepository.remove).not.toHaveBeenCalled();
+      expect(mockProductRepository.save).not.toHaveBeenCalled();
     });
 
-    it('delete should throw ConflictException when product is associated with order history (foreign key constraint)', async () => {
-      const product = { id: 123, name: 'Tied Product' };
+    it('delete should perform a soft delete update instead of hard remove', async () => {
+      const product = { id: 123, name: 'Tied Product', category: 'General', category_en: 'General' };
       mockProductRepository.findOne.mockResolvedValue(product);
 
-      const dbError = new Error('SQLITE_CONSTRAINT: FOREIGN KEY constraint failed');
-      (dbError as any).code = 'SQLITE_CONSTRAINT';
-      mockProductRepository.remove.mockRejectedValueOnce(dbError);
-
-      await expect(service.delete(123)).rejects.toThrow(ConflictException);
-      expect(mockProductRepository.remove).toHaveBeenCalledWith(product);
+      const result = await service.delete(123);
+      expect(result).toMatchObject({
+        id: 123,
+        category: '_deleted_',
+        category_en: '_deleted_',
+      });
+      expect(mockProductRepository.save).toHaveBeenCalledWith(expect.objectContaining({
+        id: 123,
+        category: '_deleted_',
+        category_en: '_deleted_',
+      }));
     });
 
     it('updateCategory should update all products matching the old category name', async () => {

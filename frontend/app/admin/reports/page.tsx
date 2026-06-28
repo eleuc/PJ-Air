@@ -585,11 +585,21 @@ function ReportsPageContent() {
                                 </p>
                         </div>
                             {orders.length > 0 && (
-                                <button onClick={() => window.print()}
-                                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20 group print:hidden">
-                                    <Printer size={16} className="group-hover:scale-110 transition-transform" />
-                                    Imprimir
-                                </button>
+                                <div className="flex flex-wrap gap-3">
+                                    <button onClick={() => window.print()}
+                                        className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20 group print:hidden">
+                                        <Printer size={16} className="group-hover:scale-110 transition-transform" />
+                                        Imprimir
+                                    </button>
+                                    <button onClick={() => window.location.href = `${API_URL}/orders/reports/export-individual?startDate=${startDate}&endDate=${endDate}`}
+                                        className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-green-600/20 group print:hidden">
+                                        Exportar Individual
+                                    </button>
+                                    <button onClick={() => window.location.href = `${API_URL}/orders/reports/export-consolidated?startDate=${startDate}&endDate=${endDate}`}
+                                        className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-emerald-600/20 group print:hidden">
+                                        Exportar Consolidado
+                                    </button>
+                                </div>
                             )}
                         </div>
                     </div>

@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { UnauthorizedException, ConflictException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { hashPassword, verifyJwt } from './crypto.util';
 
 jest.mock('nodemailer');
 
@@ -52,6 +53,7 @@ describe('AuthService', () => {
       expect(mockUsersService.create).toHaveBeenCalled();
       expect(mockUsersService.createProfile).toHaveBeenCalled();
       expect(result).toHaveProperty('session');
+      expect(verifyJwt(result.session.access_token)).not.toBeNull();
     });
   });
 
@@ -62,11 +64,20 @@ describe('AuthService', () => {
       await expect(service.login('test@example.com', 'wrongpassword')).rejects.toThrow(UnauthorizedException);
     });
 
-    it('should return session on successful login', async () => {
+    it('should return session on successful login with plain-text migration', async () => {
       mockUsersService.findByEmailWithRole.mockResolvedValue({ id: '1', email: 'test@example.com', password: 'password' });
       const result = await service.login('test@example.com', 'password');
       expect(result).toHaveProperty('session');
-      expect(result.session.access_token).toContain('local-test-token-1');
+      expect(verifyJwt(result.session.access_token)).not.toBeNull();
+      expect(mockUsersService.updatePassword).toHaveBeenCalled();
+    });
+
+    it('should return session on successful login with hashed password', async () => {
+      const hashedPassword = hashPassword('password');
+      mockUsersService.findByEmailWithRole.mockResolvedValue({ id: '1', email: 'test@example.com', password: hashedPassword });
+      const result = await service.login('test@example.com', 'password');
+      expect(result).toHaveProperty('session');
+      expect(verifyJwt(result.session.access_token)).not.toBeNull();
     });
   });
 
@@ -77,7 +88,7 @@ describe('AuthService', () => {
       await expect(service.recoverPassword('test@example.com')).rejects.toThrow(UnauthorizedException);
     });
 
-    it('should trigger recovery email with correct context', async () => {
+    it('should trigger recovery email with temporary password and update it in DB', async () => {
       mockUsersService.findByEmail.mockResolvedValue({ id: '1', email: 'test@example.com', password: 'mypassword' });
       
       const mockSendMail = jest.fn().mockResolvedValue({ messageId: '123' });
@@ -88,24 +99,31 @@ describe('AuthService', () => {
       });
 
       const result = await service.recoverPassword('test@example.com');
+      expect(mockUsersService.updatePassword).toHaveBeenCalled();
       expect(mockSendMail).toHaveBeenCalled();
-      expect(mockSendMail.mock.calls[0][0].text).toContain('mypassword');
+      
+      // The email should contain a temporary password (which is a 12-char hex string)
+      const emailText = mockSendMail.mock.calls[0][0].text;
+      expect(emailText).toContain('nueva contraseña temporal');
       expect(result).toHaveProperty('message');
     });
   });
 
   describe('changePassword', () => {
     it('should throw UnauthorizedException if current password is wrong', async () => {
-      mockUsersService.findOne.mockResolvedValue({ id: '1', password: 'oldpassword' });
+      const hashedPassword = hashPassword('oldpassword');
+      mockUsersService.findOne.mockResolvedValue({ id: '1', password: hashedPassword });
       await expect(service.changePassword('1', 'wrongpassword', 'newpassword')).rejects.toThrow(UnauthorizedException);
     });
 
     it('should update password and return success message', async () => {
-      mockUsersService.findOne.mockResolvedValue({ id: '1', password: 'oldpassword' });
+      const hashedPassword = hashPassword('oldpassword');
+      mockUsersService.findOne.mockResolvedValue({ id: '1', password: hashedPassword });
       mockUsersService.updatePassword.mockResolvedValue(true);
       const result = await service.changePassword('1', 'oldpassword', 'newpassword');
-      expect(mockUsersService.updatePassword).toHaveBeenCalledWith('1', 'newpassword');
+      expect(mockUsersService.updatePassword).toHaveBeenCalled();
       expect(result).toEqual({ message: 'Password updated successfully' });
     });
   });
 });
+

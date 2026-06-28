@@ -1,9 +1,13 @@
-import { Controller, Post, Get, Body, Param, Patch, Query } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Patch, Query, Res } from '@nestjs/common';
 import { OrdersService } from './orders.service';
+import { ExcelService } from './excel.service';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(
+    private readonly ordersService: OrdersService,
+    private readonly excelService: ExcelService,
+  ) {}
 
   @Post()
   async create(@Body() body: any) {
@@ -19,6 +23,38 @@ export class OrdersController {
   @Get('user/:userId')
   async findByUser(@Param('userId') userId: string) {
     return this.ordersService.findByUser(userId);
+  }
+
+  @Get('reports/export-individual')
+  async exportIndividual(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Res() res: any,
+  ) {
+    const orders = await this.ordersService.findInRange(startDate, endDate);
+    const buffer = this.excelService.exportIndividual(orders);
+    res.set({
+      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': `attachment; filename="ORDENES_INDIVIDUALES.xlsx"`,
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
+  }
+
+  @Get('reports/export-consolidated')
+  async exportConsolidated(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Res() res: any,
+  ) {
+    const orders = await this.ordersService.findInRange(startDate, endDate);
+    const buffer = this.excelService.exportConsolidated(orders);
+    res.set({
+      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': `attachment; filename="ORDENES_CONSOLIDADO.xlsx"`,
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
   }
 
   @Get('reports/range')

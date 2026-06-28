@@ -1,15 +1,16 @@
 {
-  "session_uuid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-  "total_bytes": 6912,
-  "total_bytes_out": 6912,
-  "context_base_bytes": 0,
-  "cli_bytes": 6144,
+  "total_bytes": 46113,
+  "total_bytes_out": 2548,
+  "context_base_bytes": 44065,
+  "cli_bytes": 0,
   "chat_bytes": 0,
-  "total_tokens": 1728,
-  "turns": 5,
-  "peak_bytes": 2048,
-  "last_platform": "unknown",
-  "last_update": "2026-06-21T22:21:08.955967",
+  "total_tokens": 11528,
+  "turns": 7,
+  "peak_bytes": 512,
   "strike_count": 0,
-  "daemon_bytes": 768
+  "session_uuid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+  "session_start_ts": "2026-06-28T04:39:01.739755",
+  "hwc_complete": false,
+  "last_update": "2026-06-28T04:53:27.992917",
+  "daemon_bytes": 2048
 }
