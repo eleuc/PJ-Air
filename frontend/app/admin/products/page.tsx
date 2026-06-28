@@ -9,56 +9,43 @@ import {
 import { api } from '@/lib/api';
 import { API_URL } from '@/lib/config';
 
+interface Category {
+    id: number;
+    name: string;
+    name_en: string;
+    min_qty: number;
+}
+
 interface Product {
     id: number;
     name: string;
-    category: string;
-    category_en?: string;
+    category: Category | null;
     price: number;
     description: string;
     image: string;
-    category_min_qty?: number;
 }
 
 interface ProductForm {
     name: string;
-    category: string;
-    category_en: string;
+    category_id: string;
     price: string;
     description: string;
     image: string;
-    category_min_qty: string;
 }
-
-const LS_CATS_KEY = 'admin_custom_categories';
-
 
 const emptyForm: ProductForm = {
     name: '',
-    category: '',
-    category_en: '',
+    category_id: '',
     price: '',
     description: '',
     image: '',
-    category_min_qty: '1',
 };
-
-function getDynamicCategories(products: Product[]): string[] {
-    const fromProducts = [...new Set(products.map(p => p.category).filter(Boolean))];
-    try {
-        const custom: string[] = JSON.parse(localStorage.getItem(LS_CATS_KEY) || '[]');
-        const all = [...new Set([...fromProducts, ...custom])];
-        return all.sort();
-    } catch {
-        return fromProducts.sort();
-    }
-}
 
 export default function AdminProductsPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<string[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -80,21 +67,23 @@ export default function AdminProductsPage() {
     // Toast
     const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
 
-    useEffect(() => { fetchProducts(); }, []);
+    useEffect(() => { fetchProductsAndCategories(); }, []);
 
     const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
         setToast({ msg, type });
         setTimeout(() => setToast(null), 3000);
     };
 
-    const fetchProducts = async () => {
+    const fetchProductsAndCategories = async () => {
         try {
             setLoading(true);
             setError(null);
-            const data = await api.get('/products') as Product[];
-            const list = data || [];
-            setProducts(list);
-            setCategories(getDynamicCategories(list));
+            const [productsData, categoriesData] = await Promise.all([
+                api.get('/products'),
+                api.get('/products/categories')
+            ]);
+            setProducts(productsData as Product[]);
+            setCategories(categoriesData as Category[]);
         } catch (err: any) {
             setError(err.message || 'No se pudieron cargar los productos');
         } finally {
@@ -113,12 +102,10 @@ export default function AdminProductsPage() {
         setEditingProduct(p);
         setForm({
             name: p.name,
-            category: p.category,
-            category_en: p.category_en || '',
+            category_id: p.category?.id ? p.category.id.toString() : '',
             price: p.price.toString(),
             description: p.description || '',
             image: p.image || '',
-            category_min_qty: (p.category_min_qty || 1).toString(),
         });
         setFormError(null);
         setShowModal(true);
@@ -126,7 +113,6 @@ export default function AdminProductsPage() {
 
     // Image upload via file input
     const handleImageUpload = async (file: File) => {
-        // Instant local preview
         const objectUrl = URL.createObjectURL(file);
         setForm(f => ({ ...f, image: objectUrl }));
 
@@ -142,19 +128,16 @@ export default function AdminProductsPage() {
 
             if (!res.ok) throw new Error('Error al subir imagen');
             const data = await res.json();
-            // Replace local preview with server path
             setForm(f => ({ ...f, image: data.url }));
         } catch (err: any) {
             console.error('Upload error:', err);
-            // Fallback: keep the local object URL so the user can still save (though it might break later)
-            // but we already set it at the start.
         } finally {
             setUploadingImage(false);
         }
     };
 
     const handleSave = async () => {
-        if (!form.name.trim() || !form.price || !form.category) {
+        if (!form.name.trim() || !form.price || !form.category_id) {
             setFormError('Nombre, categoría y precio son obligatorios.');
             return;
         }
@@ -163,23 +146,16 @@ export default function AdminProductsPage() {
             setFormError('El precio debe ser un número positivo.');
             return;
         }
-        const minQty = parseInt(form.category_min_qty);
-        if (isNaN(minQty) || minQty <= 0) {
-            setFormError('La cantidad mínima debe ser un número positivo.');
-            return;
-        }
 
         setSaving(true);
         setFormError(null);
         try {
             const payload = {
                 name: form.name.trim(),
-                category: form.category.trim(),
-                category_en: form.category_en.trim() || form.category.trim(),
                 price,
                 description: form.description.trim(),
                 image: form.image.trim(),
-                category_min_qty: minQty,
+                category_id: parseInt(form.category_id),
             };
 
             if (editingProduct) {
@@ -216,7 +192,7 @@ export default function AdminProductsPage() {
 
     const filtered = products.filter(p =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.category.toLowerCase().includes(searchQuery.toLowerCase())
+        (p.category?.name || 'Sin categoría').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -284,7 +260,7 @@ export default function AdminProductsPage() {
                                     </div>
                                 </div>
                                 <div className="p-4">
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-accent">{product.category}</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-accent">{product.category?.name || 'Sin categoría'}</span>
                                     <h3 className="font-bold truncate mt-0.5">{product.name}</h3>
                                     {product.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{product.description}</p>}
                                     <div className="flex justify-between items-center mt-3">
@@ -327,7 +303,7 @@ export default function AdminProductsPage() {
                                             <p className="font-semibold">{product.name}</p>
                                             {product.description && <p className="text-xs text-muted-foreground truncate max-w-xs">{product.description}</p>}
                                         </td>
-                                        <td className="px-6 py-4"><span className="bg-accent/10 text-accent px-2 py-1 rounded text-xs font-bold">{product.category}</span></td>
+                                        <td className="px-6 py-4"><span className="bg-accent/10 text-accent px-2 py-1 rounded text-xs font-bold">{product.category?.name || 'Sin categoría'}</span></td>
                                         <td className="px-6 py-4 font-bold text-primary">${Number(product.price).toFixed(2)}</td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex justify-end gap-2">
@@ -383,44 +359,22 @@ export default function AdminProductsPage() {
                                     <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Nombre del Producto *</label>
                                     <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Ej: Croissant de Mantequilla" className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium" />
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Categoría (ES) *</label>
-                                    <input
-                                        type="text"
-                                        list="categories-list"
-                                        value={form.category}
-                                        onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                                        placeholder="Ej: Croissants"
+                                <div className="col-span-2 sm:col-span-1">
+                                    <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Categoría *</label>
+                                    <select
+                                        value={form.category_id}
+                                        onChange={e => setForm(f => ({ ...f, category_id: e.target.value }))}
                                         className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
-                                    />
-                                    <datalist id="categories-list">
-                                        {categories.map(c => <option key={c} value={c} />)}
-                                    </datalist>
+                                    >
+                                        <option value="">Selecciona una categoría...</option>
+                                        {categories.map(c => (
+                                            <option key={c.id} value={c.id.toString()}>{c.name} ({c.name_en})</option>
+                                        ))}
+                                    </select>
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Categoría (EN) *</label>
-                                    <input
-                                        type="text"
-                                        value={form.category_en}
-                                        onChange={e => setForm(f => ({ ...f, category_en: e.target.value }))}
-                                        placeholder="Ej: Croissants"
-                                        className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
-                                    />
-                                </div>
-                                <div>
+                                <div className="col-span-2 sm:col-span-1">
                                     <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Precio ($) *</label>
                                     <input type="number" step="0.01" min="0" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="0.00" className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Mínimo por cat.</label>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        value={form.category_min_qty}
-                                        onChange={e => setForm(f => ({ ...f, category_min_qty: e.target.value }))}
-                                        placeholder="1"
-                                        className="w-full px-4 py-3 bg-muted rounded-xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
-                                    />
                                 </div>
                                 <div className="col-span-2">
                                     <label className="block text-xs font-black text-muted-foreground uppercase mb-1.5">Descripción</label>

@@ -236,10 +236,10 @@ function ProductCard({
                         <p className="text-[10px] font-bold text-muted-foreground/60 line-through decoration-primary/40 decoration-2">${originalPrice.toFixed(2)}</p>
                     )}
                 </div>
-                {product.category_min_qty > 1 && (
+                {product.category?.min_qty > 1 && (
                     <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
                         <Info size={10} strokeWidth={3} />
-                        <span className="text-[9px] font-black uppercase tracking-tight">{locale === 'en' ? `Min: ${product.category_min_qty} units` : `Mínimo: ${product.category_min_qty} unidades`}</span>
+                        <span className="text-[9px] font-black uppercase tracking-tight">{locale === 'en' ? `Min: ${product.category.min_qty} units` : `Mínimo: ${product.category.min_qty} unidades`}</span>
                     </div>
                 )}
 
@@ -451,7 +451,7 @@ export default function Home() {
                 if (!mounted) return;
                 if (Array.isArray(data) && data.length > 0) {
                     setProducts(data);
-                    setQuantities(data.reduce((a: any, p: any) => ({ ...a, [p.id]: Number(p.category_min_qty) || 1 }), {}));
+                    setQuantities(data.reduce((a: any, p: any) => ({ ...a, [p.id]: Number(p.category?.min_qty) || 1 }), {}));
                 } else {
                     setFetchError('empty');
                 }
@@ -467,17 +467,17 @@ export default function Home() {
     // ── Cart handlers ──────────────────────────────────────────────────────
     const handleIncrement = (id: number) => {
         const prod = products.find(p => p.id === id);
-        const min = Number(prod?.category_min_qty) || 1;
+        const min = Number(prod?.category?.min_qty) || 1;
         setQuantities(p => ({ ...p, [id]: (p[id] || min) + 1 }));
     };
     const handleDecrement = (id: number) => {
         const prod = products.find(p => p.id === id);
-        const min = Number(prod?.category_min_qty) || 1;
+        const min = Number(prod?.category?.min_qty) || 1;
         setQuantities(p => ({ ...p, [id]: Math.max(min, (p[id] || min) - 1) }));
     };
     const handleQuantityChange = (id: number, val: string) => {
         const prod = products.find(p => p.id === id);
-        const min = Number(prod?.category_min_qty) || 1;
+        const min = Number(prod?.category?.min_qty) || 1;
         if (val === '') {
             setQuantities(p => ({ ...p, [id]: '' as any }));
             return;
@@ -488,7 +488,7 @@ export default function Home() {
     };
     const handleAddToCart = (product: any) => {
         let q = Number(quantities[product.id]);
-        const min = Number(product.category_min_qty) || 1;
+        const min = Number(product.category?.min_qty) || 1;
         if (isNaN(q) || q < min) q = min;
         addToCart(product, q);
         setAddedIds(p => [...p, product.id]);
@@ -499,8 +499,8 @@ export default function Home() {
     const categoryGroups = useMemo(() => {
         const map: Record<string, { labelEn: string; items: any[] }> = {};
         products.forEach(p => {
-            const key = p.category || 'Other';
-            if (!map[key]) map[key] = { labelEn: p.category_en || key, items: [] };
+            const key = p.category?.name || 'Other';
+            if (!map[key]) map[key] = { labelEn: p.category?.name_en || key, items: [] };
             map[key].items.push(p);
         });
         return Object.entries(map)
@@ -518,8 +518,8 @@ export default function Home() {
         if (!q) return [];
         return products.filter(p =>
             p.name.toLowerCase().includes(q) ||
-            (p.category || '').toLowerCase().includes(q) ||
-            (p.category_en || '').toLowerCase().includes(q)
+            (p.category?.name || '').toLowerCase().includes(q) ||
+            (p.category?.name_en || '').toLowerCase().includes(q)
         );
     }, [products, searchQuery]);
 

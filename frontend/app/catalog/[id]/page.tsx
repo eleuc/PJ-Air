@@ -14,7 +14,7 @@ import { API_URL } from '@/lib/config';
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
     const productId = parseInt(resolvedParams.id);
-    const { t } = useLanguage();
+    const { t, locale } = useLanguage();
     const [product, setProduct] = useState<Product | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     
@@ -107,7 +107,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     {/* Content Section */}
                     <div className="flex flex-col">
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-black uppercase tracking-widest mb-6 w-fit">
-                            <Star size={14} fill="currentColor" /> {product.category}
+                            <Star size={14} fill="currentColor" /> {locale === 'en' ? product.category?.name_en : product.category?.name}
                         </div>
                         
                         <h1 className="text-5xl lg:text-7xl font-black font-serif tracking-tighter text-foreground mb-6 leading-none">

@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 
 // Entities
 import { Product } from './products/product.entity';
+import { Category } from './products/category.entity';
 import { User } from './users/user.entity';
 import { Profile } from './users/profile.entity';
 import { Address } from './addresses/address.entity';
@@ -24,7 +25,7 @@ import { ProductDiscount } from './users/product-discount.entity';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: DATABASE_PATH,
-      entities: [Product, User, Profile, Address, Order, OrderItem, ProductDiscount],
+      entities: [Product, Category, User, Profile, Address, Order, OrderItem, ProductDiscount],
       synchronize: NODE_ENV !== 'production',
       logging: false,
     }),

@@ -158,12 +158,12 @@ export class OrdersService {
     const savedOrder = Array.isArray(savedResult) ? savedResult[0] : savedResult;
 
     if (validatedItems.length > 0) {
-      const orderItems = validatedItems.map((item: any) => 
-        this.orderItemRepository.create({
-          ...item,
-          order_id: savedOrder.id,
-        })
-      );
+      const orderItems = validatedItems.map((item: any) => ({
+        product_id: item.product_id,
+        price_at_time: item.price_at_time,
+        quantity: item.quantity,
+        order_id: savedOrder.id,
+      }));
       await this.orderItemRepository.save(orderItems);
     }
 
@@ -211,12 +211,12 @@ export class OrdersService {
       
       const result = await this.calculateOrderPricesAndTotal(order.user_id, items);
       
-      const newItems = result.validatedItems.map((item: any) => 
-        this.orderItemRepository.create({
-          ...item,
-          order_id: id,
-        })
-      );
+      const newItems = result.validatedItems.map((item: any) => ({
+        product_id: item.product_id,
+        price_at_time: item.price_at_time,
+        quantity: item.quantity,
+        order_id: id,
+      }));
       
       order.items = await this.orderItemRepository.save(newItems);
       order.total = result.total;

@@ -9,6 +9,7 @@ import { User } from '../users/user.entity';
 import { Profile } from '../users/profile.entity';
 import { Address } from '../addresses/address.entity';
 import { ProductDiscount } from '../users/product-discount.entity';
+import { Category } from '../products/category.entity';
 
 describe('Orders Integration Tests', () => {
   let service: OrdersService;
@@ -21,11 +22,11 @@ describe('Orders Integration Tests', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: ':memory:',
-          entities: [Order, OrderItem, Product, User, Profile, Address, ProductDiscount],
+          entities: [Order, OrderItem, Product, Category, User, Profile, Address, ProductDiscount],
           synchronize: true,
           dropSchema: true,
         }),
-        TypeOrmModule.forFeature([Order, OrderItem, User, Product]),
+        TypeOrmModule.forFeature([Order, OrderItem, User, Product, Category]),
       ],
       providers: [OrdersService],
     }).compile();
@@ -124,11 +125,17 @@ describe('Orders Integration Tests', () => {
     const orderRepo = dataSource.getRepository(Order);
     const orderItemRepo = dataSource.getRepository(OrderItem);
 
-    // 1. Create a product
+    // 1. Create a category
+    const category = await dataSource.getRepository(Category).save({
+      name: 'Cake',
+      name_en: 'Cake',
+    });
+
+    // 2. Create a product
     const product = await productRepo.save({
       name: 'Integrity Test Product',
       price: 25.0,
-      category: 'Cake',
+      category: category,
     });
 
     // 2. Create an order

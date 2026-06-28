@@ -6,13 +6,12 @@ import { Plus, Trash2, Folder, Loader2, AlertCircle, X, Save, Edit2, CheckCircle
 import { api } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
 
-const LS_KEY = 'admin_custom_categories';
-
 interface CategorySummary {
+    id: number;
     name: string;       // Spanish name (master key used in DB)
     name_en: string;    // English name
     count: number;
-    min_quantity: number;
+    min_qty: number;
 }
 
 export default function AdminCategoriesPage() {
@@ -44,48 +43,34 @@ export default function AdminCategoriesPage() {
         setTimeout(() => setToast(null), 3500);
     };
 
-    /** Get custom categories from localStorage (stores {name, name_en}[]) */
-    const getCustomCategories = (): CategorySummary[] => {
-        try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); }
-        catch { return []; }
-    };
-
-    const saveCustomCategories = (cats: CategorySummary[]) => {
-        localStorage.setItem(LS_KEY, JSON.stringify(cats));
-    };
-
     const fetchCategories = async () => {
         try {
             setLoading(true);
             setError(null);
+            
+            // Fetch real categories from backend
+            const cats = await api.get('/products/categories') as any[];
+            
+            // Fetch products to count them
             const products = await api.get('/products') as any[];
 
-            // Build map: category(ES) -> { name_en, count, min_quantity }
-            const map: Record<string, { name_en: string; count: number; min_quantity: number }> = {};
+            // Build counts
+            const counts: Record<number, number> = {};
             products.forEach(p => {
-                if (p.category) {
-                    if (!map[p.category]) map[p.category] = { name_en: p.category_en || '', count: 0, min_quantity: Number(p.category_min_qty) || 1 };
-                    map[p.category].count++;
-                    // If a product already has category_en, use it
-                    if (p.category_en && !map[p.category].name_en) {
-                        map[p.category].name_en = p.category_en;
-                    }
-                    if (p.category_min_qty && map[p.category].min_quantity === 1) {
-                         map[p.category].min_quantity = Number(p.category_min_qty);
-                    }
+                const catId = p.category?.id;
+                if (catId) {
+                    counts[catId] = (counts[catId] || 0) + 1;
                 }
             });
 
-            // Merge with locally-stored custom categories (those with 0 products)
-            const customCats = getCustomCategories();
-            customCats.forEach(c => {
-                if (!(c.name in map)) map[c.name] = { name_en: c.name_en || '', count: 0, min_quantity: c.min_quantity || 1 };
-            });
-
             setCategories(
-                Object.entries(map)
-                    .sort(([a], [b]) => a.localeCompare(b))
-                    .map(([name, { name_en, count, min_quantity }]) => ({ name, name_en, count, min_quantity }))
+                cats.map(c => ({
+                    id: c.id,
+                    name: c.name,
+                    name_en: c.name_en || c.name,
+                    min_qty: c.min_qty || 1,
+                    count: counts[c.id] || 0,
+                })).sort((a, b) => a.name.localeCompare(b.name))
             );
         } catch (err: any) {
             setError(err.message || 'Could not load categories');
@@ -107,7 +92,7 @@ export default function AdminCategoriesPage() {
         setEditingCategory(cat);
         setCatName(cat.name);
         setCatNameEn(cat.name_en);
-        setMinQty(cat.min_quantity || 1);
+        setMinQty(cat.min_qty || 1);
         setFormError(null);
         setShowModal(true);
     };
@@ -127,34 +112,21 @@ export default function AdminCategoriesPage() {
         setFormError(null);
         try {
             if (editingCategory) {
-                // Batch-rename on backend (updates all products)
-                await api.patch('/products/rename-category', {
-                    oldName: editingCategory.name,
-                    newName: trimmedEs,
-                    newNameEn: trimmedEn,
-                    minQty: minQty
+                await api.patch(`/products/categories/${editingCategory.id}`, {
+                    name: trimmedEs,
+                    name_en: trimmedEn,
+                    min_qty: minQty
                 });
-
-                // Also update localStorage custom categories
-                const custom = getCustomCategories().map(c =>
-                    c.name === editingCategory.name ? { ...c, name: trimmedEs, name_en: trimmedEn, min_quantity: minQty } : c
-                );
-                saveCustomCategories(custom);
-
-                setCategories(prev =>
-                    prev.map(c => c.name === editingCategory.name ? { ...c, name: trimmedEs, name_en: trimmedEn, min_quantity: minQty } : c)
-                );
                 showToast(`✅ Category updated: "${trimmedEs}" (Min: ${minQty})`);
             } else {
-                // New category — store in localStorage
-                const custom = getCustomCategories();
-                const newCat: CategorySummary = { name: trimmedEs, name_en: trimmedEn, count: 0, min_quantity: minQty };
-                if (!custom.find(c => c.name === trimmedEs)) {
-                    saveCustomCategories([...custom, newCat]);
-                }
-                setCategories(prev => [...prev, newCat]);
+                await api.post('/products/categories', {
+                    name: trimmedEs,
+                    name_en: trimmedEn,
+                    min_qty: minQty
+                });
                 showToast(`✅ Category "${trimmedEs}" / "${trimmedEn}" created`);
             }
+            await fetchCategories();
             setShowModal(false);
         } catch (err: any) {
             setFormError(err.message || 'Error saving');
@@ -167,17 +139,9 @@ export default function AdminCategoriesPage() {
         if (!deleteConfirm) return;
         setDeleting(true);
         try {
-            const products = await api.get('/products') as any[];
-            const affected = products.filter(p => p.category === deleteConfirm.name);
-            if (affected.length > 0) {
-                await Promise.all(affected.map(p =>
-                    api.patch(`/products/${p.id}`, { category: 'Sin categoría', category_en: 'Uncategorized' })
-                ));
-            }
-            const custom = getCustomCategories().filter(c => c.name !== deleteConfirm.name);
-            saveCustomCategories(custom);
-            setCategories(prev => prev.filter(c => c.name !== deleteConfirm.name));
+            await api.delete(`/products/categories/${deleteConfirm.id}`);
             setDeleteConfirm(null);
+            await fetchCategories();
             showToast(`🗑️ Category "${deleteConfirm.name}" deleted`);
         } catch (err: any) {
             showToast(err.message || 'Error deleting', 'error');
@@ -229,12 +193,11 @@ export default function AdminCategoriesPage() {
                     {!loading && !error && categories.length > 0 && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {categories.map(cat => (
-                                <div key={cat.name} className="bg-card p-8 rounded-[32px] border border-border shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+                                <div key={cat.id} className="bg-card p-8 rounded-[32px] border border-border shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-2 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity rounded-l-[32px]" />
                                     <div className="w-14 h-14 bg-primary/5 text-primary rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all">
                                         <Folder size={28} />
                                     </div>
-                                    {/* Bilingual names */}
                                     <div className="mb-1">
                                         <h3 className="text-xl font-bold leading-tight">{cat.name}</h3>
                                         {cat.name_en && cat.name_en !== cat.name && (

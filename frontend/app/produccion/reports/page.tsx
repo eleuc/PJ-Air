@@ -276,7 +276,7 @@ function ReportsPageContent() {
             }
 
             (order.items || []).forEach((item: any) => {
-                const cat = item.product?.category || 'Sin Categoría';
+                const cat = item.product?.category?.name || 'Sin Categoría';
                 const prod = item.product?.name || 'Producto';
                 const qty = Number(item.quantity) || 0;
 
@@ -304,7 +304,7 @@ function ReportsPageContent() {
             if (!dateKey) return;
             if (!days[dateKey]) days[dateKey] = { total: 0 };
             (order.items || []).forEach((item: any) => {
-                const cat = item.product?.category || 'Otros';
+                const cat = item.product?.category?.name || 'Otros';
                 const qty = Number(item.quantity) || 0;
                 days[dateKey][cat] = (days[dateKey][cat] || 0) + qty;
                 days[dateKey].total += qty;
@@ -341,7 +341,7 @@ function ReportsPageContent() {
                 };
             }
             (order.items || []).forEach((item: any) => {
-                const cat = item.product?.category || 'Otros';
+                const cat = item.product?.category?.name || 'Otros';
                 const qty = Number(item.quantity) || 0;
                 weeks[weekKey].data[cat] = (weeks[weekKey].data[cat] || 0) + qty;
                 weeks[weekKey].data.total += qty;
@@ -371,7 +371,7 @@ function ReportsPageContent() {
                 };
             }
             (order.items || []).forEach((item: any) => {
-                const cat = item.product?.category || 'Otros';
+                const cat = item.product?.category?.name || 'Otros';
                 const qty = Number(item.quantity) || 0;
                 months[monthKey].data[cat] = (months[monthKey].data[cat] || 0) + qty;
                 months[monthKey].data.total += qty;
@@ -436,7 +436,7 @@ function ReportsPageContent() {
     };
 
     const allCategories = useMemo(() => {
-        return [...new Set(historyOrders.flatMap(o => (o.items || []).map((it: any) => it.product?.category || 'Otros')))];
+        return [...new Set(historyOrders.flatMap(o => (o.items || []).map((it: any) => it.product?.category?.name || 'Otros')))];
     }, [historyOrders]);
 
     // ─── CHUNKING FOR PRINT (horizontal split) ──────────────────────────────────

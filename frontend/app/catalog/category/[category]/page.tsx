@@ -34,10 +34,10 @@ function ProductCard({
             <div className="p-4 flex flex-col gap-2 flex-1">
                 <h3 className="font-bold text-sm leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2 min-h-[40px]">{product.name}</h3>
                 <p className="text-xl font-black text-foreground">${product.price}</p>
-                {product.category_min_qty > 1 && (
+                {product.category?.min_qty > 1 && (
                     <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
                         <Info size={10} />
-                        <span className="text-[9px] font-black uppercase tracking-tight">{locale === 'en' ? `Min: ${product.category_min_qty} units` : `Mínimo: ${product.category_min_qty} unidades`}</span>
+                        <span className="text-[9px] font-black uppercase tracking-tight">{locale === 'en' ? `Min: ${product.category.min_qty} units` : `Mínimo: ${product.category.min_qty} unidades`}</span>
                     </div>
                 )}
                 <div className="flex items-center bg-muted/60 rounded-xl overflow-hidden border border-border/30">
@@ -96,7 +96,7 @@ export default function CategoryPage() {
     const categoryGroups = useMemo(() => {
         const map: Record<string, string> = {};
         products.forEach(p => {
-            if (p.category) map[p.category] = p.category_en || p.category;
+            if (p.category?.name) map[p.category.name] = p.category.name_en || p.category.name;
         });
         return Object.entries(map)
             .sort(([a], [b]) => a.localeCompare(b))
@@ -107,12 +107,12 @@ export default function CategoryPage() {
     }, [products, locale]);
 
     const categoryProducts = useMemo(() =>
-        products.filter(p => p.category === categoryKey)
+        products.filter(p => p.category?.name === categoryKey)
     , [products, categoryKey]);
 
     const categoryLabel = useMemo(() => {
         const first = categoryProducts[0];
-        if (locale === 'en' && first?.category_en) return first.category_en;
+        if (locale === 'en' && first?.category?.name_en) return first.category.name_en;
         return categoryKey;
     }, [categoryProducts, categoryKey, locale]);
 
@@ -122,22 +122,22 @@ export default function CategoryPage() {
         return categoryProducts.filter(p => p.name.toLowerCase().includes(q));
     }, [categoryProducts, searchQuery]);
 
-    const handleIncrement = (id: number) => setQuantities(p => ({ ...p, [id]: (Number(p[id]) || categoryProducts.find(cp => cp.id === id)?.category_min_qty || 1) + 1 }));
+    const handleIncrement = (id: number) => setQuantities(p => ({ ...p, [id]: (Number(p[id]) || categoryProducts.find(cp => cp.id === id)?.category?.min_qty || 1) + 1 }));
     const handleDecrement = (id: number) => {
         const prod = categoryProducts.find(p => p.id === id);
-        const min = Number(prod?.category_min_qty) || 1;
+        const min = Number(prod?.category?.min_qty) || 1;
         setQuantities(p => ({ ...p, [id]: Math.max(min, (Number(p[id]) || min) - 1) }));
     };
     const handleQuantityChange = (id: number, val: string) => {
         const prod = categoryProducts.find(p => p.id === id);
-        const min = Number(prod?.category_min_qty) || 1;
+        const min = Number(prod?.category?.min_qty) || 1;
         if (val !== '' && Number(val) < min) return; // ignore lower than min if typing
         setQuantities(p => ({ ...p, [id]: val as any }));
     };
 
     const handleAddToCart = (product: any) => {
         let q = Number(quantities[product.id]);
-        const min = Number(product.category_min_qty) || 1;
+        const min = Number(product.category?.min_qty) || 1;
         if (isNaN(q) || q < min) q = min; 
         addToCart(product, q);
         setAddedIds(p => [...p, product.id]);

@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Category } from './category.entity';
 
 @Entity('products')
 export class Product {
@@ -8,11 +9,9 @@ export class Product {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  category: string;
-
-  @Column({ nullable: true })
-  category_en: string;
+  @ManyToOne(() => Category, (category) => category.products, { nullable: true, eager: true })
+  @JoinColumn({ name: 'category_id' })
+  category: Category | null;
 
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
@@ -23,6 +22,7 @@ export class Product {
   @Column({ nullable: true })
   image: string;
 
-  @Column({ default: 1 })
-  category_min_qty: number;
+  @Column({ default: false })
+  is_deleted: boolean;
 }
+

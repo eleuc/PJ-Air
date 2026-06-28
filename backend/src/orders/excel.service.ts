@@ -44,7 +44,7 @@ export class ExcelService {
       const categories: Record<string, any[]> = {};
       ordersList.forEach(o => {
         (o.items || []).forEach(item => {
-          const cat = item.product?.category || 'Sin categoría';
+          const cat = item.product?.category?.name || 'Sin categoría';
           if (!categories[cat]) categories[cat] = [];
           
           const productName = item.product?.name || `Producto #${item.product_id || 'Desconocido'}`;
@@ -111,7 +111,7 @@ export class ExcelService {
     orders.forEach(order => {
       const client = order?.user?.profile?.full_name || order?.user?.email || 'Anónimo';
       (order.items || []).forEach(item => {
-        const cat = item.product?.category || 'Sin categoría';
+        const cat = item.product?.category?.name || 'Sin categoría';
         const prod = item.product?.name || `Producto #${item.product_id || 'Desconocido'}`;
         const qty = Number(item.quantity) || 0;
 

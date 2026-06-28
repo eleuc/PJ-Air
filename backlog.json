@@ -3,8 +3,8 @@
   "version": "2.2.11",
   "kernel_version": "2.2.11",
   "status": "IN_PROGRESS",
-  "current_sprint": "S04-SECURITY-CORE",
-  "current_task": "TASK-04-01",
+  "current_sprint": "S05-DOMAIN-EVO",
+  "current_task": "TASK-05-03",
   "sprints": [
     {
       "id": "S01-INCEPTION",
@@ -67,7 +67,7 @@
     {
       "id": "S04-SECURITY-CORE",
       "name": "Sprint 04: Búnker de Seguridad y Lógica Core",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETED",
       "start_date": "2026-06-28",
       "goal": "Blindar el sistema contra vulnerabilidades críticas, autenticación real y estabilizar lógica de negocio.",
       "tasks": [
@@ -106,7 +106,7 @@
     {
       "id": "S05-DOMAIN-EVO",
       "name": "Sprint 05: Evolución de Dominio (Entidad Categoría y UI)",
-      "status": "TODO",
+      "status": "IN_PROGRESS",
       "start_date": "2026-06-28",
       "goal": "Formalizar la entidad Category, corregir borrado lógico y actualizar interfaz.",
       "tasks": [
@@ -114,19 +114,24 @@
           "id": "TASK-05-01",
           "label": "TECH/DOMAIN",
           "desc": "Entidad Category e Infraestructura DB.",
-          "status": "TODO"
+          "status": "DONE",
+          "veracity_hash": null
         },
         {
           "id": "TASK-05-02",
           "label": "TECH/UI",
           "desc": "Migración del CRUD de Categorías en Frontend.",
-          "status": "TODO"
+          "status": "DONE",
+          "veracity_hash": null
         },
         {
           "id": "TASK-05-03",
           "label": "TECH/UI",
           "desc": "Adaptación del CRUD de Productos y Filtros.",
-          "status": "TODO"
+          "status": "IN_PROGRESS",
+          "veracity_hash": null,
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
         }
       ]
     },
