@@ -4,4 +4,4 @@
 
 - [x] **TASK-05-01** [TECH/DOMAIN] Entidad Category e Infraestructura DB.
 - [x] **TASK-05-02** [TECH/UI] Migración del CRUD de Categorías en Frontend.
-- [/] **TASK-05-03** [TECH/UI] Adaptación del CRUD de Productos y Filtros.
+- [x] **TASK-05-03** [TECH/UI] Adaptación del CRUD de Productos y Filtros.

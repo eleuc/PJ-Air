@@ -1,5 +1,5 @@
 # DASHBOARD — 2.2.11
-**Generado**: 2026-06-28T09:25:04.951081
+**Generado**: 2026-06-28T12:55:29.791559
 **Profundidad de Sesión**: 🟢 BAJA (2.4%)
 **Integridad del Búnker**: 🟢 NOMINAL (98.9%)
 
@@ -10,9 +10,9 @@
 | **Integridad (Stability)** | 98.9% | 🔴 90% | 🟢 NOMINAL |
 | **Deriva (DNA Drift)** | 100.0% | Informativo | 🔴 Severa |
 | **Densidad (Swelling)** | 3/36 | 🔴 >36 | 🟢 NOMINAL |
-| **Turnos Activos** | 9 | — | 🔄 Acumulativo |
-| **Carga Volumétrica** | 48.0 KB | 1.9 MB | 📦 Volumétrico |
-| **Ventana de Contexto** | 5.0% | ⚠️ 30% / 🔴 70% | 🟢 BAJA |
+| **Turnos Activos** | 3 | — | 🔄 Acumulativo |
+| **Carga Volumétrica** | 46.3 KB | 1.9 MB | 📦 Volumétrico |
+| **Ventana de Contexto** | 4.7% | ⚠️ 30% / 🔴 70% | 🟢 BAJA |
 | **Plataforma (Native)** | unknown | Windows | 🟢 NATIVE |
 
 ## 🚢 Fleet Status (Multi-Node)
@@ -21,14 +21,14 @@
 
 
 ## 🚀 Sesión Activa
-- **Sprint**: S05-DOMAIN-EVO - Sprint 05: Evolución de Dominio (Entidad Categoría y UI)
-- **Tarea**: TASK-05-01 [TECH/DOMAIN]
+- **Sprint**: N/A
+- **Tarea**: N/A
 
 ## 🛡️ Seguridad & Independencia
 - **Isomorphism**: CERTIFIED
 - **Kernel Version**: 2.2.11
 - **Node Isolation**: ACTIVE
-- **Git Trace**: `dev-fixes` @ `363fda18` (⚠️ Dirty)
+- **Git Trace**: `dev-fixes` @ `1e85057a` (⚠️ Dirty)
 
 ---
-*Actualizado via VOLUMETRIC-TELEMETRY v1.0 — TASK-05-01 [TECH/DOMAIN]*
+*Actualizado via VOLUMETRIC-TELEMETRY v1.0 — N/A*

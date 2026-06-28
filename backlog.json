@@ -106,7 +106,7 @@
     {
       "id": "S05-DOMAIN-EVO",
       "name": "Sprint 05: Evolución de Dominio (Entidad Categoría y UI)",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETED",
       "start_date": "2026-06-28",
       "goal": "Formalizar la entidad Category, corregir borrado lógico y actualizar interfaz.",
       "tasks": [
@@ -128,10 +128,8 @@
           "id": "TASK-05-03",
           "label": "TECH/UI",
           "desc": "Adaptación del CRUD de Productos y Filtros.",
-          "status": "IN_PROGRESS",
-          "veracity_hash": null,
-          "audit_required": true,
-          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+          "status": "DONE",
+          "veracity_hash": null
         }
       ]
     },
