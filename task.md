@@ -1,9 +1,13 @@
-# SPRINT S07-UI-UX-REFINEMENT - Sprint 07: Refinamiento UI/UX y Reportes
-**Objetivo**: Mejorar navegación de categorías, fidelidad visual en Excel, ordenamiento alfabético y soporte para desactivación de categorías.
-**Fecha**: 2026-06-28
+# SPRINT S08-PAYMENTS-ACCOUNTING - Sprint 08: Integración de Pasarelas de Pago y Xero
+**Objetivo**: Implementar flujo de pago híbrido con Stripe y PayPal, y sincronización contable asíncrona con Xero.
+**Fecha**: 2026-06-29
 
-- [x] **TASK-07-01** [UI/CLEAN] Eliminación de Base de Datos Secundaria (Staging/Test) y Referencias.
-- [x] **TASK-07-02** [TECH/UI] Auditoría y Optimización de la Gestión de Imágenes del Catálogo.
-- [x] **TASK-07-03** [TECH/UI] Fidelidad Visual de Reportes Excel (Pixel-Perfect con exceljs).
-- [x] **TASK-07-04** [UI/CLEAN] Navegación Ágil y Filtros: Categorías -> Productos y Ordenamiento Universal A-Z.
-- [x] **TASK-07-05** [TECH/DOMAIN] Activación y Desactivación de Categorías (Alteración de Esquema de DB Autorizada por PO).
+- [x] **TASK-08-01** [TECH/DOMAIN] Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.
+- [ ] **TASK-08-02** [TECH/DOMAIN] Infraestructura DB: Tabla 'payments', tokens de Xero y expansión de status en Orders.
+- [ ] **TASK-08-03** [TECH/DOMAIN] Módulo de Pagos Backend: Setup SDKs Stripe & PayPal y Controladores de Intención de Pago.
+- [ ] **TASK-08-04** [TECH/UI] Frontend: Integración de Stripe Elements (Interfaz Segura de Tarjetas).
+- [ ] **TASK-08-05** [TECH/UI] Frontend: Integración de PayPal Smart Buttons.
+- [ ] **TASK-08-06** [TECH/DOMAIN] Webhooks de Pasarelas: Recepción segura y actualización de estados en DB.
+- [ ] **TASK-08-07** [TECH/DOMAIN] Autenticación Xero: Módulo OAuth 2.0, Almacenamiento y Refresco de Tokens.
+- [ ] **TASK-08-08** [TECH/DOMAIN] Sincronización Xero: Lógica de negocio (Customers, Invoices y Payments).
+- [ ] **TASK-08-09** [TECH/DOMAIN] Cola de Tareas (Queue): Orquestación asíncrona entre Pagos y Sincronización Xero.

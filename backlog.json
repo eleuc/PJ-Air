@@ -2,9 +2,9 @@
   "project": "pj-air",
   "version": "2.2.11",
   "kernel_version": "2.2.11",
-  "status": "COMPLETED",
-  "current_sprint": "S07-UI-UX-REFINEMENT",
-  "current_task": "TASK-07-05",
+  "status": "IN_PROGRESS",
+  "current_sprint": "S08-PAYMENTS-ACCOUNTING",
+  "current_task": "TASK-08-01",
   "sprints": [
     {
       "id": "S01-INCEPTION",
@@ -171,31 +171,104 @@
           "id": "TASK-07-01",
           "label": "UI/CLEAN",
           "desc": "Eliminación de Base de Datos Secundaria (Staging/Test) y todas sus referencias en código y documentación.",
-          "status": "DONE"
+          "status": "IN_PROGRESS",
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
         },
         {
           "id": "TASK-07-02",
           "label": "TECH/UI",
           "desc": "Auditoría y Optimización de la Gestión de Imágenes del Catálogo.",
-          "status": "DONE"
+          "status": "IN_PROGRESS",
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
         },
         {
           "id": "TASK-07-03",
           "label": "TECH/UI",
           "desc": "Fidelidad Visual de Reportes Excel (Pixel-Perfect con exceljs).",
-          "status": "DONE"
+          "status": "IN_PROGRESS",
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
         },
         {
           "id": "TASK-07-04",
           "label": "UI/CLEAN",
           "desc": "Navegación Ágil y Filtros: Categorías -> Productos y Ordenamiento Universal A-Z.",
-          "status": "DONE"
+          "status": "IN_PROGRESS",
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
         },
         {
           "id": "TASK-07-05",
           "label": "TECH/DOMAIN",
           "desc": "Activación y Desactivación de Categorías (Alteración de Esquema de DB Autorizada por PO).",
+          "status": "IN_PROGRESS",
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+        }
+      ]
+    },
+    {
+      "id": "S08-PAYMENTS-ACCOUNTING",
+      "name": "Sprint 08: Integración de Pasarelas de Pago y Xero",
+      "status": "IN_PROGRESS",
+      "start_date": "2026-06-29",
+      "goal": "Implementar flujo de pago híbrido con Stripe y PayPal, y sincronización contable asíncrona con Xero.",
+      "tasks": [
+        {
+          "id": "TASK-08-01",
+          "label": "TECH/DOMAIN",
+          "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
           "status": "DONE"
+        },
+        {
+          "id": "TASK-08-02",
+          "label": "TECH/DOMAIN",
+          "desc": "Infraestructura DB: Tabla 'payments', tokens de Xero y expansión de status en Orders.",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-08-03",
+          "label": "TECH/DOMAIN",
+          "desc": "Módulo de Pagos Backend: Setup SDKs Stripe & PayPal y Controladores de Intención de Pago.",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-08-04",
+          "label": "TECH/UI",
+          "desc": "Frontend: Integración de Stripe Elements (Interfaz Segura de Tarjetas).",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-08-05",
+          "label": "TECH/UI",
+          "desc": "Frontend: Integración de PayPal Smart Buttons.",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-08-06",
+          "label": "TECH/DOMAIN",
+          "desc": "Webhooks de Pasarelas: Recepción segura y actualización de estados en DB.",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-08-07",
+          "label": "TECH/DOMAIN",
+          "desc": "Autenticación Xero: Módulo OAuth 2.0, Almacenamiento y Refresco de Tokens.",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-08-08",
+          "label": "TECH/DOMAIN",
+          "desc": "Sincronización Xero: Lógica de negocio (Customers, Invoices y Payments).",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-08-09",
+          "label": "TECH/DOMAIN",
+          "desc": "Cola de Tareas (Queue): Orquestación asíncrona entre Pagos y Sincronización Xero.",
+          "status": "TODO"
         }
       ]
     }

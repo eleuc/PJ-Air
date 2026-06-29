@@ -71,6 +71,16 @@ export class AuthService {
     let isMatch = false;
     if (user.password && user.password.includes(':')) {
       isMatch = verifyPassword(password, user.password);
+    } else if (user.password && (user.password.startsWith('$2a$') || user.password.startsWith('$2b$'))) {
+      // Support bcrypt hashes (e.g. from Supabase or legacy system)
+      const bcrypt = require('bcryptjs');
+      if (bcrypt.compareSync(password, user.password)) {
+        isMatch = true;
+        // Migrate to the new PBKDF2 format
+        const hashedPassword = hashPassword(password);
+        await this.usersService.updatePassword(user.id, hashedPassword);
+        user.password = hashedPassword;
+      }
     } else {
       // Fallback and migration for plain-text passwords
       if (user.password === password) {
@@ -152,6 +162,9 @@ export class AuthService {
             user: 'mckenna.beier@ethereal.email',
             pass: 'JSF9re7Xh3bTzH4JUK',
           },
+          tls: {
+            rejectUnauthorized: false
+          }
         };
       }
 
@@ -170,6 +183,9 @@ export class AuthService {
             user: testAccount.user,
             pass: testAccount.pass,
           },
+          tls: {
+            rejectUnauthorized: false
+          }
         });
       }
 
