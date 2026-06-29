@@ -1,52 +1,74 @@
 {
-  "timestamp": "2026-06-28T04:53:28.565002",
+  "timestamp": "2026-06-29T09:44:02.321938",
   "kernel": {
     "version": "2.2.11",
     "status": "CHALLENGED",
     "dna_intact": true,
     "saturation_level": 2,
     "pulse_breakdown": {
-      "session_cp": 1.6177650000000001,
-      "historical_pressure": 1.2,
+      "session_cp": 1.6638449999999998,
+      "historical_pressure": 1.6,
       "rule_pressure": 0.0,
       "immediate_spike": 0.0,
-      "total_computed": 1.6177650000000001
+      "total_computed": 1.6638449999999998
     },
     "bhi": 0.0,
-    "odometer_bytes": 46113,
+    "odometer_bytes": 47649,
     "odometer_budget": 2000000,
     "last_audit": "N/A"
   },
   "backlog": {
-    "current_sprint": "S04-SECURITY-CORE",
-    "sprint_name": "Sprint 04: Búnker de Seguridad y Lógica Core",
-    "active_task": "TASK-04-01",
+    "current_sprint": "S08-PAYMENTS-ACCOUNTING",
+    "sprint_name": "Sprint 08: Integración de Pasarelas de Pago y Xero",
+    "active_task": "TASK-08-02",
     "version": "2.2.11",
     "pending_tasks": [
       {
-        "id": "TASK-04-01",
-        "label": "GOV/KERNEL",
-        "desc": "Implementación de Autenticación Segura (JWT & Hashing).",
-        "status": "IN_PROGRESS",
-        "audit_required": true,
-        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
-      },
-      {
-        "id": "TASK-04-02",
+        "id": "TASK-08-02",
         "label": "TECH/DOMAIN",
-        "desc": "Blindaje Financiero en Órdenes (Price Validation).",
+        "desc": "Infraestructura DB: Tabla 'payments', tokens de Xero y expansión de status en Orders.",
         "status": "TODO"
       },
       {
-        "id": "TASK-04-03",
+        "id": "TASK-08-03",
         "label": "TECH/DOMAIN",
-        "desc": "Sanitización de Carga de Archivos (Anti-RCE).",
+        "desc": "Módulo de Pagos Backend: Setup SDKs Stripe & PayPal y Controladores de Intención de Pago.",
         "status": "TODO"
       },
       {
-        "id": "TASK-04-04",
+        "id": "TASK-08-04",
         "label": "TECH/UI",
-        "desc": "Estabilización de ExcelService.",
+        "desc": "Frontend: Integración de Stripe Elements (Interfaz Segura de Tarjetas).",
+        "status": "TODO"
+      },
+      {
+        "id": "TASK-08-05",
+        "label": "TECH/UI",
+        "desc": "Frontend: Integración de PayPal Smart Buttons.",
+        "status": "TODO"
+      },
+      {
+        "id": "TASK-08-06",
+        "label": "TECH/DOMAIN",
+        "desc": "Webhooks de Pasarelas: Recepción segura y actualización de estados en DB.",
+        "status": "TODO"
+      },
+      {
+        "id": "TASK-08-07",
+        "label": "TECH/DOMAIN",
+        "desc": "Autenticación Xero: Módulo OAuth 2.0, Almacenamiento y Refresco de Tokens.",
+        "status": "TODO"
+      },
+      {
+        "id": "TASK-08-08",
+        "label": "TECH/DOMAIN",
+        "desc": "Sincronización Xero: Lógica de negocio (Customers, Invoices y Payments).",
+        "status": "TODO"
+      },
+      {
+        "id": "TASK-08-09",
+        "label": "TECH/DOMAIN",
+        "desc": "Cola de Tareas (Queue): Orquestación asíncrona entre Pagos y Sincronización Xero.",
         "status": "TODO"
       }
     ]
@@ -57,16 +79,10 @@
     "agent_id": "ANONYMOUS"
   },
   "challenge": {
-    "id": "SENTINEL-RESUME-AUTH-PJ_AIR-20260628T045225-Gs0GIPcsVb6kHwHjCklThzbfaDNYulwEBCJVeHflEFE",
+    "id": "SENTINEL-RESUME-AUTH-PJ_AIR-20260629T094300-VYl-KxzWxJwLXhVZOD3LmcedGhsOKbAbwHO0t79LgBs",
     "level": "VOLATILE",
-    "expires_at": "2026-06-28T05:52:25.571487",
+    "expires_at": "2026-06-29T10:43:00.876132",
     "deviations": [
-      {
-        "file": "CHROME-SCRIPTS",
-        "chrome": "CHROME-SCRIPTS",
-        "reason": "VOLATILE",
-        "severity": "CRITICAL"
-      },
       {
         "file": "CHROME-INFRA",
         "chrome": "CHROME-INFRA",
@@ -76,7 +92,7 @@
     ]
   },
   "dna": {
-    "last_signature_at": "2026-06-22T00:31:57.2221644-04:00",
+    "last_signature_at": "2026-06-29T09:40:41.7560913-04:00",
     "signed_project": "PJ_AIR",
     "chromosomes": [
       {
@@ -84,8 +100,12 @@
         "status": "INTACT"
       },
       {
+        "name": "CHROME-AGENT",
+        "status": "INTACT"
+      },
+      {
         "name": "CHROME-SCRIPTS",
-        "status": "DEVIATED"
+        "status": "INTACT"
       },
       {
         "name": "CHROME-DOCS",
@@ -105,30 +125,65 @@
   "federated_states": [],
   "stream": [
     {
-      "id": "TASK-04-01",
-      "label": "GOV/KERNEL",
-      "desc": "Implementación de Autenticación Segura (JWT & Hashing).",
-      "status": "IN_PROGRESS",
+      "id": "TASK-08-01",
+      "label": "TECH/DOMAIN",
+      "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
+      "status": "DONE",
       "detail_doc": null
     },
     {
-      "id": "TASK-04-02",
+      "id": "TASK-08-02",
       "label": "TECH/DOMAIN",
-      "desc": "Blindaje Financiero en Órdenes (Price Validation).",
+      "desc": "Infraestructura DB: Tabla 'payments', tokens de Xero y expansión de status en Orders.",
       "status": "TODO",
       "detail_doc": null
     },
     {
-      "id": "TASK-04-03",
+      "id": "TASK-08-03",
       "label": "TECH/DOMAIN",
-      "desc": "Sanitización de Carga de Archivos (Anti-RCE).",
+      "desc": "Módulo de Pagos Backend: Setup SDKs Stripe & PayPal y Controladores de Intención de Pago.",
       "status": "TODO",
       "detail_doc": null
     },
     {
-      "id": "TASK-04-04",
+      "id": "TASK-08-04",
       "label": "TECH/UI",
-      "desc": "Estabilización de ExcelService.",
+      "desc": "Frontend: Integración de Stripe Elements (Interfaz Segura de Tarjetas).",
+      "status": "TODO",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-08-05",
+      "label": "TECH/UI",
+      "desc": "Frontend: Integración de PayPal Smart Buttons.",
+      "status": "TODO",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-08-06",
+      "label": "TECH/DOMAIN",
+      "desc": "Webhooks de Pasarelas: Recepción segura y actualización de estados en DB.",
+      "status": "TODO",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-08-07",
+      "label": "TECH/DOMAIN",
+      "desc": "Autenticación Xero: Módulo OAuth 2.0, Almacenamiento y Refresco de Tokens.",
+      "status": "TODO",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-08-08",
+      "label": "TECH/DOMAIN",
+      "desc": "Sincronización Xero: Lógica de negocio (Customers, Invoices y Payments).",
+      "status": "TODO",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-08-09",
+      "label": "TECH/DOMAIN",
+      "desc": "Cola de Tareas (Queue): Orquestación asíncrona entre Pagos y Sincronización Xero.",
       "status": "TODO",
       "detail_doc": null
     }
@@ -138,6 +193,17 @@
     "nodes_indexed": []
   },
   "forensic_ledger": [
+    {
+      "id": 46,
+      "timestamp": "2026-06-29T09:43:00.888718",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "5361af1da66525abfeabec2bb3d293b0d9206aa141cfeb307dbd2761703d04a4",
+      "type": "CHALLENGE_ISSUED",
+      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260629T094300-VYl-KxzWxJwLXhVZOD3LmcedGhsOKbAbwHO0t79LgBs",
+      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: VYl-KxzWxJwLXhVZOD3LmcedGhsOKbAbwHO0t79LgBs",
+      "hash": "03fec1cda68172a4867043517d1db125620363bfb8375df954c2ca0410eb7967"
+    },
     {
       "id": 45,
       "timestamp": "2026-06-28T04:52:25.620447",
