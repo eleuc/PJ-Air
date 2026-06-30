@@ -11,8 +11,9 @@
 - [ ] **TASK-08-07** [TECH/DOMAIN] Autenticación Xero: Módulo OAuth 2.0, Almacenamiento y Refresco de Tokens.
 - [ ] **TASK-08-08** [TECH/DOMAIN] Sincronización Xero: Lógica de negocio (Customers, Invoices y Payments).
 - [ ] **TASK-08-09** [TECH/DOMAIN] Cola de Tareas (Queue): Orquestación asíncrona entre Pagos y Sincronización Xero.
-- [/] **TASK-08-10** [TECH/DOMAIN] Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).
-- [/] **TASK-08-11** [TECH/DOMAIN] Campo Nickname en entidad Profile y sincronización en reportes Excel.
-- [/] **TASK-08-12** [UI/TEST] Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.
+- [x] **TASK-08-10** [TECH/DOMAIN] Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).
+- [x] **TASK-08-11** [TECH/DOMAIN] Campo Nickname en entidad Profile y sincronización en reportes Excel.
+- [x] **TASK-08-12** [UI/TEST] Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.
 - [x] **TASK-08-13** [UI] Ordenamiento alfabético en listas del panel de administración (Clientes, Usuarios, Productos, Zonas, Rutas).
+
 
