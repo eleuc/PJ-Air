@@ -48,3 +48,4 @@ scratch/
 dist/
 out/
 *.xlsx
+/.meta/

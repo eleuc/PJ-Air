@@ -12,7 +12,7 @@ export class ExcelService {
     // Group orders by client (user)
     const clientOrders: Record<string, Order[]> = {};
     orders.forEach(order => {
-      const name = order?.user?.profile?.full_name || order?.user?.email || 'Anónimo';
+      const name = order?.user?.profile?.nickname || order?.user?.profile?.full_name || order?.user?.email || 'Anónimo';
       if (!clientOrders[name]) clientOrders[name] = [];
       clientOrders[name].push(order);
     });
@@ -203,14 +203,14 @@ export class ExcelService {
 
     // 1. Get all unique client names (stores)
     const clientNames = Array.from(new Set(orders.map(o => 
-      o?.user?.profile?.full_name || o?.user?.email || 'Anónimo'
+      o?.user?.profile?.nickname || o?.user?.profile?.full_name || o?.user?.email || 'Anónimo'
     ))).sort();
 
     // 2. Group items by product category, then product name, then client name
     const dataStructure: Record<string, Record<string, Record<string, number>>> = {};
     
     orders.forEach(order => {
-      const client = order?.user?.profile?.full_name || order?.user?.email || 'Anónimo';
+      const client = order?.user?.profile?.nickname || order?.user?.profile?.full_name || order?.user?.email || 'Anónimo';
       (order.items || []).forEach(item => {
         const cat = item.product?.category?.name || 'Sin categoría';
         const prod = item.product?.name || `Producto #${item.product_id || 'Desconocido'}`;

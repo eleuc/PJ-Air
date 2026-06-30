@@ -4,7 +4,7 @@
   "kernel_version": "2.2.11",
   "status": "IN_PROGRESS",
   "current_sprint": "S08-PAYMENTS-ACCOUNTING",
-  "current_task": "TASK-08-01",
+  "current_task": "TASK-08-10",
   "sprints": [
     {
       "id": "S01-INCEPTION",
@@ -220,7 +220,7 @@
           "id": "TASK-08-01",
           "label": "TECH/DOMAIN",
           "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
-          "status": "DONE"
+          "status": "TODO"
         },
         {
           "id": "TASK-08-02",
@@ -269,6 +269,24 @@
           "label": "TECH/DOMAIN",
           "desc": "Cola de Tareas (Queue): Orquestación asíncrona entre Pagos y Sincronización Xero.",
           "status": "TODO"
+        },
+        {
+          "id": "TASK-08-10",
+          "label": "TECH/DOMAIN",
+          "desc": "Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-08-11",
+          "label": "TECH/DOMAIN",
+          "desc": "Campo Nickname en entidad Profile y sincronización en reportes Excel.",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-08-12",
+          "label": "UI/TEST",
+          "desc": "Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.",
+          "status": "DONE"
         }
       ]
     }

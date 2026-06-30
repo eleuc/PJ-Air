@@ -19,7 +19,9 @@ export class OrdersService {
     private productRepository: Repository<Product>,
   ) {}
 
-  private validateStatusTransition(currentStatus: string, newStatus: string) {
+  private validateStatusTransition(currentStatus: string, newStatus: string, userRole?: string) {
+    if (userRole === 'admin') return;
+
     const validTransitions: Record<string, string[]> = {
       'pending': ['confirmed', 'shipped', 'cancelled'],
       'confirmed': ['shipped', 'cancelled'],
@@ -214,9 +216,9 @@ export class OrdersService {
     return this.findOne(savedOrder.id);
   }
 
-  async updateStatus(id: string, status: string): Promise<Order> {
+  async updateStatus(id: string, status: string, userRole?: string): Promise<Order> {
     const order = await this.findOne(id);
-    this.validateStatusTransition(order.status, status);
+    this.validateStatusTransition(order.status, status, userRole);
     order.status = status;
     return this.orderRepository.save(order);
   }
@@ -227,12 +229,12 @@ export class OrdersService {
     return this.orderRepository.save(order);
   }
 
-  async update(id: string, updateData: any): Promise<Order> {
+  async update(id: string, updateData: any, userRole?: string): Promise<Order> {
     const order = await this.findOne(id);
     const { status, total, delivery_date, address_id, motivo, items } = updateData;
     
     if (status) {
-      this.validateStatusTransition(order.status, status);
+      this.validateStatusTransition(order.status, status, userRole);
       order.status = status;
     }
 

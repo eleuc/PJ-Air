@@ -18,13 +18,30 @@ async function handleResponse(response: Response) {
   return data;
 }
 
+function getHeaders(extraHeaders?: Record<string, string>): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(extraHeaders || {}),
+  };
+  if (typeof window !== 'undefined') {
+    const savedSession = localStorage.getItem('local_session');
+    if (savedSession) {
+      try {
+        const { session } = JSON.parse(savedSession);
+        if (session?.access_token) {
+          headers['Authorization'] = `Bearer ${session.access_token}`;
+        }
+      } catch (e) {}
+    }
+  }
+  return headers;
+}
+
 export const api = {
   async post(path: string, body: any) {
     const response = await fetch(`${API_URL}${path}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getHeaders(),
       body: JSON.stringify(body),
     });
     return handleResponse(response);
@@ -33,22 +50,23 @@ export const api = {
   async patch(path: string, body: any) {
     const response = await fetch(`${API_URL}${path}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getHeaders(),
       body: JSON.stringify(body),
     });
     return handleResponse(response);
   },
 
   async get(path: string) {
-    const response = await fetch(`${API_URL}${path}`);
+    const response = await fetch(`${API_URL}${path}`, {
+      headers: getHeaders(),
+    });
     return handleResponse(response);
   },
 
   async delete(path: string) {
     const response = await fetch(`${API_URL}${path}`, {
       method: 'DELETE',
+      headers: getHeaders(),
     });
     
     if (!response.ok) {

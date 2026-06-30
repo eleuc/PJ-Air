@@ -116,5 +116,14 @@ describe('OrdersService', () => {
     
     await expect(service.updateStatus('order-123', 'pending')).rejects.toThrow(BadRequestException);
   });
+
+  it('should allow invalid order status transitions (e.g., Delivered -> Pending) if user is admin', async () => {
+    const existingOrder = { id: 'order-123', status: 'delivered' };
+    service.findOne = jest.fn().mockResolvedValue(existingOrder);
+    orderRepository.save = jest.fn().mockImplementation(o => Promise.resolve(o));
+    
+    const result = await service.updateStatus('order-123', 'pending', 'admin');
+    expect(result.status).toBe('pending');
+  });
 });
 

@@ -73,12 +73,26 @@ describe('OrdersController', () => {
   });
 
   describe('updateStatus', () => {
-    it('should extract id and status and call service.updateStatus', async () => {
+    it('should extract id and status and call service.updateStatus with userRole', async () => {
       mockOrdersService.updateStatus.mockResolvedValue('mock-updated-order');
 
-      const result = await controller.updateStatus('order-123', 'shipped');
+      const req = { user: { role: 'admin' } };
+      const result = await controller.updateStatus('order-123', 'shipped', req as any);
 
-      expect(service.updateStatus).toHaveBeenCalledWith('order-123', 'shipped');
+      expect(service.updateStatus).toHaveBeenCalledWith('order-123', 'shipped', 'admin');
+      expect(result).toBe('mock-updated-order');
+    });
+  });
+
+  describe('update', () => {
+    it('should call service.update with body and userRole', async () => {
+      mockOrdersService.update.mockResolvedValue('mock-updated-order');
+
+      const req = { user: { role: 'client' } };
+      const body = { status: 'cancelled' };
+      const result = await controller.update('order-123', body, req as any);
+
+      expect(service.update).toHaveBeenCalledWith('order-123', body, 'client');
       expect(result).toBe('mock-updated-order');
     });
   });

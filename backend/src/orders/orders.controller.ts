@@ -1,6 +1,7 @@
-import { Controller, Post, Get, Body, Param, Patch, Query, Res } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Patch, Query, Res, UseGuards, Req } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { ExcelService } from './excel.service';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('orders')
 export class OrdersController {
@@ -72,8 +73,10 @@ export class OrdersController {
   }
 
   @Patch(':id/status')
-  async updateStatus(@Param('id') id: string, @Body('status') status: string) {
-    return this.ordersService.updateStatus(id, status);
+  @UseGuards(AuthGuard)
+  async updateStatus(@Param('id') id: string, @Body('status') status: string, @Req() req: any) {
+    const userRole = req.user?.role;
+    return this.ordersService.updateStatus(id, status, userRole);
   }
 
   @Patch(':id/assign')
@@ -82,7 +85,9 @@ export class OrdersController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() body: any) {
-    return this.ordersService.update(id, body);
+  @UseGuards(AuthGuard)
+  async update(@Param('id') id: string, @Body() body: any, @Req() req: any) {
+    const userRole = req.user?.role;
+    return this.ordersService.update(id, body, userRole);
   }
 }

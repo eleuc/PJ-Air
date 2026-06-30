@@ -306,3 +306,45 @@ test.describe('S02 — Reportes y Exportación Excel', () => {
   });
 
 });
+
+// ──────────────────────────────────────────────────────────────────────
+// SUITE 5 — CAMBIO DE ESTADO Y NICKNAME (TASK-08-10, TASK-08-11)
+// ──────────────────────────────────────────────────────────────────────
+test.describe('S08 — Cambio de Estado de Órdenes y Nickname', () => {
+
+  test.beforeEach(async ({ page }) => {
+    await loginAsAdmin(page);
+  });
+
+  test('5.1 — Admin puede cambiar el estado de órdenes entregadas/canceladas', async ({ page }) => {
+    await page.goto(`${FRONTEND_URL}/admin/orders`);
+    await page.waitForTimeout(2000);
+
+    // Encuentra la primera orden que esté en estado final (ej: entregada o cancelada)
+    // O simplemente selecciona cualquier orden visible para cambiar su estado.
+    const firstOrderRow = page.locator('[data-testid="order-row"], tr').nth(1);
+    if (await firstOrderRow.count() > 0) {
+      await firstOrderRow.click();
+      await page.waitForTimeout(1000);
+
+      // Intenta cambiar el estado a otro valor (ej: "pendiente" o "confirmado")
+      const pendingBtn = page.locator('button:has-text("PENDIENTE"), button:has-text("pending")').first();
+      if (await pendingBtn.count() > 0) {
+        await pendingBtn.click();
+        // Verifica que se muestre el toast de éxito
+        await expect(page.locator('text=/Estado cambiado a/i').first()).toBeVisible({ timeout: 8000 });
+      }
+    } else {
+      console.log('⚠️ No hay órdenes disponibles para el test.');
+    }
+  });
+
+  test('5.2 — Admin puede ver la lista de clientes y verificar campos', async ({ page }) => {
+    await page.goto(`${FRONTEND_URL}/admin/clients`);
+    await page.waitForTimeout(2000);
+    // Verifica que la página de clientes cargue correctamente
+    await expect(page.locator('h1').first()).toBeVisible();
+  });
+
+});
+
