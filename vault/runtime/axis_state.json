@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-06-30T00:34:59.216147",
+  "timestamp": "2026-06-30T02:00:05.109744",
   "kernel": {
     "version": "2.2.11",
-    "status": "CHALLENGED",
-    "dna_intact": false,
-    "saturation_level": 1,
+    "status": "NOMINAL",
+    "dna_intact": true,
+    "saturation_level": 3,
     "pulse_breakdown": {
-      "session_cp": 1.0527,
-      "historical_pressure": 3.7,
+      "session_cp": 2.66289,
+      "historical_pressure": 3.9,
       "rule_pressure": 0.0,
       "immediate_spike": 0.0,
-      "total_computed": 1.0527
+      "total_computed": 2.66289
     },
     "bhi": 0.0,
-    "odometer_bytes": 3840,
+    "odometer_bytes": 57513,
     "odometer_budget": 2000000,
     "last_audit": "N/A"
   },
@@ -112,20 +112,7 @@
     "id": "SENTINEL-RESUME-AUTH-PJ_AIR-20260630T003340-Gd9234mCyHRlriqz3iGw4FL3ukpAYGGW4oEq_7dghTw",
     "level": "VOLATILE",
     "expires_at": "2026-06-30T01:33:40.958852",
-    "deviations": [
-      {
-        "file": "CHROME-AGENT",
-        "chrome": "CHROME-AGENT",
-        "reason": "VOLATILE",
-        "severity": "CRITICAL"
-      },
-      {
-        "file": "CHROME-INFRA",
-        "chrome": "CHROME-INFRA",
-        "reason": "VOLATILE",
-        "severity": "CRITICAL"
-      }
-    ]
+    "deviations": []
   },
   "dna": {
     "last_signature_at": "2026-06-29T14:25:37.186572",
@@ -137,7 +124,7 @@
       },
       {
         "name": "CHROME-AGENT",
-        "status": "DEVIATED"
+        "status": "INTACT"
       },
       {
         "name": "CHROME-SCRIPTS",
@@ -153,7 +140,7 @@
       },
       {
         "name": "CHROME-INFRA",
-        "status": "DEVIATED"
+        "status": "INTACT"
       }
     ]
   },
@@ -250,6 +237,50 @@
     "nodes_indexed": []
   },
   "forensic_ledger": [
+    {
+      "id": 52,
+      "timestamp": "2026-06-30T01:59:56.989966",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "b818562d6dbee70bf7912c8d9f57074b864febbc642728fd6fcbc040b11c6f16",
+      "type": "TRACE",
+      "task": "PUSH",
+      "detail": "Ejecución administrativa detectada: logix push",
+      "hash": "618b62b26f588bb002aaaf4b2035c9dd1ee8bda97124f07b650b04b202b15bb6"
+    },
+    {
+      "id": 51,
+      "timestamp": "2026-06-30T01:59:51.366246",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "a693c1644c9d782a46687fd1db9a4b7828f005f40935cdd2fe85a80d1dc8d168",
+      "type": "TRACE",
+      "task": "FLEET-PUSH",
+      "detail": "Ejecución administrativa detectada: logix fleet-push",
+      "hash": "b818562d6dbee70bf7912c8d9f57074b864febbc642728fd6fcbc040b11c6f16"
+    },
+    {
+      "id": 50,
+      "timestamp": "2026-06-30T00:35:58.914859",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "96a81c9742b42f5bdede10ec80ec3c76c9f7fbe4dc3e30bc7e4649e4f232c374",
+      "type": "TRACE",
+      "task": "UNKNOWN",
+      "detail": "Ejecución administrativa detectada: logix unknown",
+      "hash": "a693c1644c9d782a46687fd1db9a4b7828f005f40935cdd2fe85a80d1dc8d168"
+    },
+    {
+      "id": 49,
+      "timestamp": "2026-06-30T00:35:04.750347",
+      "role": "AGENT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "507565906469bd8834b794a4ff89ed5267a35756a3ee389e30de7a853df0156e",
+      "type": "ODOMETER_RESET",
+      "task": "TAKEOVER",
+      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
+      "hash": "96a81c9742b42f5bdede10ec80ec3c76c9f7fbe4dc3e30bc7e4649e4f232c374"
+    },
     {
       "id": 48,
       "timestamp": "2026-06-30T00:33:40.975041",
@@ -755,28 +786,6 @@
       "task": "TAKEOVER",
       "detail": "Ejecución administrativa detectada: logix takeover",
       "hash": "379345098d882fa72d5a7511a55cb0687a173e7726e850934963c4103fdfcb61"
-    },
-    {
-      "id": 2,
-      "timestamp": "2026-06-21T22:20:49.351984",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "c126642eaf49c26d7f1491983116fbfcba45b0ce0a86adf36523a19e6ada2218",
-      "type": "TRACE",
-      "task": "UNKNOWN",
-      "detail": "Ejecución administrativa detectada: logix unknown",
-      "hash": "0937df12d7810ad2bc6be2c8976830fefffaff8fe6123e4df5e36a7a0c7974e8"
-    },
-    {
-      "id": 1,
-      "timestamp": "2026-06-21T18:00:57.608646",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "0000000000000000000000000000000000000000000000000000000000000000",
-      "type": "TRACE",
-      "task": "BASELINE",
-      "detail": "Ejecución administrativa detectada: logix baseline",
-      "hash": "c126642eaf49c26d7f1491983116fbfcba45b0ce0a86adf36523a19e6ada2218"
     }
   ]
 }

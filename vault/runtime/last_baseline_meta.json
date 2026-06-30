@@ -1,1 +1,1 @@
-{"issuer":"AGENT","timestamp":"2026-06-30T00:35:02.156223","has_critical":false,"version":"2.2.11","changed_files":[]}
+{"issuer":"PO","timestamp":"2026-06-30T14:18:14.358067","has_critical":true,"version":"2.2.11","changed_files":["vault/po_public.xml","vault/rules/oracle_anchor.json","vault/rules/veracity.json","VISION.md"]}
