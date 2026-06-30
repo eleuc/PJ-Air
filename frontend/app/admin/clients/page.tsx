@@ -20,7 +20,7 @@ interface OrderItem {
 interface Order { id: string; total: number; status: string; created_at: string; delivery_date?: string; items?: OrderItem[]; }
 interface UserRecord {
     id: string; email: string; role: string; general_discount?: number; delivery_fee?: number;
-    profile?: { full_name?: string; username?: string; phone?: string; avatar_url?: string; };
+    profile?: { full_name?: string; username?: string; phone?: string; avatar_url?: string; nickname?: string; };
     addresses?: Address[];
     orders?: Order[];
 }
@@ -59,6 +59,10 @@ export default function AdminClientsPage() {
     const [deliveryFee, setDeliveryFee] = useState<number>(0);
     const [isSavingFee, setIsSavingFee] = useState(false);
 
+    // Nickname states
+    const [nickname, setNickname] = useState<string>('');
+    const [isSavingNickname, setIsSavingNickname] = useState(false);
+
     useEffect(() => { 
         fetchUsers(); 
         fetchProducts();
@@ -89,6 +93,7 @@ export default function AdminClientsPage() {
         setSelectedUser(user);
         setGeneralDiscount(Number(user.general_discount) || 0);
         setDeliveryFee(Number(user.delivery_fee) || 0);
+        setNickname(user.profile?.nickname || '');
         
         try {
             setLoadingDetail(true);
@@ -96,15 +101,28 @@ export default function AdminClientsPage() {
             setSelectedUser(detail);
             setGeneralDiscount(Number(detail.general_discount) || 0);
             setDeliveryFee(Number(detail.delivery_fee) || 0);
+            setNickname(detail.profile?.nickname || '');
             
             // Get product discounts
-            const discounts = await api.get(`/users/${user.id}/product-discounts`) as any[];
+            const discounts = await api.get(`/users/${detail.id}/product-discounts`) as any[];
             setProductDiscounts(discounts || []);
         } catch (err) {
             console.error("Error loading user details", err);
         } finally {
             setLoadingDetail(false);
         }
+    };
+
+    const handleUpdateNickname = async () => {
+        if (!selectedUser) return;
+        setIsSavingNickname(true);
+        try {
+            await api.patch(`/users/${selectedUser.id}/profile`, { nickname });
+            showToast('✅ Nickname actualizado');
+            setUsers(prev => prev.map(u => u.id === selectedUser.id ? { ...u, profile: { ...u.profile, nickname } } : u));
+            setSelectedUser(prev => prev ? { ...prev, profile: { ...prev.profile, nickname } } : null);
+        } catch (err: any) { showToast(`❌ ${err.message}`); }
+        finally { setIsSavingNickname(false); }
     };
 
     const handleUpdateGeneralDiscount = async () => {
@@ -354,6 +372,25 @@ export default function AdminClientsPage() {
                                         <label className="text-[10px] font-black text-slate-400 uppercase mb-1 block">Usuario</label>
                                         <p className="font-bold text-slate-700">@{selectedUser.profile?.username || '—'}</p>
                                     </div>
+                                </div>
+                                <div className="bg-slate-50 p-5 rounded-3xl border border-slate-100 mt-4 flex items-end gap-4">
+                                    <div className="flex-1">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase mb-1 block">Nickname (Uso Interno)</label>
+                                        <input
+                                            type="text"
+                                            value={nickname}
+                                            onChange={e => setNickname(e.target.value)}
+                                            placeholder="Nombre alternativo o ID interno..."
+                                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-slate-700"
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={handleUpdateNickname}
+                                        disabled={isSavingNickname}
+                                        className="px-5 py-2.5 bg-slate-900 hover:bg-primary text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all disabled:opacity-50 h-[38px] flex items-center justify-center"
+                                    >
+                                        {isSavingNickname ? 'Guardando...' : 'Guardar'}
+                                    </button>
                                 </div>
                             </section>
 
