@@ -16,7 +16,7 @@ import { api } from '@/lib/api';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { GOOGLE_MAPS_KEY } from '@/lib/config';
 
-const MIN_ORDER_AMOUNT = 500;
+// MIN_ORDER_AMOUNT was migrated to dynamic configuration loaded from the backend API
 
 const mapContainerStyle = {
     width: '100%',
@@ -295,6 +295,7 @@ export default function CheckoutPage() {
     const [paymentDate, setPaymentDate] = useState('');
     const [isBeforeCutoff, setIsBeforeCutoff] = useState(true);
     const [showMinAmountModal, setShowMinAmountModal] = useState(false);
+    const [minOrderAmount, setMinOrderAmount] = useState<number>(500);
 
     const [addresses, setAddresses] = useState<any[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
@@ -332,6 +333,17 @@ export default function CheckoutPage() {
         }).finally(() => setIsFetchingAddresses(false));
     }, [user]);
 
+    // ── Fetch min order amount configuration ──────────────────────────────────
+    useEffect(() => {
+        api.get('/configs/min_order_amount')
+            .then((res: any) => {
+                if (res && res.value) {
+                    setMinOrderAmount(Number(res.value) || 500);
+                }
+            })
+            .catch(err => console.error('Error fetching min_order_amount:', err));
+    }, []);
+
     // ── Calculation logic ─────────────────────────────────────────────────────
     const rawSubtotal = getRawSubtotal();
     const discountedSubtotal = getDiscountedSubtotal();
@@ -358,8 +370,8 @@ export default function CheckoutPage() {
     const handleSubmit = async () => {
         if (!user || cart.length === 0) return;
 
-        // Minimum order amount check ($500)
-        if (finalTotal < MIN_ORDER_AMOUNT) {
+        // Minimum order amount check
+        if (finalTotal < minOrderAmount) {
             setShowMinAmountModal(true);
             return;
         }
@@ -776,12 +788,12 @@ export default function CheckoutPage() {
                                         </div>
                                     )}
 
-                                    {finalTotal < MIN_ORDER_AMOUNT && (
+                                    {finalTotal < minOrderAmount && (
                                         <div className="p-3 bg-red-50 rounded-xl border border-red-100 mb-2">
                                             <p className="text-[10px] text-red-600 font-black uppercase tracking-tight leading-tight">
                                                 {lbl(
-                                                    'Monto mínimo para pedido: $500.00. Te invitamos a completar tu pedido.',
-                                                    'Minimum order amount: $500.00. Please add more items to complete.'
+                                                    `Monto mínimo para pedido: $${minOrderAmount.toFixed(2)}. Te invitamos a completar tu pedido.`,
+                                                    `Minimum order amount: $${minOrderAmount.toFixed(2)}. Please add more items to complete.`
                                                 )}
                                             </p>
                                         </div>
@@ -811,7 +823,7 @@ export default function CheckoutPage() {
                                     )}
 
                                     <p className="text-[9px] text-muted-foreground font-bold mt-2 text-center">
-                                        {lbl('Monto mínimo por pedido: $500.00', 'Minimum order amount: $500.00')}
+                                        {lbl(`Monto mínimo por pedido: $${minOrderAmount.toFixed(2)}`, `Minimum order amount: $${minOrderAmount.toFixed(2)}`)}
                                     </p>
                                 </div>
                             </div>
@@ -856,6 +868,7 @@ export default function CheckoutPage() {
                 isOpen={showMinAmountModal} 
                 onClose={() => setShowMinAmountModal(false)} 
                 locale={locale} 
+                minOrderAmount={minOrderAmount}
             />
         </div>
     );
@@ -864,7 +877,7 @@ export default function CheckoutPage() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Minimum Amount Modal
 // ─────────────────────────────────────────────────────────────────────────────
-function MinimumAmountModal({ isOpen, onClose, locale }: { isOpen: boolean; onClose: () => void; locale: string }) {
+function MinimumAmountModal({ isOpen, onClose, locale, minOrderAmount }: { isOpen: boolean; onClose: () => void; locale: string; minOrderAmount: number }) {
     const router = useRouter();
     if (!isOpen) return null;
 
@@ -884,8 +897,8 @@ function MinimumAmountModal({ isOpen, onClose, locale }: { isOpen: boolean; onCl
                 
                 <p className="text-muted-foreground font-medium mb-8">
                     {lbl(
-                        `Tu pedido actual es inferior a $${MIN_ORDER_AMOUNT.toFixed(2)}. Por favor, añade más productos para completar tu compra mínima.`,
-                        `Your current order is below $${MIN_ORDER_AMOUNT.toFixed(2)}. Please add more items to complete your minimum purchase.`
+                        `Tu pedido actual es inferior a $${minOrderAmount.toFixed(2)}. Por favor, añade más productos para completar tu compra mínima.`,
+                        `Your current order is below $${minOrderAmount.toFixed(2)}. Please add more items to complete your minimum purchase.`
                     )}
                 </p>
 

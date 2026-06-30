@@ -246,6 +246,8 @@ const en = {
     language: 'Language',
     languageDesc: 'Set the default language for all users',
     defaultLanguage: 'Default Language',
+    minOrderAmount: 'Minimum Order Amount',
+    minOrderAmountDesc: 'Set the minimum purchase amount required to complete an order',
     english: 'English',
     spanish: 'Spanish',
   },

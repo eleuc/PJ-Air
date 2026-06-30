@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 import { 
     Bell, Save, Loader2, CheckCircle2, AlertCircle, 
-    Clock, Zap, Calendar, Globe
+    Clock, Zap, Calendar, Globe, DollarSign
 } from 'lucide-react';
 import { useLanguage, type Locale } from '@/context/LanguageContext';
+import { api } from '@/lib/api';
 
 export default function AdminSettingsPage() {
     const { t, setDefaultLocale, defaultLocale } = useLanguage();
@@ -20,10 +21,20 @@ export default function AdminSettingsPage() {
         consolidatedTime: '20:00'
     });
     const [selectedDefault, setSelectedDefault] = useState<Locale>(defaultLocale);
+    const [minOrderAmount, setMinOrderAmount] = useState<number>(500);
 
     useEffect(() => {
         const saved = localStorage.getItem('admin_notification_settings');
         if (saved) setSettings(JSON.parse(saved));
+
+        // Fetch min order amount configuration
+        api.get('/configs/min_order_amount')
+            .then((res: any) => {
+                if (res && res.value) {
+                    setMinOrderAmount(Number(res.value) || 500);
+                }
+            })
+            .catch(err => console.error('Error fetching min order amount:', err));
     }, []);
 
     // Keep selectedDefault in sync if defaultLocale changes externally
@@ -42,6 +53,10 @@ export default function AdminSettingsPage() {
             localStorage.setItem('admin_notification_settings', JSON.stringify(settings));
             // Apply the chosen default language for all users
             setDefaultLocale(selectedDefault);
+            
+            // Save the min order amount config
+            await api.patch('/configs/min_order_amount', { value: String(minOrderAmount) });
+
             await new Promise(r => setTimeout(r, 600));
             showToast(t.adminSettings.savedOk);
         } catch {
@@ -102,6 +117,35 @@ export default function AdminSettingsPage() {
                                         </button>
                                     );
                                 })}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ── Order Config Section ────────────────────────────────── */}
+                    <section className="bg-white rounded-[2.5rem] border border-border shadow-sm overflow-hidden">
+                        <div className="p-8 border-b border-border bg-slate-50/50 flex items-center gap-4">
+                            <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
+                                <DollarSign size={24} />
+                            </div>
+                            <div>
+                                <h2 className="font-black text-slate-800 text-xl leading-none mb-1">{t.adminSettings.minOrderAmount}</h2>
+                                <p className="text-sm text-muted-foreground">{t.adminSettings.minOrderAmountDesc}</p>
+                            </div>
+                        </div>
+
+                        <div className="p-10 space-y-6">
+                            <div className="flex flex-col gap-2 max-w-xs">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                    {t.adminSettings.minOrderAmount} ($)
+                                </label>
+                                <input 
+                                    type="number" 
+                                    min="0"
+                                    step="0.01"
+                                    value={minOrderAmount}
+                                    onChange={e => setMinOrderAmount(Number(e.target.value) || 0)}
+                                    className="bg-white border-2 border-slate-200 rounded-2xl px-6 py-4 text-lg font-black text-slate-800 outline-none focus:border-primary transition-all"
+                                />
                             </div>
                         </div>
                     </section>

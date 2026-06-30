@@ -248,6 +248,8 @@ const es: Translations = {
     language: 'Idioma',
     languageDesc: 'Establece el idioma predeterminado para todos los usuarios',
     defaultLanguage: 'Idioma Predeterminado',
+    minOrderAmount: 'Monto Mínimo de Pedido',
+    minOrderAmountDesc: 'Establece el monto de compra mínimo requerido para finalizar un pedido',
     english: 'Inglés',
     spanish: 'Español',
   },
