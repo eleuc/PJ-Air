@@ -74,3 +74,16 @@
 | 2026-06-29 21:21 | AI | CLEANUP | 46d9569 | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260629T212010-Gu4y90eNIlQy6Hu7w0SRHJgubb9LVqQc6KGqNtHKu_Y expirado al iniciar handover. |
 | 2026-06-30 00:33 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 3aa8344 | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
 | 2026-06-30 00:33 | AI | Sentinel | 5c8e269 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260630T003340-Gd9234mCyHRlriqz3iGw4FL3ukpAYGGW4oEq_7dghTw | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: Gd9234mCyHRlriqz3iGw4FL3ukpAYGGW4oEq_7dghTw |
+| 2026-06-30 00:35 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 5075659 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-06-30 00:35 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 96a81c9 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
+| 2026-06-30 01:59 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | a693c16 | TRACE | FLEET-PUSH | Ejecución administrativa detectada: logix fleet-push |
+| 2026-06-30 01:59 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | b818562 | TRACE | PUSH | Ejecución administrativa detectada: logix push |
+| 2026-06-30 04:00 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 618b62b | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-06-30 04:00 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 59ac251 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
+| 2026-06-30 04:00 | AI | Sentinel | 63702d6 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260630T040039-zeePLLOV9AOutN00gM8ZduEg3LAmu4H9JSBvY2QJ3qw | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: zeePLLOV9AOutN00gM8ZduEg3LAmu4H9JSBvY2QJ3qw |
+| 2026-06-30 04:00 | AI | RED | ccbdefb | ALERT | TEST-FAIL | Pruebas unitarias fallidas durante el baseline. |
+| 2026-06-30 14:17 | AI | Sentinel | 9bd839d | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260630T141730-pQkJjaUYo5VC8QgsMisNqNwuI9cXywUhEvBKr-OrYas | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: pQkJjaUYo5VC8QgsMisNqNwuI9cXywUhEvBKr-OrYas |
+| 2026-06-30 14:17 | AI | RED | 5ff0ebc | ALERT | TEST-FAIL | Pruebas unitarias fallidas durante el baseline. |
+| 2026-06-30 14:18 | AI | RED | 24f2755 | ALERT | TEST-FAIL | Pruebas unitarias fallidas durante el baseline. |
+| 2026-06-30 14:18 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | a0981bc | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
+| 2026-06-30 14:18 | AI | Sentinel | d8b140f | CHALLENGE_ISSUED | 92e916611f614d48788bd30568524d8531ad49f1573fd6fb99a5b7cc5f788222 | Level: GATE-1 | Project: PJ_AIR | Nonce: T7HROXHAnT1BwyuqCeNGLB2654Atwwy7BMMeuYu5ybU |
