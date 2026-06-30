@@ -9,7 +9,7 @@ import { Category } from './category.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Product, Category])],
   providers: [ProductsService],
-  controllers: [ProductsController, CategoriesController],
+  controllers: [CategoriesController, ProductsController],
   exports: [ProductsService],
 })
 export class ProductsModule {}

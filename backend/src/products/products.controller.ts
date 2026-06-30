@@ -21,7 +21,11 @@ export class ProductsController {
 
     @Get(':id')
     async findOne(@Param('id') id: string) {
-        return this.productsService.findOne(parseInt(id));
+        const parsedId = parseInt(id);
+        if (isNaN(parsedId)) {
+            throw new BadRequestException('Invalid product ID');
+        }
+        return this.productsService.findOne(parsedId);
     }
 
     @Post()
@@ -41,12 +45,20 @@ export class ProductsController {
 
     @Patch(':id')
     async update(@Param('id') id: string, @Body() body: any) {
-        return this.productsService.update(parseInt(id), body);
+        const parsedId = parseInt(id);
+        if (isNaN(parsedId)) {
+            throw new BadRequestException('Invalid product ID');
+        }
+        return this.productsService.update(parsedId, body);
     }
 
     @Delete(':id')
     async delete(@Param('id') id: string) {
-        return this.productsService.delete(parseInt(id));
+        const parsedId = parseInt(id);
+        if (isNaN(parsedId)) {
+            throw new BadRequestException('Invalid product ID');
+        }
+        return this.productsService.delete(parsedId);
     }
 
     @Post('upload-image')
