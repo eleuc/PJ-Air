@@ -1,28 +1,34 @@
 {
-  "timestamp": "2026-06-29T09:44:02.321938",
+  "timestamp": "2026-06-30T00:34:59.216147",
   "kernel": {
     "version": "2.2.11",
     "status": "CHALLENGED",
-    "dna_intact": true,
-    "saturation_level": 2,
+    "dna_intact": false,
+    "saturation_level": 1,
     "pulse_breakdown": {
-      "session_cp": 1.6638449999999998,
-      "historical_pressure": 1.6,
+      "session_cp": 1.0527,
+      "historical_pressure": 3.7,
       "rule_pressure": 0.0,
       "immediate_spike": 0.0,
-      "total_computed": 1.6638449999999998
+      "total_computed": 1.0527
     },
     "bhi": 0.0,
-    "odometer_bytes": 47649,
+    "odometer_bytes": 3840,
     "odometer_budget": 2000000,
     "last_audit": "N/A"
   },
   "backlog": {
     "current_sprint": "S08-PAYMENTS-ACCOUNTING",
     "sprint_name": "Sprint 08: Integración de Pasarelas de Pago y Xero",
-    "active_task": "TASK-08-02",
+    "active_task": "TASK-08-10",
     "version": "2.2.11",
     "pending_tasks": [
+      {
+        "id": "TASK-08-01",
+        "label": "TECH/DOMAIN",
+        "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
+        "status": "TODO"
+      },
       {
         "id": "TASK-08-02",
         "label": "TECH/DOMAIN",
@@ -70,6 +76,30 @@
         "label": "TECH/DOMAIN",
         "desc": "Cola de Tareas (Queue): Orquestación asíncrona entre Pagos y Sincronización Xero.",
         "status": "TODO"
+      },
+      {
+        "id": "TASK-08-10",
+        "label": "TECH/DOMAIN",
+        "desc": "Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).",
+        "status": "IN_PROGRESS",
+        "audit_required": true,
+        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+      },
+      {
+        "id": "TASK-08-11",
+        "label": "TECH/DOMAIN",
+        "desc": "Campo Nickname en entidad Profile y sincronización en reportes Excel.",
+        "status": "IN_PROGRESS",
+        "audit_required": true,
+        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+      },
+      {
+        "id": "TASK-08-12",
+        "label": "UI/TEST",
+        "desc": "Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.",
+        "status": "IN_PROGRESS",
+        "audit_required": true,
+        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
       }
     ]
   },
@@ -79,10 +109,16 @@
     "agent_id": "ANONYMOUS"
   },
   "challenge": {
-    "id": "SENTINEL-RESUME-AUTH-PJ_AIR-20260629T094300-VYl-KxzWxJwLXhVZOD3LmcedGhsOKbAbwHO0t79LgBs",
+    "id": "SENTINEL-RESUME-AUTH-PJ_AIR-20260630T003340-Gd9234mCyHRlriqz3iGw4FL3ukpAYGGW4oEq_7dghTw",
     "level": "VOLATILE",
-    "expires_at": "2026-06-29T10:43:00.876132",
+    "expires_at": "2026-06-30T01:33:40.958852",
     "deviations": [
+      {
+        "file": "CHROME-AGENT",
+        "chrome": "CHROME-AGENT",
+        "reason": "VOLATILE",
+        "severity": "CRITICAL"
+      },
       {
         "file": "CHROME-INFRA",
         "chrome": "CHROME-INFRA",
@@ -92,7 +128,7 @@
     ]
   },
   "dna": {
-    "last_signature_at": "2026-06-29T09:40:41.7560913-04:00",
+    "last_signature_at": "2026-06-29T14:25:37.186572",
     "signed_project": "PJ_AIR",
     "chromosomes": [
       {
@@ -101,7 +137,7 @@
       },
       {
         "name": "CHROME-AGENT",
-        "status": "INTACT"
+        "status": "DEVIATED"
       },
       {
         "name": "CHROME-SCRIPTS",
@@ -128,7 +164,7 @@
       "id": "TASK-08-01",
       "label": "TECH/DOMAIN",
       "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
-      "status": "DONE",
+      "status": "TODO",
       "detail_doc": null
     },
     {
@@ -186,6 +222,27 @@
       "desc": "Cola de Tareas (Queue): Orquestación asíncrona entre Pagos y Sincronización Xero.",
       "status": "TODO",
       "detail_doc": null
+    },
+    {
+      "id": "TASK-08-10",
+      "label": "TECH/DOMAIN",
+      "desc": "Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).",
+      "status": "IN_PROGRESS",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-08-11",
+      "label": "TECH/DOMAIN",
+      "desc": "Campo Nickname en entidad Profile y sincronización en reportes Excel.",
+      "status": "IN_PROGRESS",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-08-12",
+      "label": "UI/TEST",
+      "desc": "Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.",
+      "status": "IN_PROGRESS",
+      "detail_doc": null
     }
   ],
   "nexus_summary": {
@@ -193,6 +250,28 @@
     "nodes_indexed": []
   },
   "forensic_ledger": [
+    {
+      "id": 48,
+      "timestamp": "2026-06-30T00:33:40.975041",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "5c8e269c154049b083ccf3960b025eede568bc8bd16fd55bbc22a56dcbe96f1d",
+      "type": "CHALLENGE_ISSUED",
+      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260630T003340-Gd9234mCyHRlriqz3iGw4FL3ukpAYGGW4oEq_7dghTw",
+      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: Gd9234mCyHRlriqz3iGw4FL3ukpAYGGW4oEq_7dghTw",
+      "hash": "507565906469bd8834b794a4ff89ed5267a35756a3ee389e30de7a853df0156e"
+    },
+    {
+      "id": 47,
+      "timestamp": "2026-06-30T00:33:39.984536",
+      "role": "ARCHITECT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "3aa83445ae9d4e6c169b51fc7616f258d439adbe7b9e3683863cd781e43d6247",
+      "type": "TRACE",
+      "task": "TAKEOVER",
+      "detail": "Ejecución administrativa detectada: logix takeover",
+      "hash": "5c8e269c154049b083ccf3960b025eede568bc8bd16fd55bbc22a56dcbe96f1d"
+    },
     {
       "id": 46,
       "timestamp": "2026-06-29T09:43:00.888718",
