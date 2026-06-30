@@ -166,15 +166,19 @@ export default function AdminRoutesPage() {
     const filteredRoutes = routes.filter(r =>
         getTransportName(r.transportId).toLowerCase().includes(search.toLowerCase()) ||
         getZoneName(r.zoneId).toLowerCase().includes(search.toLowerCase())
-    );
+    ).sort((a, b) => {
+        const nameA = getTransportName(a.transportId);
+        const nameB = getTransportName(b.transportId);
+        return nameA.localeCompare(nameB);
+    });
     const filteredTransports = transports.filter(t =>
         t.name.toLowerCase().includes(search.toLowerCase()) ||
         t.plates.toLowerCase().includes(search.toLowerCase())
-    );
+    ).sort((a, b) => a.name.localeCompare(b.name));
     const filteredZones = zones.filter(z =>
         z.name.toLowerCase().includes(search.toLowerCase()) ||
         z.description.toLowerCase().includes(search.toLowerCase())
-    );
+    ).sort((a, b) => a.name.localeCompare(b.name));
 
     return (
         <div className="flex min-h-screen bg-muted/30">

@@ -207,6 +207,10 @@ export default function AdminClientsPage() {
             u.profile?.full_name?.toLowerCase().includes(s) ||
             u.profile?.username?.toLowerCase().includes(s)
         );
+    }).sort((a, b) => {
+        const nameA = a.profile?.full_name || a.email || '';
+        const nameB = b.profile?.full_name || b.email || '';
+        return nameA.localeCompare(nameB);
     });
 
     const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);

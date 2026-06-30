@@ -221,6 +221,10 @@ export default function AdminUsersPage() {
         const matchesRole = roleFilter === 'all' || u.role === roleFilter;
         
         return matchesSearch && matchesRole;
+    }).sort((a, b) => {
+        const nameA = a.profile?.full_name || a.email || '';
+        const nameB = b.profile?.full_name || b.email || '';
+        return nameA.localeCompare(nameB);
     });
 
     return (

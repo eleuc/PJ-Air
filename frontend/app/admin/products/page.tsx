@@ -193,7 +193,7 @@ export default function AdminProductsPage() {
     const filtered = products.filter(p =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (p.category?.name || 'Sin categoría').toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    ).sort((a, b) => a.name.localeCompare(b.name));
 
     return (
         <div className="flex min-h-screen bg-muted/30">

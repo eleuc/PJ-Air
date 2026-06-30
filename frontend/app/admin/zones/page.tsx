@@ -5,9 +5,9 @@ import AdminSidebar from '@/components/layout/AdminSidebar';
 import { MapPin, Plus, Edit2, Trash2, Search, Globe, ChevronRight } from 'lucide-react';
 
 const MOCK_ZONES = [
-    { id: 1, name: 'Norte', description: 'Cubre sectores desde el centro hasta la salida norte.' },
     { id: 2, name: 'Centro', description: 'Casco histórico y zonas empresariales.' },
     { id: 3, name: 'Este', description: 'Zonas residenciales y centros comerciales del este.' },
+    { id: 1, name: 'Norte', description: 'Cubre sectores desde el centro hasta la salida norte.' },
 ];
 
 export default function AdminZonesPage() {
