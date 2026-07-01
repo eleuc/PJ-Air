@@ -64,7 +64,11 @@ let ProductsController = class ProductsController {
         return this.productsService.findByCategory(category);
     }
     async findOne(id) {
-        return this.productsService.findOne(parseInt(id));
+        const parsedId = parseInt(id);
+        if (isNaN(parsedId)) {
+            throw new common_1.BadRequestException('Invalid product ID');
+        }
+        return this.productsService.findOne(parsedId);
     }
     async create(body) {
         return this.productsService.create(body);
@@ -77,18 +81,29 @@ let ProductsController = class ProductsController {
         });
     }
     async update(id, body) {
-        return this.productsService.update(parseInt(id), body);
+        const parsedId = parseInt(id);
+        if (isNaN(parsedId)) {
+            throw new common_1.BadRequestException('Invalid product ID');
+        }
+        return this.productsService.update(parsedId, body);
     }
     async delete(id) {
-        return this.productsService.delete(parseInt(id));
+        const parsedId = parseInt(id);
+        if (isNaN(parsedId)) {
+            throw new common_1.BadRequestException('Invalid product ID');
+        }
+        return this.productsService.delete(parsedId);
     }
     async uploadImage(file) {
         if (!file)
-            throw new Error('No file uploaded');
+            throw new common_1.BadRequestException('No file uploaded');
         return { url: `/uploads/products/${file.filename}` };
     }
     async uploadProducts(files, body) {
-        const csvFile = files.find(f => f.originalname.endsWith('.csv'));
+        if (!files || files.length === 0) {
+            return { message: 'Upload processed successfully' };
+        }
+        const csvFile = files.find(f => f.originalname.toLowerCase().endsWith('.csv'));
         if (csvFile) {
             await this.productsService.processCSV(csvFile);
         }
@@ -158,9 +173,22 @@ __decorate([
             },
             filename: (req, file, cb) => {
                 const randomName = Array(24).fill(null).map(() => Math.round(Math.random() * 16).toString(16)).join('');
-                cb(null, `${randomName}${(0, path_1.extname)(file.originalname)}`);
+                cb(null, `${randomName}${(0, path_1.extname)(file.originalname).toLowerCase()}`);
             },
         }),
+        limits: {
+            fileSize: 5 * 1024 * 1024,
+        },
+        fileFilter: (req, file, cb) => {
+            const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
+            const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+            const ext = (0, path_1.extname)(file.originalname).toLowerCase();
+            const mime = file.mimetype;
+            if (!allowedExtensions.includes(ext) || !allowedMimeTypes.includes(mime)) {
+                return cb(new common_1.BadRequestException('Only image files (.jpg, .jpeg, .png, .webp, .gif) are allowed'), false);
+            }
+            cb(null, true);
+        }
     })),
     __param(0, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
@@ -169,7 +197,19 @@ __decorate([
 ], ProductsController.prototype, "uploadImage", null);
 __decorate([
     (0, common_1.Post)('upload'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files')),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 10, {
+        limits: {
+            fileSize: 2 * 1024 * 1024,
+        },
+        fileFilter: (req, file, cb) => {
+            const ext = (0, path_1.extname)(file.originalname).toLowerCase();
+            const allowedMimeTypes = ['text/csv', 'application/vnd.ms-excel', 'text/plain', 'application/csv'];
+            if (ext !== '.csv' || !allowedMimeTypes.includes(file.mimetype)) {
+                return cb(new common_1.BadRequestException('Only CSV files (.csv) are allowed'), false);
+            }
+            cb(null, true);
+        }
+    })),
     __param(0, (0, common_1.UploadedFiles)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

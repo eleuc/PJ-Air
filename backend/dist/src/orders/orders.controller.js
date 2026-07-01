@@ -16,6 +16,7 @@ exports.OrdersController = void 0;
 const common_1 = require("@nestjs/common");
 const orders_service_1 = require("./orders.service");
 const excel_service_1 = require("./excel.service");
+const auth_guard_1 = require("../auth/auth.guard");
 let OrdersController = class OrdersController {
     ordersService;
     excelService;
@@ -35,7 +36,7 @@ let OrdersController = class OrdersController {
     }
     async exportIndividual(startDate, endDate, res) {
         const orders = await this.ordersService.findInRange(startDate, endDate);
-        const buffer = this.excelService.exportIndividual(orders);
+        const buffer = await this.excelService.exportIndividual(orders);
         res.set({
             'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition': `attachment; filename="ORDENES_INDIVIDUALES.xlsx"`,
@@ -45,7 +46,7 @@ let OrdersController = class OrdersController {
     }
     async exportConsolidated(startDate, endDate, res) {
         const orders = await this.ordersService.findInRange(startDate, endDate);
-        const buffer = this.excelService.exportConsolidated(orders);
+        const buffer = await this.excelService.exportConsolidated(orders);
         res.set({
             'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition': `attachment; filename="ORDENES_CONSOLIDADO.xlsx"`,
@@ -59,14 +60,16 @@ let OrdersController = class OrdersController {
     async findOne(id) {
         return this.ordersService.findOne(id);
     }
-    async updateStatus(id, status) {
-        return this.ordersService.updateStatus(id, status);
+    async updateStatus(id, status, req) {
+        const userRole = req.user?.role;
+        return this.ordersService.updateStatus(id, status, userRole);
     }
     async assignDelivery(id, deliveryUserId) {
         return this.ordersService.assignDelivery(id, deliveryUserId);
     }
-    async update(id, body) {
-        return this.ordersService.update(id, body);
+    async update(id, body, req) {
+        const userRole = req.user?.role;
+        return this.ordersService.update(id, body, userRole);
     }
 };
 exports.OrdersController = OrdersController;
@@ -126,10 +129,12 @@ __decorate([
 ], OrdersController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id/status'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)('status')),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "updateStatus", null);
 __decorate([
@@ -142,10 +147,12 @@ __decorate([
 ], OrdersController.prototype, "assignDelivery", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "update", null);
 exports.OrdersController = OrdersController = __decorate([

@@ -11,7 +11,7 @@ export declare class OrdersController {
     exportConsolidated(startDate: string, endDate: string, res: any): Promise<void>;
     findInRange(startDate: string, endDate: string, userId?: string): Promise<import("./order.entity").Order[]>;
     findOne(id: string): Promise<import("./order.entity").Order>;
-    updateStatus(id: string, status: string): Promise<import("./order.entity").Order>;
+    updateStatus(id: string, status: string, req: any): Promise<import("./order.entity").Order>;
     assignDelivery(id: string, deliveryUserId: string): Promise<import("./order.entity").Order>;
-    update(id: string, body: any): Promise<import("./order.entity").Order>;
+    update(id: string, body: any, req: any): Promise<import("./order.entity").Order>;
 }

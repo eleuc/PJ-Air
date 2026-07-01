@@ -1,7 +1,7 @@
 const Database = require('./backend/node_modules/better-sqlite3');
 const crypto = require('crypto');
 
-const db = new Database('./backend/database.sqlite');
+const db = new Database('./database.sqlite');
 
 try {
     db.exec('ALTER TABLE users ADD COLUMN role TEXT DEFAULT "client"');

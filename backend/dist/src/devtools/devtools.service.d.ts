@@ -8,7 +8,7 @@ export declare class DevtoolsService {
     private ordersService;
     private addressesService;
     constructor(productsService: ProductsService, usersService: UsersService, ordersService: OrdersService, addressesService: AddressesService);
-    seedProducts(): Promise<import("../products/product.entity").Product[]>;
+    seedProducts(): Promise<any[]>;
     seedAdmin(): Promise<{
         message: string;
         email: string;

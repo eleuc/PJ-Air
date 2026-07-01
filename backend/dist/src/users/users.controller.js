@@ -74,7 +74,7 @@ let UsersController = class UsersController {
         console.log('User ID:', id);
         if (!file) {
             console.error('No file received in request');
-            throw new common_1.BadRequestException('No file uploaded');
+            throw new common_1.BadRequestException('No file uploaded or file type not allowed');
         }
         console.log('File Name:', file.filename);
         console.log('File Path:', file.path);
@@ -154,9 +154,22 @@ __decorate([
                     .fill(null)
                     .map(() => Math.round(Math.random() * 16).toString(16))
                     .join('');
-                cb(null, `${randomName}${(0, path_1.extname)(file.originalname)}`);
+                cb(null, `${randomName}${(0, path_1.extname)(file.originalname).toLowerCase()}`);
             },
         }),
+        limits: {
+            fileSize: 2 * 1024 * 1024,
+        },
+        fileFilter: (req, file, cb) => {
+            const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
+            const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+            const ext = (0, path_1.extname)(file.originalname).toLowerCase();
+            const mime = file.mimetype;
+            if (!allowedExtensions.includes(ext) || !allowedMimeTypes.includes(mime)) {
+                return cb(new common_1.BadRequestException('Only image files (.jpg, .jpeg, .png, .webp, .gif) are allowed'), false);
+            }
+            cb(null, true);
+        }
     })),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.UploadedFile)()),

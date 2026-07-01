@@ -17,12 +17,74 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const product_entity_1 = require("./product.entity");
+const category_entity_1 = require("./category.entity");
 const stream_1 = require("stream");
 const csv = require('csv-parser');
 let ProductsService = class ProductsService {
     productRepository;
-    constructor(productRepository) {
+    categoryRepository;
+    constructor(productRepository, categoryRepository) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+    }
+    async onModuleInit() {
+        await this.migrateLegacyCategories();
+    }
+    async migrateLegacyCategories() {
+        try {
+            const hasLegacyColumn = await this.productRepository.query("PRAGMA table_info(products)").then((info) => info.some(col => col.name === 'category'));
+            if (hasLegacyColumn) {
+                console.log('[MIGRATION] Legacy "category" column found. Migrating to Category entities...');
+                const legacyProducts = await this.productRepository.query("SELECT id, category, category_en, category_min_qty FROM products WHERE category IS NOT NULL AND category != '_deleted_'");
+                for (const row of legacyProducts) {
+                    if (!row.category)
+                        continue;
+                    let cat = await this.categoryRepository.findOne({ where: { name: row.category } });
+                    if (!cat) {
+                        cat = this.categoryRepository.create({
+                            name: row.category,
+                            name_en: row.category_en || row.category,
+                            min_qty: Number(row.category_min_qty) || 1,
+                        });
+                        cat = await this.categoryRepository.save(cat);
+                    }
+                    await this.productRepository.query("UPDATE products SET category_id = ? WHERE id = ?", [cat.id, row.id]);
+                }
+                const deletedLegacyProducts = await this.productRepository.query("SELECT id FROM products WHERE category = '_deleted_'");
+                for (const row of deletedLegacyProducts) {
+                    await this.productRepository.query("UPDATE products SET is_deleted = 1 WHERE id = ?", [row.id]);
+                }
+                console.log('[MIGRATION] Legacy categories migration completed successfully.');
+            }
+        }
+        catch (error) {
+            console.error('[MIGRATION] Error migrating legacy categories:', error.message);
+        }
+    }
+    async findAllCategories() {
+        return this.categoryRepository.find();
+    }
+    async findCategoryById(id) {
+        const cat = await this.categoryRepository.findOne({ where: { id } });
+        if (!cat)
+            throw new common_1.NotFoundException('Category not found');
+        return cat;
+    }
+    async createCategory(data) {
+        const existing = await this.categoryRepository.findOne({ where: { name: data.name } });
+        if (existing)
+            throw new common_1.ConflictException('Category name already registered');
+        const cat = this.categoryRepository.create(data);
+        return this.categoryRepository.save(cat);
+    }
+    async updateCategoryById(id, data) {
+        await this.categoryRepository.update(id, data);
+        return this.findCategoryById(id);
+    }
+    async deleteCategory(id) {
+        const cat = await this.findCategoryById(id);
+        await this.productRepository.update({ category: { id } }, { category: null });
+        return this.categoryRepository.remove(cat);
     }
     async processCSV(file) {
         const results = [];
@@ -40,13 +102,23 @@ let ProductsService = class ProductsService {
                             continue;
                         const description = row.description || row['descripción corta'] || '';
                         const price = parseFloat(row.precio || row.price) || 0;
-                        const category = row['categoría'] || row.category || 'General';
+                        const categoryName = row['categoría'] || row.category || 'General';
                         const image = row.image || '';
+                        let cat = await this.categoryRepository.findOne({ where: { name: categoryName } });
+                        if (!cat) {
+                            cat = this.categoryRepository.create({
+                                name: categoryName,
+                                name_en: row.category_en || categoryName,
+                                min_qty: 1,
+                            });
+                            cat = await this.categoryRepository.save(cat);
+                        }
                         let existing = await this.productRepository.findOne({ where: { name: productName } });
                         if (existing) {
                             existing.price = price;
-                            existing.category = category;
+                            existing.category = cat;
                             existing.description = description;
+                            existing.is_deleted = false;
                             if (image) {
                                 existing.image = image;
                             }
@@ -57,10 +129,9 @@ let ProductsService = class ProductsService {
                             const newProd = this.productRepository.create({
                                 name: productName,
                                 price,
-                                category,
+                                category: cat,
                                 description,
                                 image,
-                                category_en: row.category_en || category
                             });
                             const saved = await this.productRepository.save(newProd);
                             savedProducts.push(saved);
@@ -75,49 +146,117 @@ let ProductsService = class ProductsService {
         });
     }
     async findAll() {
-        const list = await this.productRepository.find();
-        return list.filter(p => p.category !== '_deleted_');
+        const products = await this.productRepository.find({
+            where: { is_deleted: false },
+            relations: ['category'],
+        });
+        return products.filter(p => !p.category || p.category.is_active !== false);
     }
-    async findByCategory(category) {
-        return this.productRepository.find({ where: { category } });
+    async findByCategory(categoryName) {
+        const products = await this.productRepository.find({
+            where: { category: { name: categoryName }, is_deleted: false },
+            relations: ['category']
+        });
+        return products.filter(p => !p.category || p.category.is_active !== false);
     }
     async findOne(id) {
-        return this.productRepository.findOne({ where: { id } });
+        return this.productRepository.findOne({
+            where: { id, is_deleted: false },
+            relations: ['category']
+        });
     }
-    async create(product) {
+    async create(productData) {
+        let cat = null;
+        if (productData.category_id) {
+            cat = await this.findCategoryById(Number(productData.category_id));
+        }
+        else if (productData.category && typeof productData.category === 'object') {
+            cat = await this.findCategoryById(Number(productData.category.id));
+        }
+        const product = this.productRepository.create({
+            ...productData,
+            category: cat,
+        });
         return this.productRepository.save(product);
     }
     async syncLocalProducts(products) {
-        return this.productRepository.save(products);
+        const categoryMap = {};
+        const productsToSave = [];
+        for (const p of products) {
+            const categoryName = p.category;
+            if (typeof categoryName === 'string') {
+                let cat = categoryMap[categoryName];
+                if (!cat) {
+                    const found = await this.categoryRepository.findOne({ where: { name: categoryName } });
+                    if (found) {
+                        cat = found;
+                    }
+                    else {
+                        const newCat = this.categoryRepository.create({
+                            name: categoryName,
+                            name_en: categoryName === 'Postres' ? 'Desserts' : categoryName === 'Pasteles' ? 'Cakes' : categoryName,
+                            min_qty: 1,
+                            is_active: true,
+                        });
+                        cat = await this.categoryRepository.save(newCat);
+                    }
+                    categoryMap[categoryName] = cat;
+                }
+                const { category, ...rest } = p;
+                productsToSave.push({
+                    ...rest,
+                    category: cat,
+                });
+            }
+            else {
+                productsToSave.push(p);
+            }
+        }
+        return this.productRepository.save(productsToSave);
     }
     async update(id, data) {
-        await this.productRepository.update(id, data);
-        return this.productRepository.findOne({ where: { id } });
+        const product = await this.findOne(id);
+        if (!product)
+            throw new common_1.NotFoundException('Product not found');
+        const { category_id, ...rest } = data;
+        if (category_id !== undefined) {
+            if (category_id === null) {
+                product.category = null;
+            }
+            else {
+                product.category = await this.findCategoryById(Number(category_id));
+            }
+        }
+        Object.assign(product, rest);
+        return this.productRepository.save(product);
     }
     async delete(id) {
         const product = await this.productRepository.findOne({ where: { id } });
         if (!product)
             return null;
-        product.category = '_deleted_';
-        product.category_en = '_deleted_';
+        product.is_deleted = true;
         return this.productRepository.save(product);
     }
     async updateCategory(oldName, data) {
-        const products = await this.productRepository.find({ where: { category: oldName } });
-        if (products.length === 0)
+        const cat = await this.categoryRepository.findOne({ where: { name: oldName } });
+        if (!cat)
             return { updated: 0 };
-        await Promise.all(products.map(p => this.productRepository.update(p.id, {
-            category: data.newName,
-            category_en: data.newNameEn,
-            category_min_qty: data.minQty ?? p.category_min_qty
-        })));
-        return { updated: products.length };
+        cat.name = data.newName;
+        cat.name_en = data.newNameEn;
+        if (data.minQty !== undefined) {
+            cat.min_qty = data.minQty;
+        }
+        await this.categoryRepository.save(cat);
+        const count = await this.productRepository.count({ where: { category: { id: cat.id } } });
+        return { updated: count };
     }
 };
 exports.ProductsService = ProductsService;
 exports.ProductsService = ProductsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(product_entity_1.Product)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(category_entity_1.Category)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], ProductsService);
 //# sourceMappingURL=products.service.js.map

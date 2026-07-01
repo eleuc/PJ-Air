@@ -1,34 +1,28 @@
 {
-  "timestamp": "2026-06-30T02:00:05.109744",
+  "timestamp": "2026-07-01T04:46:12.629979",
   "kernel": {
     "version": "2.2.11",
-    "status": "NOMINAL",
+    "status": "CHALLENGED",
     "dna_intact": true,
     "saturation_level": 3,
     "pulse_breakdown": {
-      "session_cp": 2.66289,
-      "historical_pressure": 3.9,
+      "session_cp": 2.93169,
+      "historical_pressure": 4.45,
       "rule_pressure": 0.0,
       "immediate_spike": 0.0,
-      "total_computed": 2.66289
+      "total_computed": 2.93169
     },
     "bhi": 0.0,
-    "odometer_bytes": 57513,
+    "odometer_bytes": 66473,
     "odometer_budget": 2000000,
     "last_audit": "N/A"
   },
   "backlog": {
     "current_sprint": "S08-PAYMENTS-ACCOUNTING",
     "sprint_name": "Sprint 08: Integración de Pasarelas de Pago y Xero",
-    "active_task": "TASK-08-10",
+    "active_task": "TASK-08-02",
     "version": "2.2.11",
     "pending_tasks": [
-      {
-        "id": "TASK-08-01",
-        "label": "TECH/DOMAIN",
-        "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
-        "status": "TODO"
-      },
       {
         "id": "TASK-08-02",
         "label": "TECH/DOMAIN",
@@ -78,28 +72,50 @@
         "status": "TODO"
       },
       {
-        "id": "TASK-08-10",
+        "id": "TASK-08-14",
         "label": "TECH/DOMAIN",
-        "desc": "Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).",
-        "status": "IN_PROGRESS",
+        "desc": "Backend: Módulo admin-actions independiente con endpoint PATCH /admin-actions/users/:id/reset-password. Jerarquía: admin no puede resetear a otro admin. Flag force_pwd_change en system_configs. Sin SMTP.",
+        "status": "TODO",
         "audit_required": true,
-        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+        "detail_doc": "vault/runtime/detail_docs/TASK-08-14.md"
       },
       {
-        "id": "TASK-08-11",
+        "id": "TASK-08-15",
         "label": "TECH/DOMAIN",
-        "desc": "Campo Nickname en entidad Profile y sincronización en reportes Excel.",
-        "status": "IN_PROGRESS",
+        "desc": "Backend: Extender respuesta de login para incluir require_password_change:true cuando el flag esté activo en system_configs. Modificación mínima y quirúrgica de AuthService.",
+        "status": "TODO",
         "audit_required": true,
-        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+        "detail_doc": "vault/runtime/detail_docs/TASK-08-15.md"
       },
       {
-        "id": "TASK-08-12",
-        "label": "UI/TEST",
-        "desc": "Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.",
-        "status": "IN_PROGRESS",
+        "id": "TASK-08-16",
+        "label": "TECH/DOMAIN",
+        "desc": "Backend: Endpoint self-service PATCH /admin-actions/me/change-password. Verifica contraseña actual, actualiza hash con PBKDF2, elimina flag force_pwd_change de system_configs. Sin SMTP.",
+        "status": "TODO",
         "audit_required": true,
-        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+        "detail_doc": "vault/runtime/detail_docs/TASK-08-16.md"
+      },
+      {
+        "id": "TASK-08-17",
+        "label": "UI",
+        "desc": "Frontend: Componente ForcePasswordChangeModal que intercepta navegación cuando require_password_change es true. Integración pasiva en layout raíz via AuthContext. Sin SMTP.",
+        "status": "TODO",
+        "detail_doc": "vault/runtime/detail_docs/TASK-08-17.md"
+      },
+      {
+        "id": "TASK-08-18",
+        "label": "UI",
+        "desc": "Frontend: Botón Restablecer Contraseña en detalle de usuario/cliente (admin/users y admin/clients). Botón Nuevo Usuario Staff (rol delivery/produccion/admin). Modificación aditiva mínima. Sin SMTP.",
+        "status": "TODO",
+        "detail_doc": "vault/runtime/detail_docs/TASK-08-18.md"
+      },
+      {
+        "id": "TASK-08-19",
+        "label": "TECH/TEST",
+        "desc": "Suite completa de pruebas: unitarias (Jest mocks), integración e2e backend (Supertest) y automatización UI (Playwright). Usuario de prueba: pwd-test@jhpanesbakery.com. Admin tester: rubendarioc o admin@test.com.",
+        "status": "TODO",
+        "audit_required": true,
+        "detail_doc": "vault/runtime/detail_docs/TASK-08-19.md"
       }
     ]
   },
@@ -109,10 +125,17 @@
     "agent_id": "ANONYMOUS"
   },
   "challenge": {
-    "id": "SENTINEL-RESUME-AUTH-PJ_AIR-20260630T003340-Gd9234mCyHRlriqz3iGw4FL3ukpAYGGW4oEq_7dghTw",
+    "id": "SENTINEL-RESUME-AUTH-PJ_AIR-20260701T044525-M2X2a_0TsObG6FeXEDj6ryQYO_P3GBPfLPqx05HP3eM",
     "level": "VOLATILE",
-    "expires_at": "2026-06-30T01:33:40.958852",
-    "deviations": []
+    "expires_at": "2026-07-01T05:45:25.776468",
+    "deviations": [
+      {
+        "file": "CHROME-SCRIPTS",
+        "chrome": "CHROME-SCRIPTS",
+        "reason": "VOLATILE",
+        "severity": "CRITICAL"
+      }
+    ]
   },
   "dna": {
     "last_signature_at": "2026-06-29T14:25:37.186572",
@@ -128,7 +151,7 @@
       },
       {
         "name": "CHROME-SCRIPTS",
-        "status": "INTACT"
+        "status": "DEVIATED"
       },
       {
         "name": "CHROME-DOCS",
@@ -151,7 +174,7 @@
       "id": "TASK-08-01",
       "label": "TECH/DOMAIN",
       "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
-      "status": "TODO",
+      "status": "COMPLETED",
       "detail_doc": null
     },
     {
@@ -214,22 +237,71 @@
       "id": "TASK-08-10",
       "label": "TECH/DOMAIN",
       "desc": "Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETED",
       "detail_doc": null
     },
     {
       "id": "TASK-08-11",
       "label": "TECH/DOMAIN",
       "desc": "Campo Nickname en entidad Profile y sincronización en reportes Excel.",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETED",
       "detail_doc": null
     },
     {
       "id": "TASK-08-12",
       "label": "UI/TEST",
       "desc": "Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETED",
       "detail_doc": null
+    },
+    {
+      "id": "TASK-08-13",
+      "label": "UI",
+      "desc": "Ordenamiento alfabético en listas del panel de administración (Clientes, Usuarios, Productos, Zonas, Rutas).",
+      "status": "COMPLETED",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-08-14",
+      "label": "TECH/DOMAIN",
+      "desc": "Backend: Módulo admin-actions independiente con endpoint PATCH /admin-actions/users/:id/reset-password. Jerarquía: admin no puede resetear a otro admin. Flag force_pwd_change en system_configs. Sin SMTP.",
+      "status": "TODO",
+      "detail_doc": "vault/runtime/detail_docs/TASK-08-14.md"
+    },
+    {
+      "id": "TASK-08-15",
+      "label": "TECH/DOMAIN",
+      "desc": "Backend: Extender respuesta de login para incluir require_password_change:true cuando el flag esté activo en system_configs. Modificación mínima y quirúrgica de AuthService.",
+      "status": "TODO",
+      "detail_doc": "vault/runtime/detail_docs/TASK-08-15.md"
+    },
+    {
+      "id": "TASK-08-16",
+      "label": "TECH/DOMAIN",
+      "desc": "Backend: Endpoint self-service PATCH /admin-actions/me/change-password. Verifica contraseña actual, actualiza hash con PBKDF2, elimina flag force_pwd_change de system_configs. Sin SMTP.",
+      "status": "TODO",
+      "detail_doc": "vault/runtime/detail_docs/TASK-08-16.md"
+    },
+    {
+      "id": "TASK-08-17",
+      "label": "UI",
+      "desc": "Frontend: Componente ForcePasswordChangeModal que intercepta navegación cuando require_password_change es true. Integración pasiva en layout raíz via AuthContext. Sin SMTP.",
+      "status": "TODO",
+      "detail_doc": "vault/runtime/detail_docs/TASK-08-17.md"
+    },
+    {
+      "id": "TASK-08-18",
+      "label": "UI",
+      "desc": "Frontend: Botón Restablecer Contraseña en detalle de usuario/cliente (admin/users y admin/clients). Botón Nuevo Usuario Staff (rol delivery/produccion/admin). Modificación aditiva mínima. Sin SMTP.",
+      "status": "TODO",
+      "detail_doc": "vault/runtime/detail_docs/TASK-08-18.md"
+    },
+    {
+      "id": "TASK-08-19",
+      "label": "TECH/TEST",
+      "desc": "Suite completa de pruebas: unitarias (Jest mocks), integración e2e backend (Supertest) y automatización UI (Playwright). Usuario de prueba: pwd-test@jhpanesbakery.com. Admin tester: rubendarioc o admin@test.com.",
+      "status": "TODO",
+      "detail_doc": "vault/runtime/detail_docs/TASK-08-19.md"
     }
   ],
   "nexus_summary": {
@@ -237,6 +309,116 @@
     "nodes_indexed": []
   },
   "forensic_ledger": [
+    {
+      "id": 62,
+      "timestamp": "2026-07-01T04:45:25.806415",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "d501339e186d91aab8ecd9c8146a781cfc7ae18b4743d995cce45b12e68cf909",
+      "type": "CHALLENGE_ISSUED",
+      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260701T044525-M2X2a_0TsObG6FeXEDj6ryQYO_P3GBPfLPqx05HP3eM",
+      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: M2X2a_0TsObG6FeXEDj6ryQYO_P3GBPfLPqx05HP3eM",
+      "hash": "a110a2c544223e17ed9cbb5cd4007b61ad1b6b05f049181e16d63c7f14ed61ca"
+    },
+    {
+      "id": 61,
+      "timestamp": "2026-06-30T14:18:13.868921",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "d8b140f6629a8ac50b4e1a7fd1a99d35c32dd65c6c26a69b3712d824032ac6b4",
+      "type": "CHALLENGE_ISSUED",
+      "task": "92e916611f614d48788bd30568524d8531ad49f1573fd6fb99a5b7cc5f788222",
+      "detail": "Level: GATE-1 | Project: PJ_AIR | Nonce: T7HROXHAnT1BwyuqCeNGLB2654Atwwy7BMMeuYu5ybU",
+      "hash": "78fb84ca9760d6a65235fd2c4bbbe32f74184bf553f8296f82b0617b3801ac1e"
+    },
+    {
+      "id": 60,
+      "timestamp": "2026-06-30T14:18:09.653070",
+      "role": "ARCHITECT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "a0981bce28e26f46bb833e9bbd3321bfaf434ca3e665b90d5c2ec13985eacccf",
+      "type": "TRACE",
+      "task": "BASELINE",
+      "detail": "Ejecución administrativa detectada: logix baseline",
+      "hash": "d8b140f6629a8ac50b4e1a7fd1a99d35c32dd65c6c26a69b3712d824032ac6b4"
+    },
+    {
+      "id": 59,
+      "timestamp": "2026-06-30T14:18:02.019875",
+      "role": "AI",
+      "sessionid": "GATE-RED",
+      "prevhash": "24f2755dcb02fce8eeeb5411ee2c9f15e0b817f73fdbec41cc1db841751c39fc",
+      "type": "ALERT",
+      "task": "TEST-FAIL",
+      "detail": "Pruebas unitarias fallidas durante el baseline.",
+      "hash": "a0981bce28e26f46bb833e9bbd3321bfaf434ca3e665b90d5c2ec13985eacccf"
+    },
+    {
+      "id": 58,
+      "timestamp": "2026-06-30T14:17:32.995224",
+      "role": "AI",
+      "sessionid": "GATE-RED",
+      "prevhash": "5ff0ebc829c58eff43951ad0092607b2a3e83ae3e0f30be1015d7aa03ba9cdfe",
+      "type": "ALERT",
+      "task": "TEST-FAIL",
+      "detail": "Pruebas unitarias fallidas durante el baseline.",
+      "hash": "24f2755dcb02fce8eeeb5411ee2c9f15e0b817f73fdbec41cc1db841751c39fc"
+    },
+    {
+      "id": 57,
+      "timestamp": "2026-06-30T14:17:30.138960",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "9bd839dada693e0100a56d1fd715518226d98678c4bfb752a4b69a0935ea8585",
+      "type": "CHALLENGE_ISSUED",
+      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260630T141730-pQkJjaUYo5VC8QgsMisNqNwuI9cXywUhEvBKr-OrYas",
+      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: pQkJjaUYo5VC8QgsMisNqNwuI9cXywUhEvBKr-OrYas",
+      "hash": "5ff0ebc829c58eff43951ad0092607b2a3e83ae3e0f30be1015d7aa03ba9cdfe"
+    },
+    {
+      "id": 56,
+      "timestamp": "2026-06-30T04:00:41.552421",
+      "role": "AI",
+      "sessionid": "GATE-RED",
+      "prevhash": "ccbdefb07ffff4be2abc77c5f26867727d5f1dbe2e7a9fe0bc5a0070e3f02107",
+      "type": "ALERT",
+      "task": "TEST-FAIL",
+      "detail": "Pruebas unitarias fallidas durante el baseline.",
+      "hash": "9bd839dada693e0100a56d1fd715518226d98678c4bfb752a4b69a0935ea8585"
+    },
+    {
+      "id": 55,
+      "timestamp": "2026-06-30T04:00:39.525665",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "63702d60ad59910b30d7c76ed80b23958b8779981028286c43c480824bd282b9",
+      "type": "CHALLENGE_ISSUED",
+      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260630T040039-zeePLLOV9AOutN00gM8ZduEg3LAmu4H9JSBvY2QJ3qw",
+      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: zeePLLOV9AOutN00gM8ZduEg3LAmu4H9JSBvY2QJ3qw",
+      "hash": "ccbdefb07ffff4be2abc77c5f26867727d5f1dbe2e7a9fe0bc5a0070e3f02107"
+    },
+    {
+      "id": 54,
+      "timestamp": "2026-06-30T04:00:34.252223",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "59ac251b05113ca032abdc47819a671229274f2cbe7891ea91c8e0d6e75feee5",
+      "type": "TRACE",
+      "task": "UNKNOWN",
+      "detail": "Ejecución administrativa detectada: logix unknown",
+      "hash": "63702d60ad59910b30d7c76ed80b23958b8779981028286c43c480824bd282b9"
+    },
+    {
+      "id": 53,
+      "timestamp": "2026-06-30T04:00:04.133503",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "618b62b26f588bb002aaaf4b2035c9dd1ee8bda97124f07b650b04b202b15bb6",
+      "type": "TRACE",
+      "task": "HANDOVER",
+      "detail": "Ejecución administrativa detectada: logix handover",
+      "hash": "59ac251b05113ca032abdc47819a671229274f2cbe7891ea91c8e0d6e75feee5"
+    },
     {
       "id": 52,
       "timestamp": "2026-06-30T01:59:56.989966",
@@ -676,116 +858,6 @@
       "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260622T001214-lUzws13SqmR1cEKMDJ4l2eEEb0RUfDcnR_oYxryTwVA",
       "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: lUzws13SqmR1cEKMDJ4l2eEEb0RUfDcnR_oYxryTwVA",
       "hash": "da08cc076ac24124fb3e4eff20a6256f2f506e6dd20acbc1b8a9bdc20092ae77"
-    },
-    {
-      "id": 12,
-      "timestamp": "2026-06-22T00:11:51.891299",
-      "role": "AI",
-      "sessionid": "HANDOVER-CLEANUP",
-      "prevhash": "0be396b1904140927d6dfefb2a5bce535446bc628601cadcf5f4766444e75ae3",
-      "type": "CHALLENGE_EXPIRED",
-      "task": "Handover Cleanup",
-      "detail": "Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260622T000928-zPk_URE-tYeFxQwyWhqt3l5hJpf-TjvbUtIFNAiOXgQ expirado al iniciar handover.",
-      "hash": "337e6180668b13991ca2b9a7767ab414b35718a30070f040a74d7ef5b4f7fc71"
-    },
-    {
-      "id": 11,
-      "timestamp": "2026-06-22T00:11:51.702815",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "2dd5cbc7be510434e62a34c964322c23d1c4ac2c036d23254fb2a5357baaf3e0",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "0be396b1904140927d6dfefb2a5bce535446bc628601cadcf5f4766444e75ae3"
-    },
-    {
-      "id": 10,
-      "timestamp": "2026-06-22T00:10:22.073075",
-      "role": "AGENT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "e7be0de5cd6c7572b87c8d442c23875e9acaf6cad7ef135b88a92cb1b2274da1",
-      "type": "ODOMETER_RESET",
-      "task": "TAKEOVER",
-      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
-      "hash": "2dd5cbc7be510434e62a34c964322c23d1c4ac2c036d23254fb2a5357baaf3e0"
-    },
-    {
-      "id": 9,
-      "timestamp": "2026-06-22T00:09:44.193399",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "ff8e6e2f2d115e6becdf0575cdf934dd7884b4e171649169f1aa341f37ab8ae4",
-      "type": "TRACE",
-      "task": "TAKEOVER",
-      "detail": "Ejecución administrativa detectada: logix takeover",
-      "hash": "e7be0de5cd6c7572b87c8d442c23875e9acaf6cad7ef135b88a92cb1b2274da1"
-    },
-    {
-      "id": 8,
-      "timestamp": "2026-06-22T00:09:28.463674",
-      "role": "AI",
-      "sessionid": "Sentinel",
-      "prevhash": "69e1cc10e51e448c0524b937ce27a2bdedd6c3d7087b31a04206b166f20d503d",
-      "type": "CHALLENGE_ISSUED",
-      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260622T000928-zPk_URE-tYeFxQwyWhqt3l5hJpf-TjvbUtIFNAiOXgQ",
-      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: zPk_URE-tYeFxQwyWhqt3l5hJpf-TjvbUtIFNAiOXgQ",
-      "hash": "ff8e6e2f2d115e6becdf0575cdf934dd7884b4e171649169f1aa341f37ab8ae4"
-    },
-    {
-      "id": 7,
-      "timestamp": "2026-06-21T22:21:14.980759",
-      "role": "AI",
-      "sessionid": "Sentinel",
-      "prevhash": "71454c3548fefc2c9c13b7dc82040fee3eee93e2b97351109794fc800dae1e9e",
-      "type": "CHALLENGE_ISSUED",
-      "task": "d119ef4b4d2c92239c8da597bc51f9abe90263effc02714a433a9a6261675687",
-      "detail": "Level: GATE-1 | Project: PJ_AIR | Nonce: tVX6nUlpN8qL3rYop5siADBfG5-ix4aSGdakwcVu_-0",
-      "hash": "69e1cc10e51e448c0524b937ce27a2bdedd6c3d7087b31a04206b166f20d503d"
-    },
-    {
-      "id": 6,
-      "timestamp": "2026-06-21T22:20:55.745395",
-      "role": "AI",
-      "sessionid": "Sentinel",
-      "prevhash": "9b8073678f6893f2b231b9d6f30817f248c8e05ee52a82f37e1ecf41bd7cc2e7",
-      "type": "CHALLENGE_ISSUED",
-      "task": "GATE-GOLD-AUTH-PJ_AIR-20260621T222055-YYNeFAI4zPtTxjy1AM6Rkk8OVqUbqNkrMZSSJ6VcBMU",
-      "detail": "Level: GATE-GOLD | Project: PJ_AIR | Nonce: YYNeFAI4zPtTxjy1AM6Rkk8OVqUbqNkrMZSSJ6VcBMU",
-      "hash": "71454c3548fefc2c9c13b7dc82040fee3eee93e2b97351109794fc800dae1e9e"
-    },
-    {
-      "id": 5,
-      "timestamp": "2026-06-21T22:20:54.503857",
-      "role": "AI",
-      "sessionid": "Sentinel",
-      "prevhash": "e5dbc4a161c0e77717c189530feee4f2133a534c517fd0a999fbfbccf300bf35",
-      "type": "CHALLENGE_ISSUED",
-      "task": "GATE-GOLD-AUTH-PJ_AIR-20260621T222054-Tup9oJDf9h3WHMaj_mCts4_2ZfGL7YVqd58uLIpZ0uU",
-      "detail": "Level: GATE-GOLD | Project: PJ_AIR | Nonce: Tup9oJDf9h3WHMaj_mCts4_2ZfGL7YVqd58uLIpZ0uU",
-      "hash": "9b8073678f6893f2b231b9d6f30817f248c8e05ee52a82f37e1ecf41bd7cc2e7"
-    },
-    {
-      "id": 4,
-      "timestamp": "2026-06-21T22:20:52.386872",
-      "role": "AI",
-      "sessionid": "Sentinel",
-      "prevhash": "379345098d882fa72d5a7511a55cb0687a173e7726e850934963c4103fdfcb61",
-      "type": "CHALLENGE_ISSUED",
-      "task": "GATE-1-AUTH-PJ_AIR-20260621T222052-DDiIkeIYWbr6Ih4aT9chyNvr0ravFXs_dEQI54j95d8",
-      "detail": "Level: GATE-1 | Project: PJ_AIR | Nonce: DDiIkeIYWbr6Ih4aT9chyNvr0ravFXs_dEQI54j95d8",
-      "hash": "e5dbc4a161c0e77717c189530feee4f2133a534c517fd0a999fbfbccf300bf35"
-    },
-    {
-      "id": 3,
-      "timestamp": "2026-06-21T22:20:52.132540",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "0937df12d7810ad2bc6be2c8976830fefffaff8fe6123e4df5e36a7a0c7974e8",
-      "type": "TRACE",
-      "task": "TAKEOVER",
-      "detail": "Ejecución administrativa detectada: logix takeover",
-      "hash": "379345098d882fa72d5a7511a55cb0687a173e7726e850934963c4103fdfcb61"
     }
   ]
 }

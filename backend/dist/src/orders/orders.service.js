@@ -18,25 +18,130 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const order_entity_1 = require("./order.entity");
 const order_item_entity_1 = require("./order-item.entity");
+const user_entity_1 = require("../users/user.entity");
+const product_entity_1 = require("../products/product.entity");
 let OrdersService = class OrdersService {
     orderRepository;
     orderItemRepository;
-    constructor(orderRepository, orderItemRepository) {
+    userRepository;
+    productRepository;
+    constructor(orderRepository, orderItemRepository, userRepository, productRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
+    }
+    validateStatusTransition(currentStatus, newStatus, userRole) {
+        if (userRole === 'admin')
+            return;
+        const validTransitions = {
+            'pending': ['confirmed', 'shipped', 'cancelled'],
+            'confirmed': ['shipped', 'cancelled'],
+            'shipped': ['delivered', 'cancelled'],
+            'delivered': [],
+            'cancelled': [],
+        };
+        const current = currentStatus?.toLowerCase() || 'pending';
+        const next = newStatus?.toLowerCase() || 'pending';
+        if (current === next)
+            return;
+        const allowed = validTransitions[current];
+        if (!allowed || !allowed.includes(next)) {
+            throw new common_1.BadRequestException(`Invalid status transition from ${currentStatus} to ${newStatus}`);
+        }
+    }
+    async calculateOrderPricesAndTotal(userId, items) {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['productDiscounts']
+        });
+        if (!user)
+            throw new common_1.NotFoundException('User not found');
+        let calculatedTotal = 0;
+        const validatedItems = [];
+        for (const item of items) {
+            const productId = item.productId || item.product_id;
+            const product = await this.productRepository.findOne({ where: { id: Number(productId) } });
+            if (!product) {
+                throw new common_1.NotFoundException(`Product with ID ${productId} not found`);
+            }
+            const quantity = Number(item.quantity) || 0;
+            if (quantity < 1) {
+                throw new common_1.BadRequestException('Validation Error: Item quantity must be at least 1');
+            }
+            let finalPrice = Number(product.price);
+            const productDiscount = user.productDiscounts?.find(d => d.product_id === product.id);
+            if (productDiscount) {
+                if (productDiscount.special_price !== null && productDiscount.special_price !== undefined && Number(productDiscount.special_price) > 0) {
+                    finalPrice = Number(productDiscount.special_price);
+                }
+                else if (productDiscount.discount_percentage !== null && productDiscount.discount_percentage !== undefined && Number(productDiscount.discount_percentage) > 0) {
+                    finalPrice = Number(product.price) * (1 - Number(productDiscount.discount_percentage) / 100);
+                }
+            }
+            else if (user.general_discount !== null && user.general_discount !== undefined && Number(user.general_discount) > 0) {
+                finalPrice = Number(product.price) * (1 - Number(user.general_discount) / 100);
+            }
+            finalPrice = Math.round((finalPrice + Number.EPSILON) * 100) / 100;
+            calculatedTotal += finalPrice * quantity;
+            validatedItems.push({
+                product_id: product.id,
+                price_at_time: finalPrice,
+                quantity,
+            });
+        }
+        return {
+            validatedItems,
+            total: Math.round((calculatedTotal + Number.EPSILON) * 100) / 100,
+        };
     }
     async findInRange(startDate, endDate, userId) {
+        console.log('findInRange called with:', { startDate, endDate, userId });
+        const rawStart = startDate.split(' ')[0].split('T')[0];
+        const rawEnd = endDate.split(' ')[0].split('T')[0];
+        const startD = new Date(rawStart + 'T12:00:00');
+        startD.setDate(startD.getDate() - 2);
+        const endD = new Date(rawEnd + 'T12:00:00');
+        endD.setDate(endD.getDate() + 2);
+        const queryStart = startD.toISOString().split('T')[0] + 'T00:00:00.000Z';
+        const queryEnd = endD.toISOString().split('T')[0] + 'T23:59:59.999Z';
         const qb = this.orderRepository.createQueryBuilder('order')
             .leftJoinAndSelect('order.items', 'items')
             .leftJoinAndSelect('items.product', 'product')
+            .leftJoinAndSelect('product.category', 'category')
             .leftJoinAndSelect('order.user', 'user')
             .leftJoinAndSelect('user.profile', 'profile')
-            .where('order.created_at >= :start', { start: startDate })
-            .andWhere('order.created_at <= :end', { end: endDate });
+            .leftJoinAndSelect('order.delivery_user', 'delivery_user')
+            .leftJoinAndSelect('delivery_user.profile', 'delivery_profile')
+            .leftJoinAndSelect('order.address', 'address')
+            .where('order.created_at >= :start', { start: queryStart })
+            .andWhere('order.created_at <= :end', { end: queryEnd });
         if (userId) {
             qb.andWhere('order.user_id = :userId', { userId });
         }
-        return qb.orderBy('order.created_at', 'DESC').getMany();
+        qb.orderBy('order.created_at', 'DESC');
+        const allMatching = await qb.getMany();
+        const getProductionDate = (dateVal) => {
+            if (!dateVal)
+                return '';
+            const d = dateVal instanceof Date ? dateVal : new Date(dateVal);
+            if (isNaN(d.getTime()))
+                return '';
+            const nyDate = new Date(d.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+            if (nyDate.getHours() >= 13) {
+                nyDate.setDate(nyDate.getDate() + 1);
+            }
+            const yr = nyDate.getFullYear();
+            const mo = String(nyDate.getMonth() + 1).padStart(2, '0');
+            const da = String(nyDate.getDate()).padStart(2, '0');
+            return `${yr}-${mo}-${da}`;
+        };
+        const filtered = allMatching.filter(order => {
+            const prodDate = getProductionDate(order.created_at || order.delivery_date || '');
+            return prodDate >= rawStart && prodDate <= rawEnd;
+        });
+        console.log(`findInRange: wider query found ${allMatching.length}, filtered down to ${filtered.length} for ${rawStart} to ${rawEnd}`);
+        return filtered;
     }
     async findAll() {
         return this.orderRepository.find({
@@ -63,6 +168,13 @@ let OrdersService = class OrdersService {
     async create(userId, orderData) {
         const { items, ...rest } = orderData;
         const { deliveryDate, paymentDueDate, addressId, deliveryType, deliveryAddressText, ...otherData } = rest;
+        let finalTotal = 0;
+        let validatedItems = [];
+        if (items && items.length > 0) {
+            const result = await this.calculateOrderPricesAndTotal(userId, items);
+            validatedItems = result.validatedItems;
+            finalTotal = result.total;
+        }
         const orderToCreate = this.orderRepository.create({
             ...otherData,
             delivery_date: deliveryDate,
@@ -71,13 +183,14 @@ let OrdersService = class OrdersService {
             delivery_type: deliveryType || 'saved',
             delivery_address_text: deliveryAddressText || null,
             user_id: userId,
+            total: finalTotal,
         });
         const savedResult = await this.orderRepository.save(orderToCreate);
         const savedOrder = Array.isArray(savedResult) ? savedResult[0] : savedResult;
-        if (items && items.length > 0) {
-            const orderItems = items.map((item) => this.orderItemRepository.create({
-                product_id: item.productId,
-                price_at_time: item.price,
+        if (validatedItems.length > 0) {
+            const orderItems = validatedItems.map((item) => ({
+                product_id: item.product_id,
+                price_at_time: item.price_at_time,
                 quantity: item.quantity,
                 order_id: savedOrder.id,
             }));
@@ -85,8 +198,9 @@ let OrdersService = class OrdersService {
         }
         return this.findOne(savedOrder.id);
     }
-    async updateStatus(id, status) {
+    async updateStatus(id, status, userRole) {
         const order = await this.findOne(id);
+        this.validateStatusTransition(order.status, status, userRole);
         order.status = status;
         return this.orderRepository.save(order);
     }
@@ -95,18 +209,18 @@ let OrdersService = class OrdersService {
         order.delivery_user_id = deliveryUserId;
         return this.orderRepository.save(order);
     }
-    async update(id, updateData) {
+    async update(id, updateData, userRole) {
         const order = await this.findOne(id);
         const { status, total, delivery_date, address_id, motivo, items } = updateData;
+        if (status) {
+            this.validateStatusTransition(order.status, status, userRole);
+            order.status = status;
+        }
         if (motivo) {
             const originalLines = (order.items || []).map(item => `${item.quantity} Unidades de ${item.product?.name || 'Producto'}, precio unitario: ${item.price_at_time}, subtotal: ${(item.quantity * item.price_at_time).toFixed(2)}`).join('; ');
             const auditLog = `El pedido ha sido modificado por: ${motivo}, pedido original: ${originalLines}, total original: ${Number(order.total || 0).toFixed(2)}. Modificado el ${new Date().toLocaleString('es-ES')}.\n`;
             order.notes = auditLog + (order.notes || '');
         }
-        if (status)
-            order.status = status;
-        if (total !== undefined)
-            order.total = total;
         if (delivery_date)
             order.delivery_date = delivery_date;
         if (address_id)
@@ -114,13 +228,18 @@ let OrdersService = class OrdersService {
         if (items && Array.isArray(items)) {
             order.items = [];
             await this.orderItemRepository.delete({ order_id: id });
-            const newItems = items.map((item) => this.orderItemRepository.create({
-                product_id: item.product_id || item.productId,
-                price_at_time: item.price_at_time || item.price,
+            const result = await this.calculateOrderPricesAndTotal(order.user_id, items);
+            const newItems = result.validatedItems.map((item) => ({
+                product_id: item.product_id,
+                price_at_time: item.price_at_time,
                 quantity: item.quantity,
                 order_id: id,
             }));
             order.items = await this.orderItemRepository.save(newItems);
+            order.total = result.total;
+        }
+        else if (total !== undefined) {
+            order.total = total;
         }
         await this.orderRepository.save(order);
         return this.findOne(id);
@@ -131,7 +250,11 @@ exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(order_entity_1.Order)),
     __param(1, (0, typeorm_1.InjectRepository)(order_item_entity_1.OrderItem)),
+    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(3, (0, typeorm_1.InjectRepository)(product_entity_1.Product)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map

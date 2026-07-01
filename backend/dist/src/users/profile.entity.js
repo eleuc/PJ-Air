@@ -16,6 +16,7 @@ let Profile = class Profile {
     id;
     full_name;
     username;
+    nickname;
     phone;
     company_name;
     avatar_url;
@@ -34,6 +35,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Profile.prototype, "username", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Profile.prototype, "nickname", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)

@@ -6,11 +6,11 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const authService = app.get(AuthService);
 
-  console.log("Testing login for user1...");
+  console.log("Testing login for eleucn1@gmail.com...");
   try {
-    const result = await authService.login('user1', '123132');
+    const result = await authService.login('eleucn1@gmail.com', '123456');
     console.log("Login Success!", JSON.stringify(result.user, null, 2));
-  } catch (e) {
+  } catch (e: any) {
     console.log("Login Failed:", e.message);
   }
 

@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('C:/Users/USUARIO/Documents/Antigravity/database.sqlite');
+const db = new sqlite3.Database(require('path').join(__dirname, '../database.sqlite'));
 
 db.all("SELECT role, COUNT(*) as count FROM users GROUP BY role", (err, roles) => {
   if (err) {

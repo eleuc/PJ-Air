@@ -41,50 +41,86 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExcelService = void 0;
 const common_1 = require("@nestjs/common");
-const XLSX = __importStar(require("xlsx"));
+const ExcelJS = __importStar(require("exceljs"));
 let ExcelService = class ExcelService {
-    exportIndividual(orders) {
-        const wb = XLSX.utils.book_new();
+    async exportIndividual(orders) {
+        const workbook = new ExcelJS.Workbook();
+        const usedSheetNames = new Set();
         const clientOrders = {};
         orders.forEach(order => {
-            const name = order.user?.profile?.full_name || order.user?.email || 'Anónimo';
+            const name = order?.user?.profile?.nickname || order?.user?.profile?.full_name || order?.user?.email || 'Anónimo';
             if (!clientOrders[name])
                 clientOrders[name] = [];
             clientOrders[name].push(order);
         });
+        const fontName = 'Segoe UI';
+        const borderStyle = {
+            style: 'thin',
+            color: { argb: 'FFD3D3D3' }
+        };
+        const cellBorders = {
+            top: borderStyle,
+            left: borderStyle,
+            bottom: borderStyle,
+            right: borderStyle
+        };
+        if (Object.keys(clientOrders).length === 0) {
+            const ws = workbook.addWorksheet('Sin Pedidos');
+            ws.addRow(['No hay pedidos en el rango de fechas seleccionado.']);
+        }
         for (const [clientName, ordersList] of Object.entries(clientOrders)) {
-            const rows = [];
+            if (!ordersList || ordersList.length === 0)
+                continue;
+            const cleanSheetName = clientName.replace(/[\\\/\?\*\[\]\:]/g, '').slice(0, 30) || 'Pedido';
+            let finalSheetName = cleanSheetName;
+            let counter = 1;
+            while (usedSheetNames.has(finalSheetName.toLowerCase())) {
+                const suffix = `_${counter}`;
+                finalSheetName = `${cleanSheetName.slice(0, 30 - suffix.length)}${suffix}`;
+                counter++;
+            }
+            usedSheetNames.add(finalSheetName.toLowerCase());
+            const worksheet = workbook.addWorksheet(finalSheetName);
+            worksheet.views = [{ showGridLines: true }];
             const order = ordersList[0];
-            const deliveryDate = order.delivery_date || 'No especificada';
-            const chofer = order.delivery_user?.profile?.full_name || 'No asignado';
+            const deliveryDate = order?.delivery_date || 'No especificada';
+            const chofer = order?.delivery_user?.profile?.full_name || 'No asignado';
             let addressStr = '';
-            if (order.delivery_type === 'pickup') {
+            if (order?.delivery_type === 'pickup') {
                 addressStr = 'Retiro en Local';
             }
-            else if (order.delivery_type === 'other') {
-                addressStr = order.delivery_address_text || '';
+            else if (order?.delivery_type === 'other') {
+                addressStr = order?.delivery_address_text || '';
             }
             else {
-                addressStr = order.address?.address || '';
+                addressStr = order?.address?.address || '';
             }
-            rows.push([`PEDIDO: ${clientName.toUpperCase()}`]);
-            rows.push([`FECHA ENTREGA: ${deliveryDate.toUpperCase()}`]);
-            rows.push([`CHOFER ASIGNADO: ${chofer.toUpperCase()}`]);
-            rows.push([`DIRECCION: ${addressStr}`]);
-            rows.push([]);
+            const addHeaderRow = (label, value) => {
+                const row = worksheet.addRow([label, value]);
+                row.getCell(1).font = { name: fontName, bold: true, size: 10, color: { argb: 'FF5C3D2E' } };
+                row.getCell(2).font = { name: fontName, size: 10 };
+                row.getCell(1).alignment = { horizontal: 'left' };
+                row.getCell(2).alignment = { horizontal: 'left' };
+            };
+            addHeaderRow('CLIENTE:', clientName.toUpperCase());
+            addHeaderRow('FECHA DE ENTREGA:', String(deliveryDate).toUpperCase());
+            addHeaderRow('CHOFER ASIGNADO:', chofer.toUpperCase());
+            addHeaderRow('DIRECCIÓN DE ENTREGA:', addressStr);
+            worksheet.addRow([]);
             const categories = {};
             ordersList.forEach(o => {
                 (o.items || []).forEach(item => {
-                    const cat = item.product?.category || 'Sin categoría';
+                    const cat = item.product?.category?.name || 'Sin categoría';
                     if (!categories[cat])
                         categories[cat] = [];
-                    const existing = categories[cat].find(it => it.productName === item.product?.name);
+                    const productName = item.product?.name || `Producto #${item.product_id || 'Desconocido'}`;
+                    const existing = categories[cat].find(it => it.productName === productName);
                     if (existing) {
                         existing.quantity += Number(item.quantity) || 0;
                     }
                     else {
                         categories[cat].push({
-                            productName: item.product?.name || 'Producto',
+                            productName,
                             quantity: Number(item.quantity) || 0,
                             notes: o.notes || '',
                         });
@@ -92,31 +128,91 @@ let ExcelService = class ExcelService {
                 });
             });
             for (const [catName, items] of Object.entries(categories)) {
-                rows.push([catName.toUpperCase()]);
-                rows.push(['Producto', 'Cantidad (Unidades)', 'NOTAS']);
+                const catTitleRow = worksheet.addRow([catName.toUpperCase()]);
+                worksheet.mergeCells(catTitleRow.number, 1, catTitleRow.number, 3);
+                catTitleRow.getCell(1).font = { name: fontName, bold: true, size: 11, color: { argb: 'FFFFFFFF' } };
+                catTitleRow.getCell(1).fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FF8D4B32' }
+                };
+                catTitleRow.getCell(1).alignment = { horizontal: 'left', vertical: 'middle' };
+                catTitleRow.height = 24;
+                const headerRow = worksheet.addRow(['Producto', 'Cantidad (Unidades)', 'Notas']);
+                headerRow.height = 20;
+                headerRow.eachCell((cell, colNum) => {
+                    cell.font = { name: fontName, bold: true, size: 10, color: { argb: 'FF5C3D2E' } };
+                    cell.fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'FFF5EBE6' }
+                    };
+                    cell.border = cellBorders;
+                    cell.alignment = {
+                        horizontal: colNum === 2 ? 'right' : 'left',
+                        vertical: 'middle'
+                    };
+                });
                 let catTotal = 0;
                 items.forEach(item => {
-                    rows.push([item.productName, item.quantity, item.notes]);
+                    const dataRow = worksheet.addRow([item.productName, item.quantity, item.notes]);
+                    dataRow.height = 18;
+                    dataRow.getCell(1).font = { name: fontName, size: 10 };
+                    dataRow.getCell(2).font = { name: fontName, size: 10 };
+                    dataRow.getCell(3).font = { name: fontName, size: 10, italic: true };
+                    dataRow.getCell(1).border = cellBorders;
+                    dataRow.getCell(2).border = cellBorders;
+                    dataRow.getCell(3).border = cellBorders;
+                    dataRow.getCell(1).alignment = { horizontal: 'left', vertical: 'middle' };
+                    dataRow.getCell(2).alignment = { horizontal: 'right', vertical: 'middle' };
+                    dataRow.getCell(3).alignment = { horizontal: 'left', vertical: 'middle' };
                     catTotal += item.quantity;
                 });
-                rows.push([`TOTAL ${catName.toUpperCase()}`, catTotal]);
-                rows.push([]);
+                const totalRow = worksheet.addRow([`TOTAL ${catName.toUpperCase()}`, catTotal, '']);
+                totalRow.height = 20;
+                totalRow.eachCell((cell, colNum) => {
+                    cell.font = { name: fontName, bold: true, size: 10, color: { argb: 'FF5C3D2E' } };
+                    cell.fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'FFE8D0C5' }
+                    };
+                    cell.border = cellBorders;
+                    cell.alignment = {
+                        horizontal: colNum === 2 ? 'right' : 'left',
+                        vertical: 'middle'
+                    };
+                });
+                worksheet.addRow([]);
             }
-            const ws = XLSX.utils.aoa_to_sheet(rows);
-            const cleanSheetName = clientName.replace(/[\\\/\?\*\[\]]/g, '').slice(0, 30) || 'Pedido';
-            XLSX.utils.book_append_sheet(wb, ws, cleanSheetName);
+            worksheet.columns.forEach(column => {
+                let maxLen = 0;
+                column.eachCell?.({ includeEmpty: true }, cell => {
+                    if (cell.value && !cell.isMerged) {
+                        const len = cell.value.toString().length;
+                        if (len > maxLen)
+                            maxLen = len;
+                    }
+                });
+                column.width = Math.max(maxLen + 4, 12);
+            });
+            worksheet.getColumn(1).width = 30;
+            worksheet.getColumn(2).width = 22;
+            worksheet.getColumn(3).width = 35;
         }
-        return XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+        const buffer = await workbook.xlsx.writeBuffer();
+        return Buffer.from(buffer);
     }
-    exportConsolidated(orders) {
-        const wb = XLSX.utils.book_new();
-        const clientNames = Array.from(new Set(orders.map(o => o.user?.profile?.full_name || o.user?.email || 'Anónimo'))).sort();
+    async exportConsolidated(orders) {
+        const workbook = new ExcelJS.Workbook();
+        const usedSheetNames = new Set();
+        const clientNames = Array.from(new Set(orders.map(o => o?.user?.profile?.nickname || o?.user?.profile?.full_name || o?.user?.email || 'Anónimo'))).sort();
         const dataStructure = {};
         orders.forEach(order => {
-            const client = order.user?.profile?.full_name || order.user?.email || 'Anónimo';
+            const client = order?.user?.profile?.nickname || order?.user?.profile?.full_name || order?.user?.email || 'Anónimo';
             (order.items || []).forEach(item => {
-                const cat = item.product?.category || 'Sin categoría';
-                const prod = item.product?.name || 'Producto';
+                const cat = item.product?.category?.name || 'Sin categoría';
+                const prod = item.product?.name || `Producto #${item.product_id || 'Desconocido'}`;
                 const qty = Number(item.quantity) || 0;
                 if (!dataStructure[cat])
                     dataStructure[cat] = {};
@@ -125,39 +221,118 @@ let ExcelService = class ExcelService {
                 dataStructure[cat][prod][client] = (dataStructure[cat][prod][client] || 0) + qty;
             });
         });
+        const fontName = 'Segoe UI';
+        const borderStyle = {
+            style: 'thin',
+            color: { argb: 'FFD3D3D3' }
+        };
+        const cellBorders = {
+            top: borderStyle,
+            left: borderStyle,
+            bottom: borderStyle,
+            right: borderStyle
+        };
+        if (Object.keys(dataStructure).length === 0) {
+            const ws = workbook.addWorksheet('Sin Pedidos');
+            ws.addRow(['No hay pedidos en el rango de fechas seleccionado.']);
+        }
         for (const [catName, products] of Object.entries(dataStructure)) {
-            const rows = [];
-            rows.push([`TOTAL ${catName.toUpperCase()}`]);
-            rows.push([]);
-            rows.push([`  ${catName.toUpperCase()}`]);
+            const cleanSheetName = catName.replace(/[\\\/\?\*\[\]\:]/g, '').toUpperCase().slice(0, 30) || 'CONSOLIDADO';
+            let finalSheetName = cleanSheetName;
+            let counter = 1;
+            while (usedSheetNames.has(finalSheetName.toLowerCase())) {
+                const suffix = `_${counter}`;
+                finalSheetName = `${cleanSheetName.slice(0, 30 - suffix.length)}${suffix}`;
+                counter++;
+            }
+            usedSheetNames.add(finalSheetName.toLowerCase());
+            const worksheet = workbook.addWorksheet(finalSheetName);
+            worksheet.views = [{ showGridLines: true }];
+            const titleRow = worksheet.addRow([`CONSOLIDADO DE PEDIDOS: ${catName.toUpperCase()}`]);
+            worksheet.mergeCells(titleRow.number, 1, titleRow.number, clientNames.length + 2);
+            titleRow.height = 28;
+            titleRow.getCell(1).font = { name: fontName, bold: true, size: 12, color: { argb: 'FFFFFFFF' } };
+            titleRow.getCell(1).fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FF5C3D2E' }
+            };
+            titleRow.getCell(1).alignment = { horizontal: 'left', vertical: 'middle' };
+            worksheet.addRow([]);
             const headers = ['PRODUCTO', ...clientNames.map(c => c.toUpperCase()), 'TOTAL'];
-            rows.push(headers);
+            const headerRow = worksheet.addRow(headers);
+            headerRow.height = 22;
+            headerRow.eachCell((cell, colNum) => {
+                cell.font = { name: fontName, bold: true, size: 10, color: { argb: 'FF5C3D2E' } };
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFF5EBE6' }
+                };
+                cell.border = cellBorders;
+                cell.alignment = {
+                    horizontal: colNum === 1 ? 'left' : 'right',
+                    vertical: 'middle'
+                };
+            });
             const clientColumnTotals = {};
             let grandTotal = 0;
             for (const [prodName, clientQtys] of Object.entries(products)) {
-                const row = [prodName];
+                const rowData = [prodName];
                 let prodTotal = 0;
                 clientNames.forEach(client => {
                     const qty = clientQtys[client] || 0;
-                    row.push(qty > 0 ? qty : 0);
+                    rowData.push(qty);
                     prodTotal += qty;
                     clientColumnTotals[client] = (clientColumnTotals[client] || 0) + qty;
                 });
-                row.push(prodTotal);
+                rowData.push(prodTotal);
                 grandTotal += prodTotal;
-                rows.push(row);
+                const dataRow = worksheet.addRow(rowData);
+                dataRow.height = 18;
+                dataRow.eachCell((cell, colNum) => {
+                    cell.font = { name: fontName, size: 10 };
+                    cell.border = cellBorders;
+                    cell.alignment = {
+                        horizontal: colNum === 1 ? 'left' : 'right',
+                        vertical: 'middle'
+                    };
+                    if (colNum > 1 && cell.value === 0) {
+                        cell.font = { name: fontName, size: 10, color: { argb: 'FFC0C0C0' } };
+                    }
+                });
             }
-            const totalsRow = [`TOTAL ${catName.toUpperCase()}`];
+            const totalsRowData = ['TOTAL GENERAL'];
             clientNames.forEach(client => {
-                totalsRow.push(clientColumnTotals[client] || 0);
+                totalsRowData.push(clientColumnTotals[client] || 0);
             });
-            totalsRow.push(grandTotal);
-            rows.push(totalsRow);
-            const ws = XLSX.utils.aoa_to_sheet(rows);
-            const cleanSheetName = catName.replace(/[\\\/\?\*\[\]]/g, '').toUpperCase().slice(0, 30) || 'Consolidado';
-            XLSX.utils.book_append_sheet(wb, ws, cleanSheetName);
+            totalsRowData.push(grandTotal);
+            const totalsRow = worksheet.addRow(totalsRowData);
+            totalsRow.height = 22;
+            totalsRow.eachCell((cell, colNum) => {
+                cell.font = { name: fontName, bold: true, size: 10, color: { argb: 'FF5C3D2E' } };
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFE8D0C5' }
+                };
+                cell.border = cellBorders;
+                cell.alignment = {
+                    horizontal: colNum === 1 ? 'left' : 'right',
+                    vertical: 'middle'
+                };
+            });
+            worksheet.columns.forEach((column, index) => {
+                if (index === 0) {
+                    column.width = 30;
+                }
+                else {
+                    column.width = 15;
+                }
+            });
         }
-        return XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+        const buffer = await workbook.xlsx.writeBuffer();
+        return Buffer.from(buffer);
     }
 };
 exports.ExcelService = ExcelService;

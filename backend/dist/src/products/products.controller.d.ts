@@ -5,7 +5,7 @@ export declare class ProductsController {
     findAll(): Promise<import("./product.entity").Product[]>;
     findByCategory(category: string): Promise<import("./product.entity").Product[]>;
     findOne(id: string): Promise<import("./product.entity").Product | null>;
-    create(body: any): Promise<Partial<import("./product.entity").Product> & import("./product.entity").Product>;
+    create(body: any): Promise<import("./product.entity").Product[]>;
     updateCategory(body: {
         oldName: string;
         newName: string;
@@ -14,7 +14,7 @@ export declare class ProductsController {
     }): Promise<{
         updated: number;
     }>;
-    update(id: string, body: any): Promise<import("./product.entity").Product | null>;
+    update(id: string, body: any): Promise<import("./product.entity").Product>;
     delete(id: string): Promise<import("./product.entity").Product | null>;
     uploadImage(file: Express.Multer.File): Promise<{
         url: string;

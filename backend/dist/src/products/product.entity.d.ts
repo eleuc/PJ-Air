@@ -1,10 +1,10 @@
+import { Category } from './category.entity';
 export declare class Product {
     id: number;
     name: string;
-    category: string;
-    category_en: string;
+    category: Category | null;
     price: number;
     description: string;
     image: string;
-    category_min_qty: number;
+    is_deleted: boolean;
 }

@@ -1,5 +1,5 @@
 import { Order } from './order.entity';
 export declare class ExcelService {
-    exportIndividual(orders: Order[]): Buffer;
-    exportConsolidated(orders: Order[]): Buffer;
+    exportIndividual(orders: Order[]): Promise<Buffer>;
+    exportConsolidated(orders: Order[]): Promise<Buffer>;
 }

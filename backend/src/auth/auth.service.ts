@@ -71,10 +71,13 @@ export class AuthService {
     let isMatch = false;
     if (user.password && user.password.includes(':')) {
       isMatch = verifyPassword(password, user.password);
-    } else if (user.password && (user.password.startsWith('$2a$') || user.password.startsWith('$2b$'))) {
+    } else if (user.password && (user.password.startsWith('$2a$') || user.password.startsWith('$2b$') || user.password.startsWith('$2y$'))) {
       // Support bcrypt hashes (e.g. from Supabase or legacy system)
       const bcrypt = require('bcryptjs');
-      if (bcrypt.compareSync(password, user.password)) {
+      const hashToCompare = user.password.startsWith('$2y$')
+        ? user.password.replace(/^\$2y\$/, '$2a$')
+        : user.password;
+      if (bcrypt.compareSync(password, hashToCompare)) {
         isMatch = true;
         // Migrate to the new PBKDF2 format
         const hashedPassword = hashPassword(password);

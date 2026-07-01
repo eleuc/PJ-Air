@@ -9,11 +9,11 @@ const config = {
     password: 'o7BR&vX+F2;wqYye'
 };
 
-const localDbPath = path.join(__dirname, '..', 'database.sqlite');
-const remoteDbPath = '/var/www/backend/database.sqlite';
+const localDbPath = path.join(__dirname, '..', '..', 'database.sqlite');
+const remoteDbPath = '/var/www/pj-air/database.sqlite';
 
 const localUploadsDir = path.join(__dirname, '..', 'uploads', 'products');
-const remoteUploadsDir = '/var/www/backend/uploads/products';
+const remoteUploadsDir = '/var/www/pj-air/backend/uploads/products';
 
 const conn = new Client();
 

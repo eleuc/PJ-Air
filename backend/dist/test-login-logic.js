@@ -6,9 +6,9 @@ const auth_service_1 = require("./src/auth/auth.service");
 async function bootstrap() {
     const app = await core_1.NestFactory.createApplicationContext(app_module_1.AppModule);
     const authService = app.get(auth_service_1.AuthService);
-    console.log("Testing login for user1...");
+    console.log("Testing login for eleucn1@gmail.com...");
     try {
-        const result = await authService.login('user1', '123132');
+        const result = await authService.login('eleucn1@gmail.com', '123456');
         console.log("Login Success!", JSON.stringify(result.user, null, 2));
     }
     catch (e) {

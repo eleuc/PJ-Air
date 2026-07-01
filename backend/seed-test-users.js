@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const { v4: uuidv4 } = require('uuid');
 
-const db = new sqlite3.Database('C:/Users/USUARIO/Documents/Antigravity/database.sqlite');
+const db = new sqlite3.Database(require('path').join(__dirname, '../database.sqlite'));
 
 const usersToCreate = [
   { email: 'user1@test.com', username: 'user1', role: 'production' },
