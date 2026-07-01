@@ -1,28 +1,36 @@
 {
-  "timestamp": "2026-07-01T04:46:12.629979",
+  "timestamp": "2026-07-01T04:55:05.267503",
   "kernel": {
     "version": "2.2.11",
     "status": "CHALLENGED",
     "dna_intact": true,
-    "saturation_level": 3,
+    "saturation_level": 2,
     "pulse_breakdown": {
-      "session_cp": 2.93169,
-      "historical_pressure": 4.45,
+      "session_cp": 1.8633118359375,
+      "historical_pressure": 5.05,
       "rule_pressure": 0.0,
       "immediate_spike": 0.0,
-      "total_computed": 2.93169
+      "total_computed": 1.8633118359375
     },
     "bhi": 0.0,
-    "odometer_bytes": 66473,
+    "odometer_bytes": 54993,
     "odometer_budget": 2000000,
     "last_audit": "N/A"
   },
   "backlog": {
     "current_sprint": "S08-PAYMENTS-ACCOUNTING",
     "sprint_name": "Sprint 08: Integración de Pasarelas de Pago y Xero",
-    "active_task": "TASK-08-02",
+    "active_task": "TASK-08-01",
     "version": "2.2.11",
     "pending_tasks": [
+      {
+        "id": "TASK-08-01",
+        "label": "TECH/DOMAIN",
+        "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
+        "status": "IN_PROGRESS",
+        "audit_required": true,
+        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+      },
       {
         "id": "TASK-08-02",
         "label": "TECH/DOMAIN",
@@ -70,6 +78,38 @@
         "label": "TECH/DOMAIN",
         "desc": "Cola de Tareas (Queue): Orquestación asíncrona entre Pagos y Sincronización Xero.",
         "status": "TODO"
+      },
+      {
+        "id": "TASK-08-10",
+        "label": "TECH/DOMAIN",
+        "desc": "Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).",
+        "status": "IN_PROGRESS",
+        "audit_required": true,
+        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+      },
+      {
+        "id": "TASK-08-11",
+        "label": "TECH/DOMAIN",
+        "desc": "Campo Nickname en entidad Profile y sincronización en reportes Excel.",
+        "status": "IN_PROGRESS",
+        "audit_required": true,
+        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+      },
+      {
+        "id": "TASK-08-12",
+        "label": "UI/TEST",
+        "desc": "Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.",
+        "status": "IN_PROGRESS",
+        "audit_required": true,
+        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+      },
+      {
+        "id": "TASK-08-13",
+        "label": "UI",
+        "desc": "Ordenamiento alfabético en listas del panel de administración (Clientes, Usuarios, Productos, Zonas, Rutas).",
+        "status": "IN_PROGRESS",
+        "audit_required": true,
+        "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
       },
       {
         "id": "TASK-08-14",
@@ -125,20 +165,13 @@
     "agent_id": "ANONYMOUS"
   },
   "challenge": {
-    "id": "SENTINEL-RESUME-AUTH-PJ_AIR-20260701T044525-M2X2a_0TsObG6FeXEDj6ryQYO_P3GBPfLPqx05HP3eM",
+    "id": "SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045442--7AswrAwminTxiuvJMbSaYDPDbHNxGtFn6w2jgHsZ14",
     "level": "VOLATILE",
-    "expires_at": "2026-07-01T05:45:25.776468",
-    "deviations": [
-      {
-        "file": "CHROME-SCRIPTS",
-        "chrome": "CHROME-SCRIPTS",
-        "reason": "VOLATILE",
-        "severity": "CRITICAL"
-      }
-    ]
+    "expires_at": "2026-07-01T05:54:42.679976",
+    "deviations": []
   },
   "dna": {
-    "last_signature_at": "2026-06-29T14:25:37.186572",
+    "last_signature_at": "2026-07-01T04:53:36.6429732-04:00",
     "signed_project": "PJ_AIR",
     "chromosomes": [
       {
@@ -151,7 +184,7 @@
       },
       {
         "name": "CHROME-SCRIPTS",
-        "status": "DEVIATED"
+        "status": "INTACT"
       },
       {
         "name": "CHROME-DOCS",
@@ -174,7 +207,7 @@
       "id": "TASK-08-01",
       "label": "TECH/DOMAIN",
       "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
-      "status": "COMPLETED",
+      "status": "IN_PROGRESS",
       "detail_doc": null
     },
     {
@@ -237,28 +270,28 @@
       "id": "TASK-08-10",
       "label": "TECH/DOMAIN",
       "desc": "Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).",
-      "status": "COMPLETED",
+      "status": "IN_PROGRESS",
       "detail_doc": null
     },
     {
       "id": "TASK-08-11",
       "label": "TECH/DOMAIN",
       "desc": "Campo Nickname en entidad Profile y sincronización en reportes Excel.",
-      "status": "COMPLETED",
+      "status": "IN_PROGRESS",
       "detail_doc": null
     },
     {
       "id": "TASK-08-12",
       "label": "UI/TEST",
       "desc": "Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.",
-      "status": "COMPLETED",
+      "status": "IN_PROGRESS",
       "detail_doc": null
     },
     {
       "id": "TASK-08-13",
       "label": "UI",
       "desc": "Ordenamiento alfabético en listas del panel de administración (Clientes, Usuarios, Productos, Zonas, Rutas).",
-      "status": "COMPLETED",
+      "status": "IN_PROGRESS",
       "detail_doc": null
     },
     {
@@ -309,6 +342,138 @@
     "nodes_indexed": []
   },
   "forensic_ledger": [
+    {
+      "id": 74,
+      "timestamp": "2026-07-01T04:55:00.572599",
+      "role": "AGENT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "bf7174bc98ffda94cbbe5ab4e4d723ec187eade69b8b90741db35a10156ac99e",
+      "type": "ODOMETER_RESET",
+      "task": "TAKEOVER",
+      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
+      "hash": "07f3993617590d6807110f5f118642736329cfebf4e19a290d4fa3938532130c"
+    },
+    {
+      "id": 73,
+      "timestamp": "2026-07-01T04:54:42.689618",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "e1bd3a8aadf09e1a22079919bf1d445a901b93e5ca6d102b937a6c22c382c441",
+      "type": "CHALLENGE_ISSUED",
+      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045442--7AswrAwminTxiuvJMbSaYDPDbHNxGtFn6w2jgHsZ14",
+      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: -7AswrAwminTxiuvJMbSaYDPDbHNxGtFn6w2jgHsZ14",
+      "hash": "bf7174bc98ffda94cbbe5ab4e4d723ec187eade69b8b90741db35a10156ac99e"
+    },
+    {
+      "id": 72,
+      "timestamp": "2026-07-01T04:54:42.114270",
+      "role": "ARCHITECT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "a9f3f05631bc24aa238c39f6f907c861febfa1280f6daf94e3d3a75bd752a8a5",
+      "type": "TRACE",
+      "task": "TAKEOVER",
+      "detail": "Ejecución administrativa detectada: logix takeover",
+      "hash": "e1bd3a8aadf09e1a22079919bf1d445a901b93e5ca6d102b937a6c22c382c441"
+    },
+    {
+      "id": 71,
+      "timestamp": "2026-07-01T04:54:30.388347",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "89961715495bc4bc38cb413e44aea5027b6cdd414345a355ac39cc95ef8e09c6",
+      "type": "TRACE",
+      "task": "HANDOVER",
+      "detail": "Ejecución administrativa detectada: logix handover",
+      "hash": "a9f3f05631bc24aa238c39f6f907c861febfa1280f6daf94e3d3a75bd752a8a5"
+    },
+    {
+      "id": 70,
+      "timestamp": "2026-07-01T04:54:08.707533",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "e5c5272979192ac310d8c06ee55327ff47d57d54d128c8d14df92edab52cccf5",
+      "type": "TRACE",
+      "task": "UNKNOWN",
+      "detail": "Ejecución administrativa detectada: logix unknown",
+      "hash": "89961715495bc4bc38cb413e44aea5027b6cdd414345a355ac39cc95ef8e09c6"
+    },
+    {
+      "id": 69,
+      "timestamp": "2026-07-01T04:53:25.230131",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "ad21a96e84197dffab821a0cc03eaa89c5445f6f67eaf8c516251ec604e4ba0e",
+      "type": "TRACE",
+      "task": "HANDOVER",
+      "detail": "Ejecución administrativa detectada: logix handover",
+      "hash": "e5c5272979192ac310d8c06ee55327ff47d57d54d128c8d14df92edab52cccf5"
+    },
+    {
+      "id": 68,
+      "timestamp": "2026-07-01T04:53:11.384859",
+      "role": "AGENT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "3e1610856199e9b2498e3a28b941b59ddc0f2101a0a1c1f67729ba6e3b0da35c",
+      "type": "ODOMETER_RESET",
+      "task": "TAKEOVER",
+      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
+      "hash": "ad21a96e84197dffab821a0cc03eaa89c5445f6f67eaf8c516251ec604e4ba0e"
+    },
+    {
+      "id": 67,
+      "timestamp": "2026-07-01T04:52:53.557540",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "aec040d8df8ece547a458ca3e919d94d07b2c5d65ca4d353984257dc61a83fbb",
+      "type": "CHALLENGE_ISSUED",
+      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045253-nfsV8Sa8hrWGkugaRtgpZUq2z0aTrFao7Op_OAqZxIE",
+      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: nfsV8Sa8hrWGkugaRtgpZUq2z0aTrFao7Op_OAqZxIE",
+      "hash": "3e1610856199e9b2498e3a28b941b59ddc0f2101a0a1c1f67729ba6e3b0da35c"
+    },
+    {
+      "id": 66,
+      "timestamp": "2026-07-01T04:52:52.967507",
+      "role": "ARCHITECT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "7eea6e6f5118323c70b9e89a1df27cf5b6128b4abbc36a1e59a991f19d9c2261",
+      "type": "TRACE",
+      "task": "TAKEOVER",
+      "detail": "Ejecución administrativa detectada: logix takeover",
+      "hash": "aec040d8df8ece547a458ca3e919d94d07b2c5d65ca4d353984257dc61a83fbb"
+    },
+    {
+      "id": 65,
+      "timestamp": "2026-07-01T04:50:57.545805",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "bbf8f8168b3f73694d1a8c67016f91ca9fb9def1d001416559a66f295ead03da",
+      "type": "TRACE",
+      "task": "HANDOVER",
+      "detail": "Ejecución administrativa detectada: logix handover",
+      "hash": "7eea6e6f5118323c70b9e89a1df27cf5b6128b4abbc36a1e59a991f19d9c2261"
+    },
+    {
+      "id": 64,
+      "timestamp": "2026-07-01T04:50:14.037325",
+      "role": "AI",
+      "sessionid": "Sentinel",
+      "prevhash": "4b0495d2d09e99ce26ed96af5c3f908e4d7c76917922eb107204e3c41bc146ab",
+      "type": "CHALLENGE_ISSUED",
+      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045014-x9RLwpKrN_BxHSgbsi0soQuJI8Fn6ZDgTbYw24MYVbw",
+      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: x9RLwpKrN_BxHSgbsi0soQuJI8Fn6ZDgTbYw24MYVbw",
+      "hash": "bbf8f8168b3f73694d1a8c67016f91ca9fb9def1d001416559a66f295ead03da"
+    },
+    {
+      "id": 63,
+      "timestamp": "2026-07-01T04:49:42.139823",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "a110a2c544223e17ed9cbb5cd4007b61ad1b6b05f049181e16d63c7f14ed61ca",
+      "type": "TRACE",
+      "task": "HANDOVER",
+      "detail": "Ejecución administrativa detectada: logix handover",
+      "hash": "4b0495d2d09e99ce26ed96af5c3f908e4d7c76917922eb107204e3c41bc146ab"
+    },
     {
       "id": 62,
       "timestamp": "2026-07-01T04:45:25.806415",
@@ -726,138 +891,6 @@
       "task": "HANDOVER",
       "detail": "Ejecución administrativa detectada: logix handover",
       "hash": "d7c9aa288d62acc71422bee63a4115e18567a532509420c33562ccdb9c16e121"
-    },
-    {
-      "id": 24,
-      "timestamp": "2026-06-22T00:27:36.635991",
-      "role": "AGENT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "68fa3c004943c80c2a96a66eaffc3c19c748df3788e96f990bb9eeea5a159efd",
-      "type": "ODOMETER_RESET",
-      "task": "TAKEOVER",
-      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
-      "hash": "250260bd73f1c315868ad290f2f0188fb796ecaca20a55db66fca40ab5bdce03"
-    },
-    {
-      "id": 23,
-      "timestamp": "2026-06-22T00:26:28.422033",
-      "role": "AI",
-      "sessionid": "Sentinel",
-      "prevhash": "dc465559634db161ee083957d338232f87bf669ac52327d575aedbc5e37a5eb5",
-      "type": "CHALLENGE_ISSUED",
-      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260622T002628-3nrXyItlCVo-U0DDiecOm6T3lsfr6gNvFoMam3X8-3I",
-      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: 3nrXyItlCVo-U0DDiecOm6T3lsfr6gNvFoMam3X8-3I",
-      "hash": "68fa3c004943c80c2a96a66eaffc3c19c748df3788e96f990bb9eeea5a159efd"
-    },
-    {
-      "id": 22,
-      "timestamp": "2026-06-22T00:26:27.419850",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "e1ab4e6ba5652eed75e86f04a75ee05db5d4db06b52eb2b32d6041aacf23c328",
-      "type": "TRACE",
-      "task": "TAKEOVER",
-      "detail": "Ejecución administrativa detectada: logix takeover",
-      "hash": "dc465559634db161ee083957d338232f87bf669ac52327d575aedbc5e37a5eb5"
-    },
-    {
-      "id": 21,
-      "timestamp": "2026-06-22T00:17:57.994865",
-      "role": "AGENT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "a3e472f647a3a5a67945218fff796f35382135357650fccd920eb7cea724d07f",
-      "type": "ODOMETER_RESET",
-      "task": "TAKEOVER",
-      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
-      "hash": "e1ab4e6ba5652eed75e86f04a75ee05db5d4db06b52eb2b32d6041aacf23c328"
-    },
-    {
-      "id": 20,
-      "timestamp": "2026-06-22T00:17:12.598671",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "69e1cc10e51e448c0524b937ce27a2bdedd6c3d7087b31a04206b166f20d503d",
-      "type": "TRACE",
-      "task": "TAKEOVER",
-      "detail": "Ejecución administrativa detectada: logix takeover",
-      "hash": "a3e472f647a3a5a67945218fff796f35382135357650fccd920eb7cea724d07f"
-    },
-    {
-      "id": 19,
-      "timestamp": "2026-06-22T00:16:30.048687",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "4861468c98a6635bbe37223126e1db2c310aa4670cb5dcaa2f11ce161b8f7e6d",
-      "type": "TRACE",
-      "task": "SYNC-CONTEXT",
-      "detail": "Ejecución administrativa detectada: logix sync-context",
-      "hash": "d6fa0fe3717ed3058aca398061f645d21d733685eb504c3e5dd54ba5a7942990"
-    },
-    {
-      "id": 18,
-      "timestamp": "2026-06-22T00:16:24.636572",
-      "role": "AI",
-      "sessionid": "Sentinel",
-      "prevhash": "09f3648980521a85ba47dda66c2057d94a0d6fcd33c32d4627aa3893d70f7a3c",
-      "type": "CHALLENGE_ISSUED",
-      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260622T001624-xmNwqdhFJ-2t-nV0Qyg5Fp3pDsptzY6SEN7l8ThsEZg",
-      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: xmNwqdhFJ-2t-nV0Qyg5Fp3pDsptzY6SEN7l8ThsEZg",
-      "hash": "4861468c98a6635bbe37223126e1db2c310aa4670cb5dcaa2f11ce161b8f7e6d"
-    },
-    {
-      "id": 17,
-      "timestamp": "2026-06-22T00:16:05.276457",
-      "role": "AI",
-      "sessionid": "HANDOVER-CLEANUP",
-      "prevhash": "b9297893a8ad7d67321ddc1fd2d5aea1ea4523d6f49a7130ecced638cd0dbe31",
-      "type": "CHALLENGE_EXPIRED",
-      "task": "Handover Cleanup",
-      "detail": "Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260622T001214-lUzws13SqmR1cEKMDJ4l2eEEb0RUfDcnR_oYxryTwVA expirado al iniciar handover.",
-      "hash": "09f3648980521a85ba47dda66c2057d94a0d6fcd33c32d4627aa3893d70f7a3c"
-    },
-    {
-      "id": 16,
-      "timestamp": "2026-06-22T00:16:04.985103",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "69e1cc10e51e448c0524b937ce27a2bdedd6c3d7087b31a04206b166f20d503d",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "b9297893a8ad7d67321ddc1fd2d5aea1ea4523d6f49a7130ecced638cd0dbe31"
-    },
-    {
-      "id": 15,
-      "timestamp": "2026-06-22T00:14:28.485426",
-      "role": "AGENT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "e39fda8ed30e092c546c4480563547daafbe3dda68128dec2cfe6d2b40fff764",
-      "type": "ODOMETER_RESET",
-      "task": "TAKEOVER",
-      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
-      "hash": "6146c81940a8bfe3f8db026a59886f15836d8378aa1ee3b4f871b5bceb1ddc42"
-    },
-    {
-      "id": 14,
-      "timestamp": "2026-06-22T00:12:45.339141",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "da08cc076ac24124fb3e4eff20a6256f2f506e6dd20acbc1b8a9bdc20092ae77",
-      "type": "TRACE",
-      "task": "TAKEOVER",
-      "detail": "Ejecución administrativa detectada: logix takeover",
-      "hash": "e39fda8ed30e092c546c4480563547daafbe3dda68128dec2cfe6d2b40fff764"
-    },
-    {
-      "id": 13,
-      "timestamp": "2026-06-22T00:12:14.057129",
-      "role": "AI",
-      "sessionid": "Sentinel",
-      "prevhash": "69e1cc10e51e448c0524b937ce27a2bdedd6c3d7087b31a04206b166f20d503d",
-      "type": "CHALLENGE_ISSUED",
-      "task": "SENTINEL-RESUME-AUTH-PJ_AIR-20260622T001214-lUzws13SqmR1cEKMDJ4l2eEEb0RUfDcnR_oYxryTwVA",
-      "detail": "Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: lUzws13SqmR1cEKMDJ4l2eEEb0RUfDcnR_oYxryTwVA",
-      "hash": "da08cc076ac24124fb3e4eff20a6256f2f506e6dd20acbc1b8a9bdc20092ae77"
     }
   ]
 }
