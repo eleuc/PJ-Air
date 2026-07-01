@@ -108,3 +108,6 @@
 | 2026-07-01 04:55 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | dd6c2ee | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-01 04:56 | AI | Sentinel | 2a775bf | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045610-hl8tP7Um5O2hYlq0a1T_GEnJ8Z_hGBbAQyLMQvP43Ko | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: hl8tP7Um5O2hYlq0a1T_GEnJ8Z_hGBbAQyLMQvP43Ko |
 | 2026-07-01 04:56 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | e528eec | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
+| 2026-07-01 04:56 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | f0d9340 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-01 04:57 | AI | Sentinel | fa747fc | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045751-6_KJNs0lZ-YAcBxg3J5kTRXIIChMR_YUcVR9UB1w0kg | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: 6_KJNs0lZ-YAcBxg3J5kTRXIIChMR_YUcVR9UB1w0kg |
+| 2026-07-01 04:57 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 3068ccd | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
