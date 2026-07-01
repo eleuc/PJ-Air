@@ -2,7 +2,7 @@
 **Objetivo**: Implementar flujo de pago híbrido con Stripe y PayPal, y sincronización contable asíncrona con Xero.
 **Fecha**: 2026-07-01
 
-- [x] **TASK-08-01** [TECH/DOMAIN] Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.
+- [x] **TASK-08-01** [TECH/DOMAIN] Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción. (Aplica a auth.service.ts, debug-users.js, reset-test-users.js, seed-test-users.js, seed-specific-client.js, test-users.js, test-login-logic.ts, test-login.js, seed-admin.js, deploy-data.js, backend/database.sqlite).
 - [ ] **TASK-08-02** [TECH/DOMAIN] Infraestructura DB: Tabla 'payments', tokens de Xero y expansión de status en Orders.
 - [ ] **TASK-08-03** [TECH/DOMAIN] Módulo de Pagos Backend: Setup SDKs Stripe & PayPal y Controladores de Intención de Pago.
 - [ ] **TASK-08-04** [TECH/UI] Frontend: Integración de Stripe Elements (Interfaz Segura de Tarjetas).
