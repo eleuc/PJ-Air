@@ -87,3 +87,5 @@
 | 2026-06-30 14:18 | AI | RED | 24f2755 | ALERT | TEST-FAIL | Pruebas unitarias fallidas durante el baseline. |
 | 2026-06-30 14:18 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | a0981bc | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
 | 2026-06-30 14:18 | AI | Sentinel | d8b140f | CHALLENGE_ISSUED | 92e916611f614d48788bd30568524d8531ad49f1573fd6fb99a5b7cc5f788222 | Level: GATE-1 | Project: PJ_AIR | Nonce: T7HROXHAnT1BwyuqCeNGLB2654Atwwy7BMMeuYu5ybU |
+| 2026-06-30 14:18 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 78fb84c | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-01 04:45 | AI | Sentinel | d501339 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T044525-M2X2a_0TsObG6FeXEDj6ryQYO_P3GBPfLPqx05HP3eM | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: M2X2a_0TsObG6FeXEDj6ryQYO_P3GBPfLPqx05HP3eM |
