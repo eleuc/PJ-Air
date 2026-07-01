@@ -89,3 +89,19 @@
 | 2026-06-30 14:18 | AI | Sentinel | d8b140f | CHALLENGE_ISSUED | 92e916611f614d48788bd30568524d8531ad49f1573fd6fb99a5b7cc5f788222 | Level: GATE-1 | Project: PJ_AIR | Nonce: T7HROXHAnT1BwyuqCeNGLB2654Atwwy7BMMeuYu5ybU |
 | 2026-06-30 14:18 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 78fb84c | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-01 04:45 | AI | Sentinel | d501339 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T044525-M2X2a_0TsObG6FeXEDj6ryQYO_P3GBPfLPqx05HP3eM | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: M2X2a_0TsObG6FeXEDj6ryQYO_P3GBPfLPqx05HP3eM |
+| 2026-07-01 04:49 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | a110a2c | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-01 04:50 | AI | Sentinel | 4b0495d | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045014-x9RLwpKrN_BxHSgbsi0soQuJI8Fn6ZDgTbYw24MYVbw | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: x9RLwpKrN_BxHSgbsi0soQuJI8Fn6ZDgTbYw24MYVbw |
+| 2026-07-01 04:50 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | bbf8f81 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-01 04:52 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 7eea6e6 | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
+| 2026-07-01 04:52 | AI | Sentinel | aec040d | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045253-nfsV8Sa8hrWGkugaRtgpZUq2z0aTrFao7Op_OAqZxIE | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: nfsV8Sa8hrWGkugaRtgpZUq2z0aTrFao7Op_OAqZxIE |
+| 2026-07-01 04:53 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 3e16108 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-07-01 04:53 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | ad21a96 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-01 04:54 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | e5c5272 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
+| 2026-07-01 04:54 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 8996171 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-01 04:54 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | a9f3f05 | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
+| 2026-07-01 04:54 | AI | Sentinel | e1bd3a8 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045442--7AswrAwminTxiuvJMbSaYDPDbHNxGtFn6w2jgHsZ14 | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: -7AswrAwminTxiuvJMbSaYDPDbHNxGtFn6w2jgHsZ14 |
+| 2026-07-01 04:55 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | bf7174b | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-07-01 04:55 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 07f3993 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-01 04:55 | AI | CLEANUP | 23494fe | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045442--7AswrAwminTxiuvJMbSaYDPDbHNxGtFn6w2jgHsZ14 expirado al iniciar handover. |
+| 2026-07-01 04:55 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 778e56d | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-01 04:55 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | b89dd6e | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
