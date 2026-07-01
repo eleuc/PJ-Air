@@ -105,3 +105,6 @@
 | 2026-07-01 04:55 | AI | CLEANUP | 23494fe | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045442--7AswrAwminTxiuvJMbSaYDPDbHNxGtFn6w2jgHsZ14 expirado al iniciar handover. |
 | 2026-07-01 04:55 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 778e56d | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-01 04:55 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | b89dd6e | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
+| 2026-07-01 04:55 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | dd6c2ee | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-01 04:56 | AI | Sentinel | 2a775bf | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T045610-hl8tP7Um5O2hYlq0a1T_GEnJ8Z_hGBbAQyLMQvP43Ko | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: hl8tP7Um5O2hYlq0a1T_GEnJ8Z_hGBbAQyLMQvP43Ko |
+| 2026-07-01 04:56 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | e528eec | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
