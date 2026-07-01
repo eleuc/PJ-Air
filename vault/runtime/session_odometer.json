@@ -1,16 +1,16 @@
 {
-  "total_bytes": 63185,
-  "total_bytes_out": 9204,
+  "total_bytes": 67793,
+  "total_bytes_out": 13812,
   "context_base_bytes": 54481,
-  "cli_bytes": 8192,
+  "cli_bytes": 12288,
   "chat_bytes": 0,
-  "total_tokens": 15796,
-  "turns": 6,
+  "total_tokens": 16948,
+  "turns": 9,
   "peak_bytes": 2048,
   "strike_count": 0,
   "session_uuid": "aa506f91880ef1d5ec9fd870ab5a0aff",
   "session_start_ts": "2026-07-01T04:55:00.678935",
   "hwc_complete": false,
-  "last_update": "2026-07-01T04:55:37.063",
-  "daemon_bytes": 512
+  "last_update": "2026-07-01T04:56:14.418261",
+  "daemon_bytes": 1024
 }

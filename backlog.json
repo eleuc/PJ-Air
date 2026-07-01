@@ -220,9 +220,10 @@
           "id": "TASK-08-01",
           "label": "TECH/DOMAIN",
           "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "audit_required": true,
-          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica.",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-02",
