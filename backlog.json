@@ -220,7 +220,7 @@
           "id": "TASK-08-01",
           "label": "TECH/DOMAIN",
           "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
-          "status": "DONE",
+          "status": "IN_PROGRESS",
           "audit_required": true,
           "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica.",
           "veracity_hash": null
@@ -309,47 +309,77 @@
           "id": "TASK-08-14",
           "label": "TECH/DOMAIN",
           "desc": "Backend: Módulo admin-actions independiente con endpoint PATCH /admin-actions/users/:id/reset-password. Jerarquía: admin no puede resetear a otro admin. Flag force_pwd_change en system_configs. Sin SMTP.",
-          "status": "TODO",
+          "status": "DONE",
           "audit_required": true,
-          "detail_doc": "vault/runtime/detail_docs/TASK-08-14.md"
+          "detail_doc": "vault/runtime/detail_docs/TASK-08-14.md",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-15",
           "label": "TECH/DOMAIN",
           "desc": "Backend: Extender respuesta de login para incluir require_password_change:true cuando el flag esté activo en system_configs. Modificación mínima y quirúrgica de AuthService.",
-          "status": "TODO",
+          "status": "DONE",
           "audit_required": true,
-          "detail_doc": "vault/runtime/detail_docs/TASK-08-15.md"
+          "detail_doc": "vault/runtime/detail_docs/TASK-08-15.md",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-16",
           "label": "TECH/DOMAIN",
           "desc": "Backend: Endpoint self-service PATCH /admin-actions/me/change-password. Verifica contraseña actual, actualiza hash con PBKDF2, elimina flag force_pwd_change de system_configs. Sin SMTP.",
-          "status": "TODO",
+          "status": "DONE",
           "audit_required": true,
-          "detail_doc": "vault/runtime/detail_docs/TASK-08-16.md"
+          "detail_doc": "vault/runtime/detail_docs/TASK-08-16.md",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-17",
           "label": "UI",
           "desc": "Frontend: Componente ForcePasswordChangeModal que intercepta navegación cuando require_password_change es true. Integración pasiva en layout raíz via AuthContext. Sin SMTP.",
-          "status": "TODO",
-          "detail_doc": "vault/runtime/detail_docs/TASK-08-17.md"
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-08-17.md",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-18",
           "label": "UI",
           "desc": "Frontend: Botón Restablecer Contraseña en detalle de usuario/cliente (admin/users y admin/clients). Botón Nuevo Usuario Staff (rol delivery/produccion/admin). Modificación aditiva mínima. Sin SMTP.",
-          "status": "TODO",
-          "detail_doc": "vault/runtime/detail_docs/TASK-08-18.md"
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-08-18.md",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-19",
           "label": "TECH/TEST",
           "desc": "Suite completa de pruebas: unitarias (Jest mocks), integración e2e backend (Supertest) y automatización UI (Playwright). Usuario de prueba: pwd-test@jhpanesbakery.com. Admin tester: rubendarioc o admin@test.com.",
-          "status": "TODO",
+          "status": "DONE",
           "audit_required": true,
-          "detail_doc": "vault/runtime/detail_docs/TASK-08-19.md"
+          "detail_doc": "vault/runtime/detail_docs/TASK-08-19.md",
+          "veracity_hash": null
+        },
+        {
+          "id": "TASK-08-20",
+          "label": "TECH/UI",
+          "desc": "Habilitar formulario de cambio de contraseña para personal Staff (delivery y producción) en sus respectivas vistas de settings.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-08-20.md",
+          "veracity_hash": null
+        },
+        {
+          "id": "TASK-08-21",
+          "label": "UI/DOMAIN",
+          "desc": "Auditoría e integración del Nickname (campo nickname en perfiles de clientes) en las vistas internas del panel de administración (listados de órdenes, clientes) y validación de consistencia en reportes Excel.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-08-21.md",
+          "veracity_hash": null
+        },
+        {
+          "id": "TASK-08-22",
+          "label": "TECH/TEST",
+          "desc": "Suite de pruebas automatizadas (Jest y Playwright) para el cambio de contraseña de staff y visualización interna del nickname.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-08-22.md",
+          "veracity_hash": null
         }
       ]
     }

@@ -10,6 +10,7 @@ import { AddressesModule } from './addresses/addresses.module';
 import { DevtoolsModule } from './devtools/devtools.module';
 import { AuthModule } from './auth/auth.module';
 import { SystemConfigsModule } from './system-configs/system-configs.module';
+import { AdminActionsModule } from './admin-actions/admin-actions.module';
 
 // Entities
 import { Product } from './products/product.entity';
@@ -38,6 +39,7 @@ import { SystemConfig } from './system-configs/system-config.entity';
     DevtoolsModule,
     AuthModule,
     SystemConfigsModule,
+    AdminActionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

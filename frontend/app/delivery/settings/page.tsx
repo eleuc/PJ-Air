@@ -4,11 +4,15 @@ import React, { useState } from 'react';
 import DeliverySidebar from '@/components/layout/DeliverySidebar';
 import { 
     Bell, Save, Loader2, CheckCircle2, AlertCircle, 
-    Clock, Zap, Smartphone, Navigation
+    Clock, Zap, Smartphone, Navigation, Key
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { api } from '@/lib/api';
 
 export default function DeliverySettingsPage() {
+    const { user, isLoading } = useAuth();
     const [saving, setSaving] = useState(false);
+    const [changingPassword, setChangingPassword] = useState(false);
     const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
     const [settings, setSettings] = useState({
         pushAssigned: true,
@@ -16,6 +20,12 @@ export default function DeliverySettingsPage() {
         autoGps: true,
         type: 'realtime', // 'realtime' or 'consolidated'
         consolidatedTime: '08:30'
+    });
+    
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
     });
 
     const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
@@ -35,6 +45,39 @@ export default function DeliverySettingsPage() {
             setSaving(false);
         }
     };
+
+    const handleChangePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user) return;
+        
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            showToast('❌ Las contraseñas nuevas no coinciden', 'error');
+            return;
+        }
+        
+        try {
+            setChangingPassword(true);
+            await api.patch('/auth/change-password', {
+                userId: user.id,
+                currentPassword: passwordData.currentPassword,
+                newPassword: passwordData.newPassword
+            });
+            showToast('✅ Contraseña actualizada con éxito');
+            setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        } catch (err: any) {
+            showToast(`❌ ${err.message || 'Error al cambiar la contraseña'}`, 'error');
+        } finally {
+            setChangingPassword(false);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-slate-50">
+                <Loader2 size={36} className="animate-spin text-primary" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen bg-slate-50/50 font-sans">
@@ -155,6 +198,69 @@ export default function DeliverySettingsPage() {
                                 Guardar Preferencias
                             </button>
                         </div>
+                    </section>
+
+                    {/* Change Password section */}
+                    <section className="bg-white rounded-[2.5rem] border border-border shadow-sm overflow-hidden">
+                        <div className="p-8 border-b border-border bg-slate-50/50 flex items-center gap-4">
+                            <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
+                                <Key size={24} />
+                            </div>
+                            <div>
+                                <h2 className="font-black text-slate-800 text-xl leading-none mb-1">Seguridad de la Cuenta</h2>
+                                <p className="text-sm text-muted-foreground">Actualiza tu contraseña de acceso</p>
+                            </div>
+                        </div>
+
+                        <form onSubmit={handleChangePassword} className="p-10 space-y-8">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-2">Contraseña Actual</label>
+                                <input 
+                                    type="password"
+                                    placeholder="••••••••"
+                                    className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-primary/30 transition-all font-bold text-slate-800"
+                                    value={passwordData.currentPassword}
+                                    onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                                    required
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-2">Nueva Contraseña</label>
+                                    <input 
+                                        type="password"
+                                        placeholder="••••••••"
+                                        className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-primary/30 transition-all font-bold text-slate-800"
+                                        value={passwordData.newPassword}
+                                        onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})}
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-2">Confirmar Nueva Contraseña</label>
+                                    <input 
+                                        type="password"
+                                        placeholder="••••••••"
+                                        className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-primary/30 transition-all font-bold text-slate-800"
+                                        value={passwordData.confirmPassword}
+                                        onChange={e => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="pt-4 flex justify-end">
+                                <button 
+                                    type="submit"
+                                    disabled={changingPassword}
+                                    className="px-10 py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-slate-900/20 flex items-center gap-3 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                                >
+                                    {changingPassword ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                                    Actualizar Contraseña
+                                </button>
+                            </div>
+                        </form>
                     </section>
                 </div>
             </main>

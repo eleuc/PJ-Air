@@ -1,6 +1,9 @@
 import { Injectable, UnauthorizedException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/user.entity';
+import { SystemConfig } from '../system-configs/system-config.entity';
 import * as nodemailer from 'nodemailer';
 import * as crypto from 'crypto';
 import { SITE_URL, SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS } from '../config';
@@ -8,10 +11,14 @@ import { hashPassword, verifyPassword, signJwt } from './crypto.util';
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    @InjectRepository(SystemConfig)
+    private systemConfigRepository: Repository<SystemConfig>,
+  ) {}
 
   async signup(body: any) {
-    const { email, password, full_name, username, phone, company_name } = body;
+    const { email, password, full_name, username, phone, company_name, role } = body;
 
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) throw new ConflictException('Email already registered');
@@ -21,6 +28,7 @@ export class AuthService {
     const userResult = await this.usersService.create({
       email,
       password: hashedPassword,
+      role: role || 'client',
     });
     const user = Array.isArray(userResult) ? userResult[0] : userResult;
 
@@ -28,12 +36,12 @@ export class AuthService {
     await this.usersService.createProfile({
       id: user.id,
       full_name,
-      username,
+      username: username || email.split('@')[0],
       phone,
       company_name,
     });
 
-    const payload = { id: user.id, email: user.email, role: 'client' };
+    const payload = { id: user.id, email: user.email, role: user.role };
     const access_token = signJwt(payload);
 
     // Return session for auto-login
@@ -102,7 +110,11 @@ export class AuthService {
     const payload = { id: user.id, email: user.email, role };
     const access_token = signJwt(payload);
 
-    return {
+    const forcePwdChange = await this.systemConfigRepository.findOne({
+      where: { key: `force_pwd_change:${user.id}` }
+    });
+
+    const response: any = {
       user: {
         id: user.id,
         email: user.email,
@@ -122,6 +134,12 @@ export class AuthService {
         user: { id: user.id, email: user.email },
       }
     };
+
+    if (forcePwdChange && forcePwdChange.value === 'true') {
+      response.require_password_change = true;
+    }
+
+    return response;
   }
 
   async recoverPassword(identifier: string) {
@@ -226,7 +244,8 @@ export class AuthService {
   }
 
   async changePassword(userId: string, currentPassword: string, newPassword: string) {
-    const user = await this.usersService.findOne(userId);
+    const tempUser = await this.usersService.findOne(userId);
+    const user = await this.usersService.findByEmailWithRole(tempUser.email);
     if (!user) {
       throw new UnauthorizedException('Invalid current password');
     }

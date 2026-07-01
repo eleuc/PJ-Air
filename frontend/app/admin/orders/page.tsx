@@ -26,7 +26,7 @@ interface Order {
     created_at: string;
     delivery_date?: string;
     notes?: string;
-    user?: { email: string; profile?: { full_name?: string; phone?: string; }; };
+    user?: { email: string; profile?: { full_name?: string; phone?: string; nickname?: string; }; };
     delivery_user_id?: string;
     delivery_user?: { id: string; profile?: { full_name?: string; }; };
     address?: { address: string; city: string; };
@@ -408,7 +408,7 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                             </div>
                                         </td>
                                         <td className="px-8 py-5">
-                                            <p className="font-bold text-slate-800 leading-none mb-1 group-hover:text-primary transition-colors">{order.user?.profile?.full_name || 'Anónimo'}</p>
+                                            <p className="font-bold text-slate-800 leading-none mb-1 group-hover:text-primary transition-colors">{order.user?.profile?.nickname || order.user?.profile?.full_name || 'Anónimo'}</p>
                                             <p className="text-xs text-muted-foreground font-medium truncate max-w-[180px]">{order.user?.email}</p>
                                         </td>
                                         <td className="px-8 py-5">
@@ -530,10 +530,10 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                     <div className="bg-gradient-to-br from-slate-50 to-white rounded-[2rem] p-6 border border-slate-100 space-y-4 shadow-sm">
                                         <div className="flex items-center gap-4">
                                             <div className="w-14 h-14 bg-primary text-white font-black text-xl rounded-[1.2rem] flex items-center justify-center shadow-lg shadow-primary/30">
-                                                {selectedOrder.user?.profile?.full_name?.charAt(0) || 'U'}
+                                                {(selectedOrder.user?.profile?.nickname || selectedOrder.user?.profile?.full_name || 'U').charAt(0)}
                                             </div>
                                             <div>
-                                                <p className="font-black text-slate-800 text-lg leading-tight">{selectedOrder.user?.profile?.full_name || 'Cliente de Antigravity'}</p>
+                                                <p className="font-black text-slate-800 text-lg leading-tight">{selectedOrder.user?.profile?.nickname || selectedOrder.user?.profile?.full_name || 'Cliente de Antigravity'}</p>
                                                 <p className="text-xs text-primary font-bold">{selectedOrder.user?.email}</p>
                                             </div>
                                         </div>

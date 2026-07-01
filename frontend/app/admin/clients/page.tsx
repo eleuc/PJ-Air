@@ -63,6 +63,31 @@ export default function AdminClientsPage() {
     const [nickname, setNickname] = useState<string>('');
     const [isSavingNickname, setIsSavingNickname] = useState(false);
 
+    // Password reset states
+    const [resetPasswordModal, setResetPasswordModal] = useState<UserRecord | null>(null);
+    const [newPassword, setNewPassword] = useState('');
+    const [isResettingPwd, setIsResettingPwd] = useState(false);
+
+    const handleResetPasswordSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!resetPasswordModal) return;
+        if (newPassword.length < 8) {
+            alert('La contraseña debe tener al menos 8 caracteres');
+            return;
+        }
+        setIsResettingPwd(true);
+        try {
+            await api.patch(`/admin-actions/users/${resetPasswordModal.id}/reset-password`, { newPassword });
+            showToast('✅ Contraseña restablecida');
+            setResetPasswordModal(null);
+            setNewPassword('');
+        } catch (err: any) {
+            alert(err.message || 'Error al restablecer la contraseña');
+        } finally {
+            setIsResettingPwd(false);
+        }
+    };
+
     useEffect(() => { 
         fetchUsers(); 
         fetchProducts();
@@ -272,7 +297,7 @@ export default function AdminClientsPage() {
                                                 {u.profile?.avatar_url ? <img src={u.profile.avatar_url?.startsWith('http') || u.profile.avatar_url?.startsWith('data:') ? u.profile.avatar_url : `${API_URL}${u.profile.avatar_url}`} className="w-full h-full rounded-2xl object-cover" /> : (u.profile?.full_name || u.email || '?')[0].toUpperCase()}
                                             </div>
                                             <div>
-                                                <p className="font-bold text-slate-900">{u.profile?.full_name || 'Sin Nombre'}</p>
+                                                <p className="font-bold text-slate-900">{u.profile?.nickname ? `${u.profile.nickname} (${u.profile.full_name})` : (u.profile?.full_name || 'Sin Nombre')}</p>
                                                 <p className="text-xs text-slate-400 font-medium italic">@{u.profile?.username || 'sin_usuario'}</p>
                                             </div>
                                         </div>
@@ -376,6 +401,14 @@ export default function AdminClientsPage() {
                                         <label className="text-[10px] font-black text-slate-400 uppercase mb-1 block">Usuario</label>
                                         <p className="font-bold text-slate-700">@{selectedUser.profile?.username || '—'}</p>
                                     </div>
+                                </div>
+                                <div className="mt-4 flex justify-end">
+                                    <button
+                                        onClick={() => setResetPasswordModal(selectedUser)}
+                                        className="px-4 py-2 text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-xl hover:bg-primary/20 transition-all cursor-pointer"
+                                    >
+                                        Restablecer Contraseña
+                                    </button>
                                 </div>
                                 <div className="bg-slate-50 p-5 rounded-3xl border border-slate-100 mt-4 flex items-end gap-4">
                                     <div className="flex-1">
@@ -623,6 +656,50 @@ export default function AdminClientsPage() {
                 <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-4 px-8 py-5 rounded-[2.5rem] shadow-2xl bg-slate-900 text-white border border-white/10 animate-fade-in-up">
                     <CheckCircle2 size={24} className="text-green-400" />
                     <span className="font-black uppercase text-[10px] tracking-widest">{toast}</span>
+                </div>
+            )}
+            {/* Reset Password Modal */}
+            {resetPasswordModal && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setResetPasswordModal(null)} />
+                    <div className="bg-background w-full max-w-md rounded-[2.5rem] shadow-2xl relative overflow-hidden animate-zoom-in">
+                        <div className="p-8 border-b border-slate-100 flex items-center justify-between">
+                            <h2 className="text-xl font-black">Restablecer Contraseña</h2>
+                            <button onClick={() => setResetPasswordModal(null)} className="p-2 hover:bg-muted rounded-full transition-colors"><X size={20} /></button>
+                        </div>
+                        <form onSubmit={handleResetPasswordSubmit} className="p-8 space-y-4">
+                            <p className="text-xs text-slate-500 font-medium">
+                                Restableciendo contraseña para <strong>{resetPasswordModal.profile?.full_name || resetPasswordModal.email}</strong>. El usuario tendrá que cambiarla obligatoriamente al ingresar.
+                            </p>
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-slate-400 px-1 mb-1 block">Nueva Contraseña (mín. 8 caracteres)</label>
+                                <input 
+                                    type="password" 
+                                    value={newPassword} 
+                                    onChange={e => setNewPassword(e.target.value)}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                    required
+                                    minLength={8}
+                                />
+                            </div>
+                            <div className="flex gap-4 pt-4 border-t border-slate-100">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setResetPasswordModal(null)}
+                                    className="flex-1 py-4 text-xs font-black uppercase tracking-widest border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    disabled={isResettingPwd}
+                                    className="flex-1 py-4 bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl hover:bg-primary transition-all disabled:opacity-50"
+                                >
+                                    {isResettingPwd ? <Loader2 size={18} className="animate-spin mx-auto" /> : 'Confirmar'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
         </div>

@@ -67,6 +67,66 @@ export default function AdminUsersPage() {
     const [deliveryFee, setDeliveryFee] = useState<number>(0);
     const [isSavingFee, setIsSavingFee] = useState(false);
 
+    // Password reset & New Staff states
+    const [resetPasswordModal, setResetPasswordModal] = useState<UserRecord | null>(null);
+    const [newPassword, setNewPassword] = useState('');
+    const [isResettingPwd, setIsResettingPwd] = useState(false);
+
+    const [showNewStaffModal, setShowNewStaffModal] = useState(false);
+    const [newStaffEmail, setNewStaffEmail] = useState('');
+    const [newStaffName, setNewStaffName] = useState('');
+    const [newStaffPassword, setNewStaffPassword] = useState('');
+    const [newStaffRole, setNewStaffRole] = useState<'admin' | 'delivery' | 'produccion'>('delivery');
+    const [isCreatingStaff, setIsCreatingStaff] = useState(false);
+
+    const handleResetPasswordSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!resetPasswordModal) return;
+        if (newPassword.length < 8) {
+            alert('La contraseña debe tener al menos 8 caracteres');
+            return;
+        }
+        setIsResettingPwd(true);
+        try {
+            await api.patch(`/admin-actions/users/${resetPasswordModal.id}/reset-password`, { newPassword });
+            showToast('✅ Contraseña restablecida');
+            setResetPasswordModal(null);
+            setNewPassword('');
+        } catch (err: any) {
+            alert(err.message || 'Error al restablecer la contraseña');
+        } finally {
+            setIsResettingPwd(false);
+        }
+    };
+
+    const handleCreateStaffSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (newStaffPassword.length < 8) {
+            alert('La contraseña debe tener al menos 8 caracteres');
+            return;
+        }
+        setIsCreatingStaff(true);
+        try {
+            await api.post('/auth/signup', {
+                email: newStaffEmail,
+                password: newStaffPassword,
+                full_name: newStaffName,
+                role: newStaffRole,
+            });
+            showToast('✅ Usuario Staff creado');
+            setShowNewStaffModal(false);
+            setNewStaffEmail('');
+            setNewStaffName('');
+            setNewStaffPassword('');
+            setNewStaffRole('delivery');
+            fetchUsers();
+        } catch (err: any) {
+            alert(err.message || 'Error al crear usuario staff');
+        } finally {
+            setIsCreatingStaff(false);
+        }
+    };
+
     useEffect(() => { 
         fetchUsers(); 
         fetchDeliveryUsers();
@@ -239,6 +299,12 @@ export default function AdminUsersPage() {
                             {loading ? 'Cargando...' : `${users.length} usuario${users.length !== 1 ? 's' : ''} registrado${users.length !== 1 ? 's' : ''}`}
                         </p>
                     </div>
+                    <button
+                        onClick={() => setShowNewStaffModal(true)}
+                        className="py-3 px-5 bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+                    >
+                        Nuevo Usuario
+                    </button>
                 </div>
 
                 {/* Search & Filter */}
@@ -408,6 +474,16 @@ export default function AdminUsersPage() {
                                             {selectedUser.role?.charAt(0).toUpperCase()}{selectedUser.role?.slice(1)}
                                         </span>
                                     </div>
+                                    {selectedUser.role !== 'admin' && (
+                                        <div className="pt-3 border-t border-border/50 flex justify-end">
+                                            <button
+                                                onClick={() => setResetPasswordModal(selectedUser)}
+                                                className="px-4 py-2 text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-xl hover:bg-primary/20 transition-all cursor-pointer"
+                                            >
+                                                Restablecer Contraseña
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </section>
 
@@ -761,6 +837,125 @@ export default function AdminUsersPage() {
                                     className="flex-1 py-4 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
                                 >
                                     {savingAddr ? <Loader2 size={18} className="animate-spin mx-auto" /> : 'Guardar Cambios'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Reset Password Modal */}
+            {resetPasswordModal && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setResetPasswordModal(null)} />
+                    <div className="bg-background w-full max-w-md rounded-[2.5rem] shadow-2xl relative overflow-hidden animate-zoom-in">
+                        <div className="p-8 border-b border-border flex items-center justify-between">
+                            <h2 className="text-xl font-black">Restablecer Contraseña</h2>
+                            <button onClick={() => setResetPasswordModal(null)} className="p-2 hover:bg-muted rounded-full transition-colors"><X size={20} /></button>
+                        </div>
+                        <form onSubmit={handleResetPasswordSubmit} className="p-8 space-y-4">
+                            <p className="text-xs text-muted-foreground font-medium">
+                                Restableciendo contraseña para <strong>{resetPasswordModal.profile?.full_name || resetPasswordModal.email}</strong>. El usuario tendrá que cambiarla obligatoriamente al ingresar.
+                            </p>
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-muted-foreground mb-1 block px-1">Nueva Contraseña (mín. 8 caracteres)</label>
+                                <input 
+                                    type="password" 
+                                    value={newPassword} 
+                                    onChange={e => setNewPassword(e.target.value)}
+                                    className="w-full px-4 py-3 bg-muted/40 border border-border rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                    required
+                                    minLength={8}
+                                />
+                            </div>
+                            <div className="flex gap-4 pt-4 border-t border-border">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setResetPasswordModal(null)}
+                                    className="flex-1 py-4 text-xs font-black uppercase tracking-widest border border-border rounded-2xl hover:bg-muted transition-all"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    disabled={isResettingPwd}
+                                    className="flex-1 py-4 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                                >
+                                    {isResettingPwd ? <Loader2 size={18} className="animate-spin mx-auto" /> : 'Confirmar'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* New Staff Modal */}
+            {showNewStaffModal && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowNewStaffModal(false)} />
+                    <div className="bg-background w-full max-w-md rounded-[2.5rem] shadow-2xl relative overflow-hidden animate-zoom-in">
+                        <div className="p-8 border-b border-border flex items-center justify-between">
+                            <h2 className="text-xl font-black">Nuevo Usuario Staff</h2>
+                            <button onClick={() => setShowNewStaffModal(false)} className="p-2 hover:bg-muted rounded-full transition-colors"><X size={20} /></button>
+                        </div>
+                        <form onSubmit={handleCreateStaffSubmit} className="p-8 space-y-4">
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-muted-foreground mb-1 block px-1">Nombre Completo</label>
+                                <input 
+                                    type="text" 
+                                    value={newStaffName} 
+                                    onChange={e => setNewStaffName(e.target.value)}
+                                    className="w-full px-4 py-3 bg-muted/40 border border-border rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-muted-foreground mb-1 block px-1">Email</label>
+                                <input 
+                                    type="email" 
+                                    value={newStaffEmail} 
+                                    onChange={e => setNewStaffEmail(e.target.value)}
+                                    className="w-full px-4 py-3 bg-muted/40 border border-border rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-muted-foreground mb-1 block px-1">Contraseña Temporal (mín. 8 caracteres)</label>
+                                <input 
+                                    type="password" 
+                                    value={newStaffPassword} 
+                                    onChange={e => setNewStaffPassword(e.target.value)}
+                                    className="w-full px-4 py-3 bg-muted/40 border border-border rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                                    required
+                                    minLength={8}
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-muted-foreground mb-1 block px-1">Rol</label>
+                                <select 
+                                    value={newStaffRole} 
+                                    onChange={e => setNewStaffRole(e.target.value as any)}
+                                    className="w-full px-4 py-3 bg-muted/40 border border-border rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-bold text-xs"
+                                >
+                                    <option value="delivery">Delivery</option>
+                                    <option value="produccion">Producción</option>
+                                    <option value="admin">Administrador</option>
+                                </select>
+                            </div>
+                            <div className="flex gap-4 pt-4 border-t border-border">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setShowNewStaffModal(false)}
+                                    className="flex-1 py-4 text-xs font-black uppercase tracking-widest border border-border rounded-2xl hover:bg-muted transition-all"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    disabled={isCreatingStaff}
+                                    className="flex-1 py-4 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                                >
+                                    {isCreatingStaff ? <Loader2 size={18} className="animate-spin mx-auto" /> : 'Crear Usuario'}
                                 </button>
                             </div>
                         </form>

@@ -39,6 +39,7 @@ export const metadata: Metadata = {
 import { CartProvider } from '@/context/CartContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { LanguageProvider } from '@/context/LanguageContext';
+import { AppLayoutWrapper } from '@/components/layout/AppLayoutWrapper';
 
 export default function RootLayout({
   children,
@@ -52,9 +53,11 @@ export default function RootLayout({
       >
         <LanguageProvider>
           <AuthProvider>
-            <CartProvider>
-              {children}
-            </CartProvider>
+            <AppLayoutWrapper>
+              <CartProvider>
+                {children}
+              </CartProvider>
+            </AppLayoutWrapper>
           </AuthProvider>
         </LanguageProvider>
       </body>
