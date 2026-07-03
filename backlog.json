@@ -222,7 +222,7 @@
           "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
           "status": "IN_PROGRESS",
           "audit_required": true,
-          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica.",
+          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS.",
           "veracity_hash": null
         },
         {
@@ -279,7 +279,7 @@
           "desc": "Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).",
           "status": "IN_PROGRESS",
           "audit_required": true,
-          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS."
         },
         {
           "id": "TASK-08-11",
@@ -287,7 +287,7 @@
           "desc": "Campo Nickname en entidad Profile y sincronización en reportes Excel.",
           "status": "IN_PROGRESS",
           "audit_required": true,
-          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS."
         },
         {
           "id": "TASK-08-12",
@@ -295,7 +295,7 @@
           "desc": "Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.",
           "status": "IN_PROGRESS",
           "audit_required": true,
-          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS."
         },
         {
           "id": "TASK-08-13",
@@ -303,7 +303,7 @@
           "desc": "Ordenamiento alfabético en listas del panel de administración (Clientes, Usuarios, Productos, Zonas, Rutas).",
           "status": "IN_PROGRESS",
           "audit_required": true,
-          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS."
         },
         {
           "id": "TASK-08-14",

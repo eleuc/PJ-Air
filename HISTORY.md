@@ -114,3 +114,15 @@
 | 2026-07-01 05:13 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 60b8b8b | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-01 05:13 | AI | Sentinel | db4598c | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T051344-5XJUuxV-SxWa2Fu4tH1xnz7Vr9AC5PfywDt0t5naTgo | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: 5XJUuxV-SxWa2Fu4tH1xnz7Vr9AC5PfywDt0t5naTgo |
 | 2026-07-01 05:14 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 9b599b9 | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
+| 2026-07-01 05:15 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 1a75036 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-01 05:18 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 992afe0 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-01 05:18 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | fa2bc71 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
+| 2026-07-01 05:18 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 805f17a | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
+| 2026-07-01 05:18 | AI | Sentinel | a7d3a81 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T051834-TqYOTFkmJw1F3TNoFuItvzIejCfeCsGlYJHkKdxyrn8 | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: TqYOTFkmJw1F3TNoFuItvzIejCfeCsGlYJHkKdxyrn8 |
+| 2026-07-01 05:18 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 0c50ae8 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-07-01 05:57 | AI | Sentinel | dbd42c8 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T055709-qoxtrUsSBY6U_zI9Hf8GXWc4zd_97ao9g7X_4DQ34ZY | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: qoxtrUsSBY6U_zI9Hf8GXWc4zd_97ao9g7X_4DQ34ZY |
+| 2026-07-01 06:19 | AI | Sentinel | 4e92d43 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T061926-srmC-GNPbkJ3O-M3x3jNtHnoEjWMufN1fMcp1Q8arwA | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: srmC-GNPbkJ3O-M3x3jNtHnoEjWMufN1fMcp1Q8arwA |
+| 2026-07-01 06:25 | AI | Sentinel | 2010d30 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260701T062526-NEJByxK4PStE70vSNhdSo5WtK2ffixnkK_DeAHv65wI | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: NEJByxK4PStE70vSNhdSo5WtK2ffixnkK_DeAHv65wI |
+| 2026-07-02 22:27 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | ea5a68b | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-02 22:28 | AI | GATE | 0262296 | WARNING | Handover con Drift | Handover ejecutado con drift del 100.0%. warm_start_eligible será false. |
+| 2026-07-02 22:28 | AI | 1783045719407 | 7870124 | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
