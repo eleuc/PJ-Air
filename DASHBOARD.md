@@ -1,18 +1,18 @@
 # DASHBOARD — 2.2.11
-**Generado**: 2026-07-05T19:41:23.916513
-**Profundidad de Sesión**: 🟢 BAJA (4.6%)
+**Generado**: 2026-07-05T19:42:23.752530
+**Profundidad de Sesión**: 🟢 BAJA (4.7%)
 **Integridad del Búnker**: 🟢 NOMINAL (98.9%)
 
 ## 📊 Métricas Disgregadas
 | Métrica | Valor | Umbral | Estado |
 | :--- | :--- | :--- | :--- |
-| **Profundidad (Odometer)** | 4.6% | ⚠️ 60% / 🔴 80% | 🟢 BAJA |
+| **Profundidad (Odometer)** | 4.7% | ⚠️ 60% / 🔴 80% | 🟢 BAJA |
 | **Integridad (Stability)** | 98.9% | 🔴 90% | 🟢 NOMINAL |
-| **Deriva (DNA Drift)** | 0.0% | Informativo | ℹ️ Mínima |
+| **Deriva (DNA Drift)** | 10.0% | Informativo | 🟡 Moderada |
 | **Densidad (Swelling)** | 3/36 | 🔴 >36 | 🟢 NOMINAL |
-| **Turnos Activos** | 35 | — | 🔄 Acumulativo |
-| **Carga Volumétrica** | 119.4 KB | 1.9 MB | 📦 Volumétrico |
-| **Ventana de Contexto** | 10.3% | ⚠️ 30% / 🔴 70% | 🟢 BAJA |
+| **Turnos Activos** | 37 | — | 🔄 Acumulativo |
+| **Carga Volumétrica** | 123.4 KB | 1.9 MB | 📦 Volumétrico |
+| **Ventana de Contexto** | 10.5% | ⚠️ 30% / 🔴 70% | 🟢 BAJA |
 | **Plataforma (Native)** | unknown | Windows | 🟢 NATIVE |
 
 ## 🚢 Fleet Status (Multi-Node)
@@ -33,7 +33,7 @@ Total: **0** capacidades activas en **0** nodos.
 - **Isomorphism**: CERTIFIED
 - **Kernel Version**: 2.2.11
 - **Node Isolation**: ACTIVE
-- **Git Trace**: `master` @ `450da521` (⚠️ Dirty)
+- **Git Trace**: `master` @ `119ba34d` (⚠️ Dirty)
 
 ---
 *Actualizado via VOLUMETRIC-TELEMETRY v1.0 — TASK-08-01 [TECH/DOMAIN]*
