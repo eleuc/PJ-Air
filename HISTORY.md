@@ -139,3 +139,48 @@
 | 2026-07-05 18:02 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 6dcae91 | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
 | 2026-07-05 18:02 | AI | Sentinel | a711a7d | CHALLENGE_ISSUED | 0334bc53ee8136ee30881132eb79cd49391d9098f2322628a61eed6c55461f3e | Level: GATE-1 | Project: PJ_AIR | Nonce: l6vCg763ncSIzb0LrLiDqlJFYYpk5YdDJC9x6H5Zue4 |
 | 2026-07-05 18:02 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | a6703be | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 18:02 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 05b96be | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
+| 2026-07-05 18:03 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | c6715d5 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-07-05 19:11 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | c30d259 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:14 | AI | RED | 5fdd712 | ALERT | TEST-FAIL | Pruebas unitarias fallidas durante el baseline. |
+| 2026-07-05 19:15 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d0e3785 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:16 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | f30cec2 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:16 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 810e111 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:17 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 8528c01 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:17 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | b345272 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:17 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | b5f703f | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:18 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 8d86cd3 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:18 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 9f5f21a | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:18 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 35104e1 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:22 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | e3ed7f7 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
+| 2026-07-05 19:24 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 3b0f035 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:28 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 79b21b0 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:29 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 7289772 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:29 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 214cdda | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:29 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | b1ed4fd | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:30 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 665760b | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:31 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 7247c26 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:32 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 3698844 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:33 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | f1637a5 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:33 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 85ebabb | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:34 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 4fa4fa6 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:34 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 5d11692 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:36 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 3966a5e | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:37 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 34b0180 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:38 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 3cc6309 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:39 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | f3b3aa0 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:40 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 35935d2 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:40 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 8d38664 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:41 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | ff08ff1 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:41 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d6feac3 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:42 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 500c278 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:42 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 6ecbdfa | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:42 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 4179e11 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:43 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d873f73 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:43 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | cdb6dab | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:43 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | e8e8a58 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:44 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d980419 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
+| 2026-07-05 19:44 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | cca41e1 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:45 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d49c226 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:47 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 17c6159 | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
+| 2026-07-05 19:47 | AI | Sentinel | e2f57d8 | CHALLENGE_ISSUED | df5fbd6dbc4cd2c67662da7dadd64e4e8ee18b6d6ab5239a0bce5f38b1c5f30d | Level: GATE-1 | Project: PJ_AIR | Nonce: B9bLazOUkulK4k5Bpn3h61YJTZ7Nb3MvEfN2R8NJ83k |

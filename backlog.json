@@ -4,7 +4,7 @@
   "kernel_version": "2.2.11",
   "status": "COMPLETED",
   "current_sprint": "S09-QOL",
-  "current_task": null,
+  "current_task": "TASK-09-05",
   "sprints": [
     {
       "id": "S01-INCEPTION",
@@ -386,7 +386,7 @@
     {
       "id": "S09-QOL",
       "name": "Sprint 09: Correcciones de Usabilidad y Reportes (QoL)",
-      "status": "COMPLETED",
+      "status": "IN_PROGRESS",
       "start_date": "2026-07-03",
       "goal": "Atender bugs y mejoras de calidad de vida reportadas que afectan la experiencia del administrador y la consistencia de los datos.",
       "tasks": [
@@ -422,7 +422,7 @@
           "id": "TASK-09-05",
           "label": "TECH/DOMAIN",
           "desc": "Alineación de Base de Datos Local y Corrección de Herramientas.",
-          "status": "DONE",
+          "status": "IN_PROGRESS",
           "detail_doc": "vault/runtime/detail_docs/TASK-09-05.md"
         }
       ]
