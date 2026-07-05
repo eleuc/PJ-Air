@@ -25,6 +25,8 @@ test.describe('TASK-08-19 — Password Management E2E Flow', () => {
 
     await page.goto(`${FRONTEND_URL}/admin/clients`);
     await page.waitForTimeout(2000);
+    await page.locator('input[placeholder*="Buscar por nombre"]').fill(RUBEN_EMAIL);
+    await page.waitForTimeout(1000);
 
     // Search or find a client card/row
     const clientRow = page.locator('tr').filter({ hasText: RUBEN_EMAIL }).first();
@@ -43,6 +45,8 @@ test.describe('TASK-08-19 — Password Management E2E Flow', () => {
 
     await page.goto(`${FRONTEND_URL}/admin/clients`);
     await page.waitForTimeout(2000);
+    await page.locator('input[placeholder*="Buscar por nombre"]').fill(RUBEN_EMAIL);
+    await page.waitForTimeout(1000);
 
     const clientRow = page.locator('tr').filter({ hasText: RUBEN_EMAIL }).first();
     await clientRow.locator('button:has-text("Editar")').click();
@@ -189,6 +193,8 @@ test.describe('TASK-08-19 — Password Management E2E Flow', () => {
     // 2. Check clients view shows RUBEN-NICK (Ruben Dario)
     await page.goto(`${FRONTEND_URL}/admin/clients`);
     await page.waitForTimeout(3000);
+    await page.locator('input[placeholder*="Buscar por nombre"]').fill(RUBEN_EMAIL);
+    await page.waitForTimeout(1000);
     await expect(page.locator('text=RUBEN-NICK (Ruben Dario)').first()).toBeVisible();
   });
 });

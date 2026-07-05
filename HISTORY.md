@@ -126,3 +126,16 @@
 | 2026-07-02 22:27 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | ea5a68b | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-02 22:28 | AI | GATE | 0262296 | WARNING | Handover con Drift | Handover ejecutado con drift del 100.0%. warm_start_eligible será false. |
 | 2026-07-02 22:28 | AI | 1783045719407 | 7870124 | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
+| 2026-07-05 01:50 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 6e9e0d4 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 01:50 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | d5281aa | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
+| 2026-07-05 01:50 | AI | Sentinel | 02d0192 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260705T015022-FIIbiWZhiLZlvBTl9H7hEhGocvPhYQ72pEeGkqCdJlA | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: FIIbiWZhiLZlvBTl9H7hEhGocvPhYQ72pEeGkqCdJlA |
+| 2026-07-05 01:50 | AI | Sentinel | ba5ec8e | CHALLENGE_ISSUED | GATE-GOLD-AUTH-PJ_AIR-20260705T015023-nFRJr1ZPHyBvAUKk4T7DlxivIcO53wi9ZqK-yshQlsk | Level: GATE-GOLD | Project: PJ_AIR | Nonce: nFRJr1ZPHyBvAUKk4T7DlxivIcO53wi9ZqK-yshQlsk |
+| 2026-07-05 01:51 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 2651e4e | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-07-05 17:56 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | f6e8bbc | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 17:56 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | febba1b | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
+| 2026-07-05 17:56 | AI | Sentinel | 83da8e2 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260705T175659-dMGoBS6VbGoP8E9QFCeaxuWsBDBUh7GGMz26ewSWmXI | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: dMGoBS6VbGoP8E9QFCeaxuWsBDBUh7GGMz26ewSWmXI |
+| 2026-07-05 17:57 | AI | Sentinel | bb8788f | CHALLENGE_ISSUED | GATE-GOLD-AUTH-PJ_AIR-20260705T175704-2jIA7G5_P5Re1Y_RjRNHYRpJQvKKo8RNBhtJpRVocmk | Level: GATE-GOLD | Project: PJ_AIR | Nonce: 2jIA7G5_P5Re1Y_RjRNHYRpJQvKKo8RNBhtJpRVocmk |
+| 2026-07-05 17:57 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 12515e8 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-07-05 18:02 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 6dcae91 | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
+| 2026-07-05 18:02 | AI | Sentinel | a711a7d | CHALLENGE_ISSUED | 0334bc53ee8136ee30881132eb79cd49391d9098f2322628a61eed6c55461f3e | Level: GATE-1 | Project: PJ_AIR | Nonce: l6vCg763ncSIzb0LrLiDqlJFYYpk5YdDJC9x6H5Zue4 |
+| 2026-07-05 18:02 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | a6703be | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |

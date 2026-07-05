@@ -92,11 +92,8 @@ test.describe('S03 — CRUD de Productos y Soft Delete', () => {
     // Nombre (placeholder: "Ej: Croissant de Mantequilla")
     await page.locator('input[placeholder*="Croissant de Mantequilla"]').fill(uniqueName);
 
-    // Categoría ES (placeholder: "Ej: Croissants") — first one
-    await page.locator('input[placeholder="Ej: Croissants"]').first().fill('Croissants');
-
-    // Categoría EN (placeholder: "Ej: Croissants") — second one
-    await page.locator('input[placeholder="Ej: Croissants"]').nth(1).fill('Croissants');
+    // Categoría (select dropdown)
+    await page.locator('select').first().selectOption({ index: 1 });
 
     // Precio (type="number", placeholder: "0.00")
     await page.locator('input[type="number"][placeholder="0.00"]').fill('3.50');

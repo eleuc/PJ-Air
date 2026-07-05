@@ -4,6 +4,8 @@ import { UsersService } from '../users/users.service';
 import { UnauthorizedException, ConflictException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { hashPassword, verifyJwt } from './crypto.util';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { SystemConfig } from '../system-configs/system-config.entity';
 
 jest.mock('nodemailer');
 
@@ -21,11 +23,17 @@ describe('AuthService', () => {
     updatePassword: jest.fn(),
   };
 
+  const mockSystemConfigRepository = {
+    findOne: jest.fn().mockResolvedValue(null),
+    delete: jest.fn().mockResolvedValue(true),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: UsersService, useValue: mockUsersService },
+        { provide: getRepositoryToken(SystemConfig), useValue: mockSystemConfigRepository },
       ],
     }).compile();
 
@@ -112,13 +120,15 @@ describe('AuthService', () => {
   describe('changePassword', () => {
     it('should throw UnauthorizedException if current password is wrong', async () => {
       const hashedPassword = hashPassword('oldpassword');
-      mockUsersService.findOne.mockResolvedValue({ id: '1', password: hashedPassword });
+      mockUsersService.findOne.mockResolvedValue({ id: '1', email: 'test@example.com', password: hashedPassword });
+      mockUsersService.findByEmailWithRole.mockResolvedValue({ id: '1', email: 'test@example.com', password: hashedPassword });
       await expect(service.changePassword('1', 'wrongpassword', 'newpassword')).rejects.toThrow(UnauthorizedException);
     });
 
     it('should update password and return success message', async () => {
       const hashedPassword = hashPassword('oldpassword');
-      mockUsersService.findOne.mockResolvedValue({ id: '1', password: hashedPassword });
+      mockUsersService.findOne.mockResolvedValue({ id: '1', email: 'test@example.com', password: hashedPassword });
+      mockUsersService.findByEmailWithRole.mockResolvedValue({ id: '1', email: 'test@example.com', password: hashedPassword });
       mockUsersService.updatePassword.mockResolvedValue(true);
       const result = await service.changePassword('1', 'oldpassword', 'newpassword');
       expect(mockUsersService.updatePassword).toHaveBeenCalled();

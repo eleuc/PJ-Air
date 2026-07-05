@@ -2,9 +2,9 @@
   "project": "pj-air",
   "version": "2.2.11",
   "kernel_version": "2.2.11",
-  "status": "IN_PROGRESS",
-  "current_sprint": "S08-PAYMENTS-ACCOUNTING",
-  "current_task": "TASK-08-02",
+  "status": "COMPLETED",
+  "current_sprint": "S09-QOL",
+  "current_task": "TASK-09-05",
   "sprints": [
     {
       "id": "S01-INCEPTION",
@@ -380,6 +380,50 @@
           "status": "DONE",
           "detail_doc": "vault/runtime/detail_docs/TASK-08-22.md",
           "veracity_hash": null
+        }
+      ]
+    },
+    {
+      "id": "S09-QOL",
+      "name": "Sprint 09: Correcciones de Usabilidad y Reportes (QoL)",
+      "status": "COMPLETED",
+      "start_date": "2026-07-03",
+      "goal": "Atender bugs y mejoras de calidad de vida reportadas que afectan la experiencia del administrador y la consistencia de los datos.",
+      "tasks": [
+        {
+          "id": "TASK-09-01",
+          "label": "TECH/DOMAIN",
+          "desc": "Bugfix: Guardar Costo Mínimo de Compra.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-09-01.md"
+        },
+        {
+          "id": "TASK-09-02",
+          "label": "TECH/UI",
+          "desc": "Refactor: Ordenamiento Jerárquico de Productos.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-09-02.md"
+        },
+        {
+          "id": "TASK-09-03",
+          "label": "TECH/DOMAIN",
+          "desc": "Mejora: Usar Nickname en Hojas de Reportes Excel.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-09-03.md"
+        },
+        {
+          "id": "TASK-09-04",
+          "label": "TECH/DOMAIN",
+          "desc": "Bugfix: Desajuste de Rutas de Subida (Uploads Mismatch) en Controladores.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-09-04.md"
+        },
+        {
+          "id": "TASK-09-05",
+          "label": "TECH/DOMAIN",
+          "desc": "Alineación de Base de Datos Local y Corrección de Herramientas.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-09-05.md"
         }
       ]
     }

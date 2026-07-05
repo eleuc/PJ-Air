@@ -33,6 +33,7 @@ describe('api.get()', () => {
     await api.get('/products');
     expect(mockFetch).toHaveBeenCalledWith(
       expect.stringContaining('/products'),
+      expect.any(Object),
     );
   });
 

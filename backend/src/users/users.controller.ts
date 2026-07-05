@@ -2,8 +2,9 @@ import { Controller, Get, Patch, Post, Param, Body, NotFoundException, UseInterc
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname, join } from 'path';
+import { extname, join, resolve } from 'path';
 import * as fs from 'fs';
+import { UPLOAD_PATH } from '../config';
 
 @Controller('users')
 export class UsersController {
@@ -34,8 +35,7 @@ export class UsersController {
     FileInterceptor('file', {
       storage: diskStorage({
         destination: (req, file, cb) => {
-          // process.cwd() is [root]/backend
-          const uploadPath = join(process.cwd(), 'uploads', 'avatars');
+          const uploadPath = join(resolve(UPLOAD_PATH), 'avatars');
           if (!fs.existsSync(uploadPath)) {
             fs.mkdirSync(uploadPath, { recursive: true });
           }

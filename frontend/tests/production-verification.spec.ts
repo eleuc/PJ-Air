@@ -52,6 +52,8 @@ test.describe('PROD — Verificación Visual de Producción', () => {
 
     await page.goto(`${FRONTEND_URL}/admin/clients`);
     await page.waitForTimeout(3000);
+    await page.locator('input[placeholder*="Buscar por nombre"]').fill(CLIENT_EMAIL);
+    await page.waitForTimeout(1000);
 
     await page.screenshot({ path: 'test-results/prod-03-admin-clients.png', fullPage: true });
 

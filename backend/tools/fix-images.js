@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 
-const IMAGES_DIR = path.join(__dirname, '../uploads/products');
+const IMAGES_DIR = path.join(__dirname, '../../uploads/products');
 const DB_PATHS = [
     path.join(__dirname, '../database.sqlite'),
     path.join(__dirname, '../../database.sqlite')

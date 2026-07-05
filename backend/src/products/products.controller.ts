@@ -1,9 +1,10 @@
 import { Controller, Post, Get, Body, Param, Patch, Delete, UseInterceptors, UploadedFiles, UploadedFile, BadRequestException } from '@nestjs/common';
 import { FilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname, join } from 'path';
+import { extname, join, resolve } from 'path';
 import * as fs from 'fs';
 import { ProductsService } from './products.service';
+import { UPLOAD_PATH } from '../config';
 
 @Controller('products')
 export class ProductsController {
@@ -65,8 +66,7 @@ export class ProductsController {
     @UseInterceptors(FileInterceptor('file', {
         storage: diskStorage({
             destination: (req, file, cb) => {
-                // process.cwd() is [root]/backend
-                const uploadPath = join(process.cwd(), 'uploads', 'products');
+                const uploadPath = join(resolve(UPLOAD_PATH), 'products');
                 if (!fs.existsSync(uploadPath)) {
                     fs.mkdirSync(uploadPath, { recursive: true });
                 }
