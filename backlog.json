@@ -422,7 +422,7 @@
           "id": "TASK-09-05",
           "label": "TECH/DOMAIN",
           "desc": "Alineación de Base de Datos Local y Corrección de Herramientas.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "detail_doc": "vault/runtime/detail_docs/TASK-09-05.md"
         }
       ]
