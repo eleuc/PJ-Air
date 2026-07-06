@@ -3,7 +3,7 @@
   "version": "2.2.11",
   "kernel_version": "2.2.11",
   "status": "COMPLETED",
-  "current_sprint": "S09-QOL",
+  "current_sprint": "S10-PAYMENTS-DEBT",
   "current_task": "TASK-09-05",
   "sprints": [
     {
@@ -398,7 +398,7 @@
     {
       "id": "S09-QOL",
       "name": "Sprint 09: Correcciones de Usabilidad y Reportes (QoL)",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETED",
       "start_date": "2026-07-03",
       "goal": "Atender bugs y mejoras de calidad de vida reportadas que afectan la experiencia del administrador y la consistencia de los datos.",
       "tasks": [
@@ -442,7 +442,7 @@
     {
       "id": "S10-PAYMENTS-DEBT",
       "name": "Sprint 10: Reintegración de Pasarelas de Pago y Xero (Deuda Técnica)",
-      "status": "PLANNED",
+      "status": "IN_PROGRESS",
       "start_date": "2026-07-10",
       "goal": "Reintegrar y probar los archivos exiliados en purgatory para Stripe, PayPal y Xero.",
       "tasks": [

@@ -299,5 +299,12 @@
     "exile_name": "1783293277160_update_remote_images.sql",
     "hash": "03D8C67DDF7E2A726EC31259B8CFB2CDCCED2AA3903C02D80651A567D84B9A46",
     "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\update_remote_images.sql"
+  },
+  {
+    "timestamp": "2026-07-05T23:14:10.724202",
+    "original_name": "database.sqlite",
+    "exile_name": "1783307650662_database.sqlite",
+    "hash": "D5CE69CCDA6E7B67529D43AA4D57EC13F8CF70E5CF370F2D59B73C5519FFF7C1",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\database.sqlite"
   }
 ]
