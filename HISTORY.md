@@ -1,7 +1,5 @@
 | Timestamp | Role | SessionID | PrevHash | Type | Task | Detail |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-06-28 03:34 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | efd0cd7 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-06-28 03:34 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | bf852ce | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
 | 2026-06-28 03:35 | AI | Sentinel | e19a6b3 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260628T033510-6evuZ-KolwC5PQfKja7XfByQa95G2QHEHrGjDM4o_1o | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: 6evuZ-KolwC5PQfKja7XfByQa95G2QHEHrGjDM4o_1o |
 | 2026-06-28 03:36 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 59cde68 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
 | 2026-06-28 04:37 | AI | Sentinel | f20e304 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260628T043703-HTURuuXv8G4_VhYoGbRKIsMRmo9rpWSKBifKYPGkKHg | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: HTURuuXv8G4_VhYoGbRKIsMRmo9rpWSKBifKYPGkKHg |
@@ -200,3 +198,5 @@
 | 2026-07-05 23:18 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d89e7d4 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
 | 2026-07-05 23:19 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | be4dc89 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-05 23:22 | AI | 1783308161514 | 2090692 | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
+| 2026-07-05 23:25 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 50a521d | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 23:25 | AI | 1783308326913 | b7106ae | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
