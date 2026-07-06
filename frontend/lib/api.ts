@@ -12,7 +12,7 @@ async function handleResponse(response: Response) {
     }
   }
 
-  if (response.status === 401) {
+  if (response.status === 401 && !response.url.includes('/auth/login')) {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('local_session');
       const currentPath = window.location.pathname;
