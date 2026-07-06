@@ -1,14 +1,5 @@
 | Timestamp | Role | SessionID | PrevHash | Type | Task | Detail |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-06-21 18:00 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 0000000 | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
-| 2026-06-21 22:20 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | c126642 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
-| 2026-06-21 22:20 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 0937df1 | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
-| 2026-06-21 22:20 | AI | Sentinel | 3793450 | CHALLENGE_ISSUED | GATE-1-AUTH-PJ_AIR-20260621T222052-DDiIkeIYWbr6Ih4aT9chyNvr0ravFXs_dEQI54j95d8 | Level: GATE-1 | Project: PJ_AIR | Nonce: DDiIkeIYWbr6Ih4aT9chyNvr0ravFXs_dEQI54j95d8 |
-| 2026-06-21 22:20 | AI | Sentinel | e5dbc4a | CHALLENGE_ISSUED | GATE-GOLD-AUTH-PJ_AIR-20260621T222054-Tup9oJDf9h3WHMaj_mCts4_2ZfGL7YVqd58uLIpZ0uU | Level: GATE-GOLD | Project: PJ_AIR | Nonce: Tup9oJDf9h3WHMaj_mCts4_2ZfGL7YVqd58uLIpZ0uU |
-| 2026-06-21 22:20 | AI | Sentinel | 9b80736 | CHALLENGE_ISSUED | GATE-GOLD-AUTH-PJ_AIR-20260621T222055-YYNeFAI4zPtTxjy1AM6Rkk8OVqUbqNkrMZSSJ6VcBMU | Level: GATE-GOLD | Project: PJ_AIR | Nonce: YYNeFAI4zPtTxjy1AM6Rkk8OVqUbqNkrMZSSJ6VcBMU |
-| 2026-06-21 22:21 | AI | Sentinel | 71454c3 | CHALLENGE_ISSUED | d119ef4b4d2c92239c8da597bc51f9abe90263effc02714a433a9a6261675687 | Level: GATE-1 | Project: PJ_AIR | Nonce: tVX6nUlpN8qL3rYop5siADBfG5-ix4aSGdakwcVu_-0 |
-| 2026-06-22 00:30 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 69e1cc1 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-06-22 00:30 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | ba1223a | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
 | 2026-06-22 00:30 | AI | Sentinel | 23c71ad | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260622T003041-wlDLv7SNIHw8Z7YuwubODaBnfrujdUozrWGPfHYybAA | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: wlDLv7SNIHw8Z7YuwubODaBnfrujdUozrWGPfHYybAA |
 | 2026-06-22 11:43 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 0c21308 | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
 | 2026-06-22 11:43 | AI | Sentinel | ce58c7f | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260622T114338-cvRz2WCztKFbqMKwCR_dV1uRK53JeFp4-Yz7PforWYs | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: cvRz2WCztKFbqMKwCR_dV1uRK53JeFp4-Yz7PforWYs |
@@ -184,3 +175,28 @@
 | 2026-07-05 19:45 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d49c226 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-05 19:47 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 17c6159 | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
 | 2026-07-05 19:47 | AI | Sentinel | e2f57d8 | CHALLENGE_ISSUED | df5fbd6dbc4cd2c67662da7dadd64e4e8ee18b6d6ab5239a0bce5f38b1c5f30d | Level: GATE-1 | Project: PJ_AIR | Nonce: B9bLazOUkulK4k5Bpn3h61YJTZ7Nb3MvEfN2R8NJ83k |
+| 2026-07-05 19:47 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | ab0d499 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:48 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d3dcf88 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:48 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 8389bbd | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:49 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 0aa5acc | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:49 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 83e0f5d | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:49 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | f6d6b86 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:49 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 24aad4a | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:50 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 4809753 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:50 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d73881e | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:50 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | c96705e | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:51 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | f254737 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:51 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 8223634 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:51 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 619b6f0 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:52 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 56a7a48 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:52 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | b903cb4 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:53 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 067122d | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:53 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 1fbaa4e | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:54 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 2991331 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:54 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 791576e | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 19:57 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 59c8017 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
+| 2026-07-05 19:58 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | e88efad | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-05 19:58 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 24e07fa | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
+| 2026-07-05 19:58 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 813b0d7 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-07-05 19:59 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 6e98763 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
+| 2026-07-05 20:01 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 8100555 | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |

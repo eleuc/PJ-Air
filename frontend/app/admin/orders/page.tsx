@@ -231,7 +231,11 @@ export default function AdminOrdersPage() {
             o.user?.email.toLowerCase().includes(q) ||
             o.user?.profile?.full_name?.toLowerCase().includes(q) ||
             o.items?.some(item => item.product?.name?.toLowerCase().includes(q)) ||
-            o.items?.some(item => item.product?.category?.toLowerCase().includes(q));
+            o.items?.some(item => {
+                const catObj = item.product?.category;
+                const catName = typeof catObj === 'object' && catObj ? (catObj as { name: string }).name : (catObj || '');
+                return catName.toLowerCase().includes(q);
+            });
         const matchesStatus = statusFilter === 'Todos' || o.status === statusFilter;
         const orderDate = new Date(o.created_at).toISOString().split('T')[0];
         const matchesStart = !startDate || orderDate >= startDate;
@@ -245,7 +249,8 @@ export default function AdminOrdersPage() {
         const items = order.items || [];
         const grouped: Record<string, OrderItem[]> = {};
         items.forEach(item => {
-            const cat = item.product?.category || 'Sin categoría';
+            const catObj = item.product?.category;
+            const cat = typeof catObj === 'object' && catObj ? (catObj as { name: string }).name : (catObj || 'Sin categoría');
             if (!grouped[cat]) grouped[cat] = [];
             grouped[cat].push(item);
         });
