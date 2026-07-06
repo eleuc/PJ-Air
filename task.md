@@ -1,9 +1,6 @@
 # SPRINT S08-PAYMENTS-ACCOUNTING - Sprint 08: Integración de Pasarelas de Pago y Xero
 **Objetivo**: Implementar flujo de pago híbrido con Stripe y PayPal, y sincronización contable asíncrona con Xero.
-**Fecha**: 2026-07-02
-# SPRINT S09-QOL - Sprint 09: Correcciones de Usabilidad y Reportes (QoL)
-**Objetivo**: Atender bugs y mejoras de calidad de vida reportadas que afectan la experiencia del administrador y la consistencia de los datos.
-**Fecha**: 2026-07-03
+**Fecha**: 2026-07-05
 
 - [x] **TASK-08-01** [TECH/DOMAIN] Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.
 - [x] **TASK-08-02** [TECH/DOMAIN] Infraestructura DB: Tabla 'payments', tokens de Xero y expansión de status en Orders.
@@ -27,21 +24,3 @@
 - [x] **TASK-08-20** [TECH/UI] Habilitar formulario de cambio de contraseña para personal Staff (delivery y producción) en sus respectivas vistas de settings.
 - [x] **TASK-08-21** [UI/DOMAIN] Auditoría e integración del Nickname (campo nickname en perfiles de clientes) en las vistas internas del panel de administración (listados de órdenes, clientes) y validación de consistencia en reportes Excel.
 - [x] **TASK-08-22** [TECH/TEST] Suite de pruebas automatizadas (Jest y Playwright) para el cambio de contraseña de staff y visualización interna del nickname.
-- [x] **TASK-09-01** [TECH/DOMAIN] **Bugfix: Guardar Costo Mínimo de Compra.**
-    *   **Detalle**: Investigar y corregir el error que impide guardar el valor de "costo mínimo de compra" desde el panel de `Settings`. Implica revisar el controlador `PATCH /settings` en el backend y el servicio que lo consume en el frontend.
-
-- [x] **TASK-09-02** [TECH/UI] **Refactor: Ordenamiento Jerárquico de Productos.**
-    *   **Detalle**: Modificar las vistas and fuentes de datos de productos (listas de admin, reportes) para que se ordenen primero por nombre de categoría (A-Z) y luego por nombre de producto (A-Z) dentro de cada categoría.
-
-- [x] **TASK-09-03** [TECH/DOMAIN] **Mejora: Usar Nickname en Hojas de Reportes Excel.**
-    *   **Detalle**: Actualizar el módulo de generación de reportes Excel para que, además de usar el `nickname` en el contenido, lo utilice para nombrar las hojas de cálculo individuales de cada usuario, mejorando la navegabilidad de los reportes.
-
-- [x] **TASK-09-04** [TECH/DOMAIN] **Bugfix: Desajuste de Rutas de Subida (Uploads Mismatch) en Controladores.**
-    *   **Detalle**: Modificar ProductsController y UsersController en el backend para utilizar la ruta dinámica centralizada UPLOAD_PATH en lugar del path hardcodeado process.cwd() + '/uploads'.
-
-- [x] **TASK-09-05** [TECH/DOMAIN] **Alineación de Base de Datos Local y Corrección de Herramientas.**
-    *   **Detalle**: Restaurar base de datos de producción en la raíz, eliminar base de datos duplicada en backend/, extraer imágenes de productos y corregir rutas relativas en scripts de backend/tools/.
-
-
-
-

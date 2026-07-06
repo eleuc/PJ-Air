@@ -220,7 +220,7 @@
           "id": "TASK-08-01",
           "label": "TECH/DOMAIN",
           "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "audit_required": true,
           "audit_reason": "Sesión cerrada con tareas IN_PROGRESS.",
           "veracity_hash": null
@@ -229,81 +229,93 @@
           "id": "TASK-08-02",
           "label": "TECH/DOMAIN",
           "desc": "Infraestructura DB: Tabla 'payments', tokens de Xero y expansión de status en Orders.",
-          "status": "TODO"
+          "status": "DONE",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-03",
           "label": "TECH/DOMAIN",
           "desc": "Módulo de Pagos Backend: Setup SDKs Stripe & PayPal y Controladores de Intención de Pago.",
-          "status": "TODO"
+          "status": "DONE",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-04",
           "label": "TECH/UI",
           "desc": "Frontend: Integración de Stripe Elements (Interfaz Segura de Tarjetas).",
-          "status": "TODO"
+          "status": "DONE",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-05",
           "label": "TECH/UI",
           "desc": "Frontend: Integración de PayPal Smart Buttons.",
-          "status": "TODO"
+          "status": "DONE",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-06",
           "label": "TECH/DOMAIN",
           "desc": "Webhooks de Pasarelas: Recepción segura y actualización de estados en DB.",
-          "status": "TODO"
+          "status": "DONE",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-07",
           "label": "TECH/DOMAIN",
           "desc": "Autenticación Xero: Módulo OAuth 2.0, Almacenamiento y Refresco de Tokens.",
-          "status": "TODO"
+          "status": "DONE",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-08",
           "label": "TECH/DOMAIN",
           "desc": "Sincronización Xero: Lógica de negocio (Customers, Invoices y Payments).",
-          "status": "TODO"
+          "status": "DONE",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-09",
           "label": "TECH/DOMAIN",
           "desc": "Cola de Tareas (Queue): Orquestación asíncrona entre Pagos y Sincronización Xero.",
-          "status": "TODO"
+          "status": "DONE",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-10",
           "label": "TECH/DOMAIN",
           "desc": "Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "audit_required": true,
-          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS."
+          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS.",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-11",
           "label": "TECH/DOMAIN",
           "desc": "Campo Nickname en entidad Profile y sincronización en reportes Excel.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "audit_required": true,
-          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS."
+          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS.",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-12",
           "label": "UI/TEST",
           "desc": "Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "audit_required": true,
-          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS."
+          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS.",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-13",
           "label": "UI",
           "desc": "Ordenamiento alfabético en listas del panel de administración (Clientes, Usuarios, Productos, Zonas, Rutas).",
-          "status": "IN_PROGRESS",
+          "status": "DONE",
           "audit_required": true,
-          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS."
+          "audit_reason": "Sesión cerrada con tareas IN_PROGRESS.",
+          "veracity_hash": null
         },
         {
           "id": "TASK-08-14",
