@@ -25,29 +25,7 @@ export declare class AuthController {
             };
         };
     }>;
-    login(body: any): Promise<{
-        user: {
-            id: string;
-            email: string;
-            app_metadata: {};
-            user_metadata: {
-                full_name: string;
-                role: any;
-            };
-            aud: string;
-            created_at: string;
-        };
-        session: {
-            access_token: string;
-            refresh_token: string;
-            expires_in: number;
-            token_type: string;
-            user: {
-                id: string;
-                email: string;
-            };
-        };
-    }>;
+    login(body: any): Promise<any>;
     recoverPassword(body: {
         identifier: string;
     }): Promise<{

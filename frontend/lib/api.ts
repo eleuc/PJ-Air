@@ -15,7 +15,10 @@ async function handleResponse(response: Response) {
   if (response.status === 401) {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('local_session');
-      window.location.href = '/auth/login';
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/auth/login' && currentPath !== '/auth/register') {
+        window.location.href = '/auth/login';
+      }
     }
     throw new Error('Sesión expirada. Por favor, inicia sesión de nuevo.');
   }

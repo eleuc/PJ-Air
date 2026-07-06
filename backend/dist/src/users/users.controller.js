@@ -52,6 +52,7 @@ const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
 const path_1 = require("path");
 const fs = __importStar(require("fs"));
+const config_1 = require("../config");
 let UsersController = class UsersController {
     usersService;
     constructor(usersService) {
@@ -143,7 +144,7 @@ __decorate([
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
         storage: (0, multer_1.diskStorage)({
             destination: (req, file, cb) => {
-                const uploadPath = (0, path_1.join)(process.cwd(), 'uploads', 'avatars');
+                const uploadPath = (0, path_1.join)((0, path_1.resolve)(config_1.UPLOAD_PATH), 'avatars');
                 if (!fs.existsSync(uploadPath)) {
                     fs.mkdirSync(uploadPath, { recursive: true });
                 }

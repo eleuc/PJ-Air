@@ -41,21 +41,29 @@ var __importStar = (this && this.__importStar) || (function () {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
 const users_service_1 = require("../users/users.service");
+const system_config_entity_1 = require("../system-configs/system-config.entity");
 const nodemailer = __importStar(require("nodemailer"));
 const crypto = __importStar(require("crypto"));
 const config_1 = require("../config");
 const crypto_util_1 = require("./crypto.util");
 let AuthService = class AuthService {
     usersService;
-    constructor(usersService) {
+    systemConfigRepository;
+    constructor(usersService, systemConfigRepository) {
         this.usersService = usersService;
+        this.systemConfigRepository = systemConfigRepository;
     }
     async signup(body) {
-        const { email, password, full_name, username, phone, company_name } = body;
+        const { email, password, full_name, username, phone, company_name, role } = body;
         const existingUser = await this.usersService.findByEmail(email);
         if (existingUser)
             throw new common_1.ConflictException('Email already registered');
@@ -63,16 +71,17 @@ let AuthService = class AuthService {
         const userResult = await this.usersService.create({
             email,
             password: hashedPassword,
+            role: role || 'client',
         });
         const user = Array.isArray(userResult) ? userResult[0] : userResult;
         await this.usersService.createProfile({
             id: user.id,
             full_name,
-            username,
+            username: username || email.split('@')[0],
             phone,
             company_name,
         });
-        const payload = { id: user.id, email: user.email, role: 'client' };
+        const payload = { id: user.id, email: user.email, role: user.role };
         const access_token = (0, crypto_util_1.signJwt)(payload);
         return {
             message: 'User registered successfully',
@@ -130,7 +139,10 @@ let AuthService = class AuthService {
         const role = user.role || 'client';
         const payload = { id: user.id, email: user.email, role };
         const access_token = (0, crypto_util_1.signJwt)(payload);
-        return {
+        const forcePwdChange = await this.systemConfigRepository.findOne({
+            where: { key: `force_pwd_change:${user.id}` }
+        });
+        const response = {
             user: {
                 id: user.id,
                 email: user.email,
@@ -150,6 +162,10 @@ let AuthService = class AuthService {
                 user: { id: user.id, email: user.email },
             }
         };
+        if (forcePwdChange && forcePwdChange.value === 'true') {
+            response.require_password_change = true;
+        }
+        return response;
     }
     async recoverPassword(identifier) {
         const user = await this.usersService.findByEmail(identifier) ||
@@ -240,7 +256,8 @@ let AuthService = class AuthService {
         }
     }
     async changePassword(userId, currentPassword, newPassword) {
-        const user = await this.usersService.findOne(userId);
+        const tempUser = await this.usersService.findOne(userId);
+        const user = await this.usersService.findByEmailWithRole(tempUser.email);
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid current password');
         }
@@ -262,6 +279,8 @@ let AuthService = class AuthService {
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_service_1.UsersService])
+    __param(1, (0, typeorm_1.InjectRepository)(system_config_entity_1.SystemConfig)),
+    __metadata("design:paramtypes", [users_service_1.UsersService,
+        typeorm_2.Repository])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

@@ -1,7 +1,10 @@
+import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
+import { SystemConfig } from '../system-configs/system-config.entity';
 export declare class AuthService {
     private usersService;
-    constructor(usersService: UsersService);
+    private systemConfigRepository;
+    constructor(usersService: UsersService, systemConfigRepository: Repository<SystemConfig>);
     signup(body: any): Promise<{
         message: string;
         user: {
@@ -25,29 +28,7 @@ export declare class AuthService {
             };
         };
     }>;
-    login(identifierInput: string, password: string): Promise<{
-        user: {
-            id: string;
-            email: string;
-            app_metadata: {};
-            user_metadata: {
-                full_name: string;
-                role: any;
-            };
-            aud: string;
-            created_at: string;
-        };
-        session: {
-            access_token: string;
-            refresh_token: string;
-            expires_in: number;
-            token_type: string;
-            user: {
-                id: string;
-                email: string;
-            };
-        };
-    }>;
+    login(identifierInput: string, password: string): Promise<any>;
     recoverPassword(identifier: string): Promise<{
         message: string;
         email: string;
