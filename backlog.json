@@ -438,6 +438,33 @@
           "detail_doc": "vault/runtime/detail_docs/TASK-09-05.md"
         }
       ]
+    },
+    {
+      "id": "S10-PAYMENTS-DEBT",
+      "name": "Sprint 10: Reintegración de Pasarelas de Pago y Xero (Deuda Técnica)",
+      "status": "PLANNED",
+      "start_date": "2026-07-10",
+      "goal": "Reintegrar y probar los archivos exiliados en purgatory para Stripe, PayPal y Xero.",
+      "tasks": [
+        {
+          "id": "TASK-10-01",
+          "label": "TECH/INFRA",
+          "desc": "Recrear tabla 'payments' y campos de pago en 'orders' en SQLite.",
+          "status": "PLANNED"
+        },
+        {
+          "id": "TASK-10-02",
+          "label": "TECH/DOMAIN",
+          "desc": "Reintegrar módulos de pagos backend y procesadores Xero exiliados.",
+          "status": "PLANNED"
+        },
+        {
+          "id": "TASK-10-03",
+          "label": "TECH/UI",
+          "desc": "Reintegrar formularios de Stripe y botones de PayPal en el frontend.",
+          "status": "PLANNED"
+        }
+      ]
     }
   ]
 }
