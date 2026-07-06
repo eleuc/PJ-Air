@@ -12,6 +12,14 @@ async function handleResponse(response: Response) {
     }
   }
 
+  if (response.status === 401) {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('local_session');
+      window.location.href = '/auth/login';
+    }
+    throw new Error('Sesión expirada. Por favor, inicia sesión de nuevo.');
+  }
+
   if (!response.ok) {
     throw new Error((data as any).message || 'Error en la petición');
   }

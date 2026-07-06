@@ -23,7 +23,7 @@ export function verifyPassword(password: string, storedValue: string): boolean {
   return hash === verifyHash;
 }
 
-export function signJwt(payload: any, expiresInSeconds: number = 3600): string {
+export function signJwt(payload: any, expiresInSeconds: number = 86400): string {
   const header = { alg: 'HS256', typ: 'JWT' };
   const exp = Math.floor(Date.now() / 1000) + expiresInSeconds;
   const fullPayload = { ...payload, exp };
