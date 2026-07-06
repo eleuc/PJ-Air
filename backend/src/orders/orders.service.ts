@@ -155,7 +155,8 @@ export class OrdersService {
   async findAll(): Promise<Order[]> {
     return this.orderRepository.find({ 
       relations: ['items', 'items.product', 'user', 'user.profile', 'delivery_user', 'delivery_user.profile', 'address'],
-      order: { created_at: 'DESC' }
+      order: { created_at: 'DESC' },
+      take: 100
     });
   }
 

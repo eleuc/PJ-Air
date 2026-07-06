@@ -146,7 +146,8 @@ let OrdersService = class OrdersService {
     async findAll() {
         return this.orderRepository.find({
             relations: ['items', 'items.product', 'user', 'user.profile', 'delivery_user', 'delivery_user.profile', 'address'],
-            order: { created_at: 'DESC' }
+            order: { created_at: 'DESC' },
+            take: 100
         });
     }
     async findByUser(userId) {
