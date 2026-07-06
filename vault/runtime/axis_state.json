@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-07-05T23:14:57.205350",
+  "timestamp": "2026-07-05T23:22:43.273471",
   "kernel": {
     "version": "2.2.11",
     "status": "CHALLENGED",
     "dna_intact": true,
-    "saturation_level": 3,
+    "saturation_level": 4,
     "pulse_breakdown": {
-      "session_cp": 3.3263700000000003,
+      "session_cp": 3.57213,
       "historical_pressure": 10.0,
       "rule_pressure": 0.0,
       "immediate_spike": 0.0,
-      "total_computed": 3.3263700000000003
+      "total_computed": 3.57213
     },
-    "bhi": 0.0,
-    "odometer_bytes": 79629,
+    "bhi": 98.875,
+    "odometer_bytes": 87821,
     "odometer_budget": 2000000,
-    "last_audit": "N/A"
+    "last_audit": "2026-07-05T23:22:41.514270"
   },
   "backlog": {
     "current_sprint": "S08-PAYMENTS-ACCOUNTING",
@@ -32,7 +32,7 @@
   "challenge": {
     "id": "VERACITY-VIOLATION-PJ_AIR",
     "level": "VOLATILE",
-    "expires_at": "2026-07-06T00:14:42.102974",
+    "expires_at": "2026-07-06T00:22:17.992936",
     "deviations": []
   },
   "dna": {
@@ -228,6 +228,39 @@
     "nodes_indexed": []
   },
   "forensic_ledger": [
+    {
+      "id": 233,
+      "timestamp": "2026-07-05T23:22:41.521780",
+      "role": "AI",
+      "sessionid": "RELAY-1783308161514",
+      "prevhash": "20906924e74ca7b3558ad0c615aad56c788ab96a9bf5f78aa2ee2273eaaa627b",
+      "type": "HANDOVER",
+      "task": "Session Transfer",
+      "detail": "Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED.",
+      "hash": "50a521d527965d6b501c1d133d1604670bae4b3e0a184327cfb643069465088e"
+    },
+    {
+      "id": 232,
+      "timestamp": "2026-07-05T23:19:59.186775",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "be4dc8917d832418b3c3ec4a15951f898a1edc88a42fe38dc2f6ea49177f817c",
+      "type": "TRACE",
+      "task": "HANDOVER",
+      "detail": "Ejecución administrativa detectada: logix handover",
+      "hash": "20906924e74ca7b3558ad0c615aad56c788ab96a9bf5f78aa2ee2273eaaa627b"
+    },
+    {
+      "id": 231,
+      "timestamp": "2026-07-05T23:18:45.521046",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "d89e7d4a903250d48921e6169a1cf46e1e21dfc3637b4cfaba0f5330b7d32bf3",
+      "type": "TRACE",
+      "task": "UNKNOWN",
+      "detail": "Ejecución administrativa detectada: logix unknown",
+      "hash": "be4dc8917d832418b3c3ec4a15951f898a1edc88a42fe38dc2f6ea49177f817c"
+    },
     {
       "id": 230,
       "timestamp": "2026-07-05T20:03:09.375703",
@@ -744,39 +777,6 @@
       "task": "SYNC-CONTEXT",
       "detail": "Ejecución administrativa detectada: logix sync-context",
       "hash": "34b01801ee6706db0dbca12395b52124f4d3f6fcb02fb5303aa444ecfd681491"
-    },
-    {
-      "id": 183,
-      "timestamp": "2026-07-05T19:34:51.281108",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "5d11692e15822eaa57fca2ade7c7482a600a32d1b6f5be842139f681a1fe13c7",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "3966a5eb4e26a3dd18021e93c839ce3ae6c319b26a988ce10c4373d354156006"
-    },
-    {
-      "id": 182,
-      "timestamp": "2026-07-05T19:34:42.918510",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "4fa4fa6b967893cc44a7b84b93b6cc2e41a5959870325ad8ef5050859de92371",
-      "type": "TRACE",
-      "task": "SYNC-CONTEXT",
-      "detail": "Ejecución administrativa detectada: logix sync-context",
-      "hash": "5d11692e15822eaa57fca2ade7c7482a600a32d1b6f5be842139f681a1fe13c7"
-    },
-    {
-      "id": 181,
-      "timestamp": "2026-07-05T19:33:44.670341",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "85ebabb7378d96c4d371d39ac1c28b16e492eb5fef175b70be2ff6e3bb760385",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "4fa4fa6b967893cc44a7b84b93b6cc2e41a5959870325ad8ef5050859de92371"
     }
   ]
 }

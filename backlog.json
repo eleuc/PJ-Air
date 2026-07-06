@@ -4,7 +4,7 @@
   "kernel_version": "2.2.11",
   "status": "COMPLETED",
   "current_sprint": "S10-PAYMENTS-DEBT",
-  "current_task": "TASK-09-05",
+  "current_task": "TASK-10-01",
   "sprints": [
     {
       "id": "S01-INCEPTION",
@@ -212,7 +212,7 @@
     {
       "id": "S08-PAYMENTS-ACCOUNTING",
       "name": "Sprint 08: Integración de Pasarelas de Pago y Xero",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETED",
       "start_date": "2026-06-29",
       "goal": "Implementar flujo de pago híbrido con Stripe y PayPal, y sincronización contable asíncrona con Xero.",
       "tasks": [
