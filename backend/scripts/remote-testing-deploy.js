@@ -108,6 +108,10 @@ server {
         await executeCommand(conn, 'ln -sf /etc/nginx/sites-available/testing.jhoanes.com /etc/nginx/sites-enabled/testing.jhoanes.com');
         await executeCommand(conn, 'nginx -t && systemctl reload nginx');
 
+        console.log('Running Certbot to configure/restore SSL...');
+        await executeCommand(conn, 'certbot --nginx -d testing.jhoanes.com --non-interactive --agree-tos --email rbarrosop@gmail.com --redirect');
+
+
         console.log('Testing environment deployment completed successfully!');
         console.log('Please ensure testing.jhoanes.com points to 187.124.67.53 in your DNS configuration.');
 
