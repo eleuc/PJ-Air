@@ -61,8 +61,6 @@ conn.on('ready', async () => {
             -p 5678:5678 \\
             -e EXECUTIONS_PROCESS=main \\
             -e N8N_PORT=5678 \\
-            -e N8N_SUBPATH=/n8n \\
-            -e N8N_EDITOR_BASE_URL=https://testing.jhoanes.com/n8n/ \\
             -e WEBHOOK_URL=https://testing.jhoanes.com/n8n/ \\
             -v /root/.n8n:/home/node/.n8n \\
             n8nio/n8n:latest
@@ -76,7 +74,7 @@ conn.on('ready', async () => {
     server_name testing.jhoanes.com;
 
     location /n8n/ {
-        proxy_pass http://localhost:5678;
+        proxy_pass http://localhost:5678/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -84,9 +82,27 @@ conn.on('ready', async () => {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Prefix /n8n;
         proxy_cache_bypass $http_upgrade;
     }
+
+    location /assets/ {
+        proxy_pass http://localhost:5678/assets/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /static/ {
+        proxy_pass http://localhost:5678/static/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
 
 
     location /api/ {
