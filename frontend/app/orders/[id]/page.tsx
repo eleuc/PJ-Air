@@ -6,7 +6,12 @@ import { CheckCircle2, Package, Calendar, Clock, MapPin, ChevronRight, ShoppingB
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
-import PaymentGateway from '@/components/payment/PaymentGateway';
+import dynamic from 'next/dynamic';
+
+const PaymentGateway = dynamic(() => import('@/components/payment/PaymentGateway'), {
+    ssr: false,
+});
+
 
 export default function OrderConfirmationPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: orderId } = use(params);
