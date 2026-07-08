@@ -62,13 +62,13 @@ conn.on('ready', async () => {
             -e EXECUTIONS_PROCESS=main \\
             -e N8N_PORT=5678 \\
             -e N8N_SUBPATH=/n8n \\
+            -e N8N_EDITOR_BASE_URL=https://testing.jhoanes.com/n8n/ \\
             -e WEBHOOK_URL=https://testing.jhoanes.com/n8n/ \\
             -v /root/.n8n:/home/node/.n8n \\
             n8nio/n8n:latest
         `;
         const dockerRes = await executeCommand(conn, dockerSetup);
         console.log(dockerRes.stdout || dockerRes.stderr);
-
 
         // 3. Configure Nginx with N8N path
         console.log('3. Muffling Nginx for /n8n/ location block...');
@@ -84,8 +84,10 @@ conn.on('ready', async () => {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Prefix /n8n;
         proxy_cache_bypass $http_upgrade;
     }
+
 
     location /api/ {
         proxy_pass http://localhost:3201/;
