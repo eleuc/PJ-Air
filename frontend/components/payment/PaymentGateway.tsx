@@ -18,6 +18,7 @@ interface PaymentGatewayProps {
 export default function PaymentGateway({ orderId, amount, onSuccess, locale }: PaymentGatewayProps) {
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal'>('stripe');
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [isMockState, setIsMockState] = useState(false);
   const [isLoadingSecret, setIsLoadingSecret] = useState(false);
 
   const lbl = (es: string, en: string) => locale === 'en' ? en : es;
@@ -31,6 +32,7 @@ export default function PaymentGateway({ orderId, amount, onSuccess, locale }: P
         const res = await api.post('/payments/stripe/create-intent', { orderId }) as any;
         if (res?.clientSecret) {
           setClientSecret(res.clientSecret);
+          setIsMockState(!!res.isMock);
         }
       } catch (err) {
         console.error('Error creating payment intent:', err);
@@ -87,14 +89,38 @@ export default function PaymentGateway({ orderId, amount, onSuccess, locale }: P
               <span className="text-[10px] font-black uppercase tracking-widest">{lbl('Iniciando pasarela...', 'Initializing gateway...')}</span>
             </div>
           ) : clientSecret ? (
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <StripePaymentForm
-                clientSecret={clientSecret}
-                orderId={orderId}
-                onSuccess={onSuccess}
-                locale={locale}
-              />
-            </Elements>
+            isMockState ? (
+              <div className="space-y-4 p-6 bg-white rounded-3xl border border-border/80 shadow-inner">
+                <div className="p-4 bg-amber-50 text-amber-800 rounded-2xl border border-amber-100 text-xs font-medium leading-relaxed">
+                  ⚠️ {lbl('Entorno de Pruebas: Llave de Stripe no configurada. Puedes simular un pago exitoso presionando el botón de abajo.', 'Testing Environment: Stripe key not configured. You can simulate a successful payment by clicking the button below.')}
+                </div>
+                <button
+                  onClick={async () => {
+                    setIsLoadingSecret(true);
+                    try {
+                      await api.post('/payments/stripe/mock-confirm', { orderId });
+                      onSuccess();
+                    } catch (err) {
+                      console.error('Error during mock payment:', err);
+                    } finally {
+                      setIsLoadingSecret(false);
+                    }
+                  }}
+                  className="w-full py-3 bg-primary text-white rounded-2xl font-bold hover:bg-primary/95 transition-all text-xs font-black uppercase tracking-widest shadow-md flex items-center justify-center gap-2"
+                >
+                  {lbl('Simular Pago Exitoso', 'Simulate Successful Payment')}
+                </button>
+              </div>
+            ) : (
+              <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <StripePaymentForm
+                  clientSecret={clientSecret}
+                  orderId={orderId}
+                  onSuccess={onSuccess}
+                  locale={locale}
+                />
+              </Elements>
+            )
           ) : (
             <div className="p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100 text-xs font-semibold text-center">
               {lbl('No se pudo iniciar la pasarela de Stripe.', 'Could not initialize Stripe gateway.')}
@@ -112,3 +138,4 @@ export default function PaymentGateway({ orderId, amount, onSuccess, locale }: P
     </div>
   );
 }
+

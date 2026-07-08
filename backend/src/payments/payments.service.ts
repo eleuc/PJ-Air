@@ -25,10 +25,15 @@ export class PaymentsService {
     });
   }
 
-  async createPaymentIntent(orderId: string): Promise<{ clientSecret: string }> {
+  async createPaymentIntent(orderId: string): Promise<{ clientSecret: string; isMock?: boolean }> {
     const order = await this.orderRepository.findOne({ where: { id: orderId } });
     if (!order) {
       throw new NotFoundException(`Order with ID ${orderId} not found`);
+    }
+
+    const stripeKey = process.env.STRIPE_SECRET_KEY || 'sk_test_mock_secret_key_please_change_me_in_env_file';
+    if (stripeKey.includes('mock_secret_key') || stripeKey === 'sk_test_mock_secret_key_please_change_me_in_env_file') {
+      return { clientSecret: 'mock_stripe_client_secret', isMock: true };
     }
 
     // Stripe expects amount in cents
@@ -51,11 +56,40 @@ export class PaymentsService {
       });
       await this.paymentRepository.save(payment);
 
-      return { clientSecret: paymentIntent.client_secret || '' };
+      return { clientSecret: paymentIntent.client_secret || '', isMock: false };
     } catch (error) {
       throw new BadRequestException(`Stripe error: ${error.message}`);
     }
   }
+
+  async mockConfirmStripePayment(orderId: string): Promise<{ success: boolean }> {
+    const order = await this.orderRepository.findOne({ where: { id: orderId } });
+    if (!order) {
+      throw new NotFoundException(`Order with ID ${orderId} not found`);
+    }
+
+    order.status = 'En Producción';
+    order.payment_gateway = 'stripe';
+    order.payment_transaction_id = 'mock_stripe_tx_' + Math.random().toString(36).substr(2, 9);
+    await this.orderRepository.save(order);
+
+    const payment = this.paymentRepository.create({
+      order_id: orderId,
+      amount: Number(order.total),
+      status: 'completed',
+      gateway: 'stripe',
+      transaction_id: order.payment_transaction_id,
+    });
+    await this.paymentRepository.save(payment);
+
+    // Sync to Xero
+    this.xeroService.syncOrderToXero(orderId).catch(err => {
+      console.error('Failed to sync to Xero:', err);
+    });
+
+    return { success: true };
+  }
+
 
   async capturePayPalPayment(orderId: string, transactionId: string): Promise<{ success: boolean }> {
     const order = await this.orderRepository.findOne({ where: { id: orderId } });

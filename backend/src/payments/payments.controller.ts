@@ -14,6 +14,14 @@ export class PaymentsController {
     return this.paymentsService.createPaymentIntent(dto.orderId);
   }
 
+  @Post('stripe/mock-confirm')
+  async mockConfirmStripePayment(@Body() body: { orderId: string }) {
+    if (!body.orderId) {
+      throw new BadRequestException('orderId is required');
+    }
+    return this.paymentsService.mockConfirmStripePayment(body.orderId);
+  }
+
   @Post('paypal/capture')
   async capturePayPalPayment(@Body() body: { orderId: string; transactionId: string }) {
     if (!body.orderId || !body.transactionId) {
@@ -22,3 +30,4 @@ export class PaymentsController {
     return this.paymentsService.capturePayPalPayment(body.orderId, body.transactionId);
   }
 }
+
