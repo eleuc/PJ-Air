@@ -218,7 +218,8 @@ export class XeroService {
       await this.orderRepository.save(order);
 
       // Post Payment to Invoice if order is paid
-      if (order.status === 'confirmed' && order.payment_transaction_id) {
+      if (order.status === 'En Producción' && order.payment_transaction_id) {
+
         const paymentPayload = {
           Payments: [{
             Invoice: { InvoiceID: invoiceId },

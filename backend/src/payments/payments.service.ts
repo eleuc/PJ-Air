@@ -64,7 +64,7 @@ export class PaymentsService {
     }
 
     // Update order status and gateway
-    order.status = 'confirmed';
+    order.status = 'En Producción';
     order.payment_gateway = 'paypal';
     order.payment_transaction_id = transactionId;
     await this.orderRepository.save(order);
@@ -103,7 +103,7 @@ export class PaymentsService {
       if (orderId) {
         const order = await this.orderRepository.findOne({ where: { id: orderId } });
         if (order) {
-          order.status = 'confirmed';
+          order.status = 'En Producción';
           order.payment_gateway = 'stripe';
           order.payment_transaction_id = paymentIntent.id;
           await this.orderRepository.save(order);
@@ -132,5 +132,6 @@ export class PaymentsService {
       }
     }
   }
+
 
 }
