@@ -11,6 +11,7 @@ import { DevtoolsModule } from './devtools/devtools.module';
 import { AuthModule } from './auth/auth.module';
 import { SystemConfigsModule } from './system-configs/system-configs.module';
 import { AdminActionsModule } from './admin-actions/admin-actions.module';
+import { PaymentsModule } from './payments/payments.module';
 
 // Entities
 import { Product } from './products/product.entity';
@@ -22,14 +23,15 @@ import { Order } from './orders/order.entity';
 import { OrderItem } from './orders/order-item.entity';
 import { ProductDiscount } from './users/product-discount.entity';
 import { SystemConfig } from './system-configs/system-config.entity';
+import { Payment } from './payments/payment.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: DATABASE_PATH,
-      entities: [Product, Category, User, Profile, Address, Order, OrderItem, ProductDiscount, SystemConfig],
-      synchronize: NODE_ENV !== 'production',
+      entities: [Product, Category, User, Profile, Address, Order, OrderItem, ProductDiscount, SystemConfig, Payment],
+      synchronize: NODE_ENV !== 'production' || process.env.BACKEND_PORT === '3201',
       logging: false,
     }),
     UsersModule,
@@ -40,7 +42,9 @@ import { SystemConfig } from './system-configs/system-config.entity';
     AuthModule,
     SystemConfigsModule,
     AdminActionsModule,
+    PaymentsModule,
   ],
+
   controllers: [AppController],
   providers: [AppService],
 })

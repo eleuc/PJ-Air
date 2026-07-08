@@ -38,8 +38,18 @@ export class Order {
   @Column({ nullable: true, type: 'text' })
   delivery_address_text: string; // for temporary / other addresses
 
+  @Column({ nullable: true })
+  payment_gateway: string;
+
+  @Column({ nullable: true })
+  payment_transaction_id: string;
+
+  @Column({ nullable: true })
+  xero_invoice_id: string;
+
   @CreateDateColumn()
   created_at: Date;
+
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'delivery_user_id' })
