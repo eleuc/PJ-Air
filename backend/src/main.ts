@@ -12,8 +12,9 @@ try {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
   app.enableCors(); // Enable CORS for development
+
   
   const uploadsPath = resolve(UPLOAD_PATH);
   console.log('UPLOADS PATH RESOLVED TO:', uploadsPath);

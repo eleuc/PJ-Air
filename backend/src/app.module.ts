@@ -12,6 +12,8 @@ import { AuthModule } from './auth/auth.module';
 import { SystemConfigsModule } from './system-configs/system-configs.module';
 import { AdminActionsModule } from './admin-actions/admin-actions.module';
 import { PaymentsModule } from './payments/payments.module';
+import { XeroModule } from './xero/xero.module';
+
 
 // Entities
 import { Product } from './products/product.entity';
@@ -43,6 +45,7 @@ import { Payment } from './payments/payment.entity';
     SystemConfigsModule,
     AdminActionsModule,
     PaymentsModule,
+    XeroModule,
   ],
 
   controllers: [AppController],
