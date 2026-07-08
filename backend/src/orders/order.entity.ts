@@ -44,6 +44,9 @@ export class Order {
   @Column({ nullable: true })
   payment_transaction_id: string;
 
+  @Column({ default: 'unpaid' })
+  payment_status: string;
+
   @Column({ nullable: true })
   xero_invoice_id: string;
 

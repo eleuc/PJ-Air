@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 import { API_URL } from '@/lib/config';
+import { api } from '@/lib/api';
 import { 
     Calendar as CalendarIcon, 
     Printer, 
@@ -18,7 +19,8 @@ import {
     ChevronRight,
     MapPin,
     Package,
-    ChevronUp
+    ChevronUp,
+    ShoppingBag
 } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -64,13 +66,31 @@ const getProductionDate = (dateStr: string) => {
     return `${yr}-${mo}-${da}`;
 };
 
+const PAYMENT_STATUS_COLORS: Record<string, string> = {
+    'paid': 'bg-emerald-50 text-emerald-600 border-emerald-100',
+    'pending': 'bg-amber-50 text-amber-600 border-amber-100',
+    'failed': 'bg-rose-50 text-rose-600 border-rose-100',
+    'refunded': 'bg-gray-100 text-gray-600 border-gray-200',
+    'unpaid': 'bg-slate-50 text-slate-400 border-slate-200',
+};
+
+const PAYMENT_STATUS_LABELS: Record<string, string> = {
+    'paid': 'Pagado',
+    'pending': 'Pendiente',
+    'failed': 'Fallido',
+    'refunded': 'Reembolsado',
+    'unpaid': 'No Pagado',
+};
+
 function ReportsPageContent() {
     const { t } = useLanguage();
     const searchParams = useSearchParams();
 
     // --- State ---
     const [reportType, setReportType] = useState<'daily' | 'weekly' | 'monthly' | 'custom'>('daily');
-    const [viewMode, setViewMode] = useState<'general' | 'all-clients' | 'specific-client'>('general');
+    const [viewMode, setViewMode] = useState<'general' | 'all-clients' | 'specific-client' | 'financial'>('general');
+    const [financialStats, setFinancialStats] = useState<any>(null);
+    const [loadingFinancial, setLoadingFinancial] = useState(false);
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [selectedClientId, setSelectedClientId] = useState('');
@@ -96,6 +116,24 @@ function ReportsPageContent() {
         fetchClients();
         fetchHistory();
     }, []);
+
+    useEffect(() => {
+        if (viewMode === 'financial') {
+            fetchFinancialStats();
+        }
+    }, [viewMode]);
+
+    const fetchFinancialStats = async () => {
+        setLoadingFinancial(true);
+        try {
+            const data = await api.get('/payments/stats');
+            setFinancialStats(data);
+        } catch (err) {
+            console.error('Error fetching financial stats:', err);
+        } finally {
+            setLoadingFinancial(false);
+        }
+    };
 
     // --- Auto-load from URL param (coming from dashboard 'Ver Detalle') ---
     useEffect(() => {
@@ -496,6 +534,7 @@ function ReportsPageContent() {
                                     className="w-full h-14 px-5 pr-12 bg-muted/30 border border-border rounded-2xl text-sm font-bold outline-none focus:ring-4 focus:ring-primary/10 transition-all appearance-none cursor-pointer">
                                     <option value="general">Reporte General (todos los clientes)</option>
                                     <option value="specific-client">Reporte por Cliente</option>
+                                    <option value="financial">Reporte Financiero (Pagos y Xero)</option>
                                 </select>
                                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={18} />
                             </div>
@@ -563,7 +602,7 @@ function ReportsPageContent() {
             </div>
 
             {/* ─── REPORT RESULTS ─────────────────────────────────────────── */}
-            {reportMeta && (
+            {viewMode !== 'financial' && reportMeta && (
                 <div ref={resultsRef} className="space-y-0 report-content">
                     {/* Print header */}
                     {orders.length > 0 && (
@@ -744,7 +783,7 @@ function ReportsPageContent() {
             )}
 
             {/* ─── HISTORY TABLE (DAILY) ──────────────────────────────────── */}
-            {(reportType === 'daily' || reportType === 'custom') && (
+            {viewMode !== 'financial' && (reportType === 'daily' || reportType === 'custom') && (
             <div className="bg-card border border-border rounded-[2.5rem] shadow-xl shadow-foreground/5 overflow-hidden print:hidden">
                 <div className="p-8 border-b border-border flex items-center gap-4">
                     <div className="p-3 bg-muted rounded-2xl">
@@ -813,7 +852,7 @@ function ReportsPageContent() {
             )}
 
             {/* ─── WEEKLY HISTORY TABLE ─────────────────────────────────────── */}
-            {reportType === 'weekly' && (
+            {viewMode !== 'financial' && reportType === 'weekly' && (
             <div className="bg-card border border-border rounded-[2.5rem] shadow-xl shadow-foreground/5 overflow-hidden print:hidden">
                 <div className="p-8 border-b border-border flex items-center gap-4">
                     <div className="p-3 bg-blue-50 rounded-2xl">
@@ -886,7 +925,7 @@ function ReportsPageContent() {
             )}
 
             {/* ─── MONTHLY HISTORY TABLE ────────────────────────────────────── */}
-            {reportType === 'monthly' && (
+            {viewMode !== 'financial' && reportType === 'monthly' && (
             <div className="bg-card border border-border rounded-[2.5rem] shadow-xl shadow-foreground/5 overflow-hidden print:hidden">
                 <div className="p-8 border-b border-border flex items-center gap-4">
                     <div className="p-3 bg-emerald-50 rounded-2xl">
@@ -954,6 +993,105 @@ function ReportsPageContent() {
                     </div>
                 )}
             </div>
+            )}
+
+            {/* ─── FINANCIAL REPORT VIEW ──────────────────────────────────── */}
+            {viewMode === 'financial' && (
+                <div className="space-y-8 animate-in fade-in duration-300 print:hidden">
+                    {loadingFinancial ? (
+                        <div className="flex flex-col items-center justify-center py-24">
+                            <Loader2 size={40} className="animate-spin text-primary mb-4" />
+                            <p className="font-black text-muted-foreground uppercase tracking-widest text-xs">Cargando datos financieros...</p>
+                        </div>
+                    ) : financialStats ? (
+                        <>
+                            {/* KPI Metrics */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-[2rem] p-8 shadow-xl shadow-emerald-500/10 relative overflow-hidden group">
+                                    <div className="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4 group-hover:scale-110 transition-transform">
+                                        <ShoppingBag size={120} />
+                                    </div>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-100/80 mb-2">Ingresos Totales</p>
+                                    <h3 className="text-3xl font-black">${Number(financialStats.totalRevenue || 0).toFixed(2)}</h3>
+                                </div>
+                                <div className="bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-[2rem] p-8 shadow-xl shadow-indigo-500/10 relative overflow-hidden group">
+                                    <div className="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4 group-hover:scale-110 transition-transform">
+                                        <ShoppingBag size={120} />
+                                    </div>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-100/80 mb-2">Stripe Revenue</p>
+                                    <h3 className="text-3xl font-black">${Number(financialStats.gatewayBreakdown?.stripe || 0).toFixed(2)}</h3>
+                                </div>
+                                <div className="bg-gradient-to-br from-sky-500 to-blue-500 text-white rounded-[2rem] p-8 shadow-xl shadow-sky-500/10 relative overflow-hidden group">
+                                    <div className="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4 group-hover:scale-110 transition-transform">
+                                        <ShoppingBag size={120} />
+                                    </div>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-sky-100/80 mb-2">PayPal Revenue</p>
+                                    <h3 className="text-3xl font-black">${Number(financialStats.gatewayBreakdown?.paypal || 0).toFixed(2)}</h3>
+                                </div>
+                                <div className="bg-gradient-to-br from-slate-700 to-slate-800 text-white rounded-[2rem] p-8 shadow-xl shadow-slate-700/10 relative overflow-hidden group">
+                                    <div className="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4 group-hover:scale-110 transition-transform">
+                                        <ShoppingBag size={120} />
+                                    </div>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 mb-2">Pedidos Sincronizados Xero</p>
+                                    <h3 className="text-3xl font-black">{financialStats.xeroSync?.synced} <span className="text-xs font-bold text-slate-400">/ {financialStats.xeroSync?.synced + financialStats.xeroSync?.pending}</span></h3>
+                                </div>
+                            </div>
+
+                            {/* Status Counts */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div className="bg-card border border-border rounded-[2.5rem] p-8 shadow-xl shadow-foreground/5 space-y-4 col-span-1">
+                                    <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">Distribución de Pedidos</h3>
+                                    <div className="space-y-3">
+                                        {Object.entries(financialStats.statusCounts || {}).map(([status, count]: [string, any]) => (
+                                            <div key={status} className="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
+                                                <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase border ${PAYMENT_STATUS_COLORS[status] || PAYMENT_STATUS_COLORS.unpaid}`}>{PAYMENT_STATUS_LABELS[status] || status}</span>
+                                                <span className="text-sm font-bold text-slate-700">{count} pedidos</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Recent Payments History */}
+                                <div className="bg-card border border-border rounded-[2.5rem] p-8 shadow-xl shadow-foreground/5 space-y-6 col-span-2">
+                                    <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">Historial de Pagos Recientes</h3>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left">
+                                            <thead>
+                                                <tr className="border-b border-border text-[9px] font-black text-slate-400 uppercase tracking-wider">
+                                                    <th className="pb-3">Monto</th>
+                                                    <th className="pb-3">Pasarela</th>
+                                                    <th className="pb-3">Transacción</th>
+                                                    <th className="pb-3">Fecha</th>
+                                                    <th className="pb-3 text-right">Estado</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100 text-xs">
+                                                {financialStats.recentPayments?.map((p: any) => (
+                                                    <tr key={p.id} className="hover:bg-slate-50/50">
+                                                        <td className="py-4 font-black text-slate-700">${Number(p.amount).toFixed(2)}</td>
+                                                        <td className="py-4 font-bold uppercase text-slate-500">{p.gateway}</td>
+                                                        <td className="py-4 font-mono font-medium text-slate-400 truncate max-w-[120px]" title={p.transaction_id}>{p.transaction_id || '—'}</td>
+                                                        <td className="py-4 text-slate-500">{new Date(p.created_at).toLocaleDateString()}</td>
+                                                        <td className="py-4 text-right">
+                                                            <span className={`px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase border ${PAYMENT_STATUS_COLORS[p.status] || PAYMENT_STATUS_COLORS.unpaid}`}>
+                                                                {PAYMENT_STATUS_LABELS[p.status] || p.status}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="bg-muted/20 border-2 border-dashed border-border rounded-[3rem] flex flex-col items-center justify-center py-24 text-center">
+                            <FileText size={48} className="text-muted-foreground/30 mb-4" />
+                            <p className="font-black text-lg text-muted-foreground">Error al cargar estadísticas financieras</p>
+                        </div>
+                    )}
+                </div>
             )}
 
             {/* Print Styles */}

@@ -1,10 +1,20 @@
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Req, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentIntentDto } from './dto/create-payment-intent.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
+
+  @Get('stats')
+  @UseGuards(AuthGuard)
+  async getPaymentStats(@Req() req: any) {
+    if (!req.user || req.user.role !== 'admin') {
+      throw new ForbiddenException('Solo los administradores pueden ver reportes financieros');
+    }
+    return this.paymentsService.getPaymentStats();
+  }
 
   @Post('stripe/create-intent')
   async createPaymentIntent(@Body() dto: CreatePaymentIntentDto) {

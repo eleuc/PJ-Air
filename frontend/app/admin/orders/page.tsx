@@ -32,6 +32,10 @@ interface Order {
     address?: { address: string; city: string; };
     delivery_type?: string;
     items?: OrderItem[];
+    payment_status?: string;
+    payment_gateway?: string;
+    payment_transaction_id?: string;
+    xero_invoice_id?: string;
 }
 
 interface DeliveryUser {
@@ -53,6 +57,22 @@ const STATUS_COLORS: Record<string, string> = {
     'Entregado':     'bg-green-50 text-green-600 border-green-100',
     'Cancelado':     'bg-red-50 text-red-600 border-red-100',
     'pending':       'bg-slate-50 text-slate-600 border-slate-100',
+};
+
+const PAYMENT_STATUS_COLORS: Record<string, string> = {
+    'paid': 'bg-emerald-50 text-emerald-600 border-emerald-100',
+    'pending': 'bg-amber-50 text-amber-600 border-amber-100',
+    'failed': 'bg-rose-50 text-rose-600 border-rose-100',
+    'refunded': 'bg-gray-100 text-gray-600 border-gray-200',
+    'unpaid': 'bg-slate-50 text-slate-400 border-slate-200',
+};
+
+const PAYMENT_STATUS_LABELS: Record<string, string> = {
+    'paid': 'Pagado',
+    'pending': 'Pendiente',
+    'failed': 'Fallido',
+    'refunded': 'Reembolsado',
+    'unpaid': 'No Pagado',
 };
 
 export default function AdminOrdersPage() {
@@ -417,9 +437,14 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                             <p className="text-xs text-muted-foreground font-medium truncate max-w-[180px]">{order.user?.email}</p>
                                         </td>
                                         <td className="px-8 py-5">
-                                            <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border shadow-sm transition-all group-hover:scale-105 inline-block ${STATUS_COLORS[order.status] || STATUS_COLORS.pending}`}>
-                                                {order.status}
-                                            </span>
+                                            <div className="flex flex-col gap-1.5 items-start">
+                                                <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border shadow-sm transition-all group-hover:scale-105 inline-block ${STATUS_COLORS[order.status] || STATUS_COLORS.pending}`}>
+                                                    {order.status}
+                                                </span>
+                                                <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase border transition-all inline-block ${PAYMENT_STATUS_COLORS[order.payment_status || 'unpaid'] || PAYMENT_STATUS_COLORS.unpaid}`}>
+                                                    {PAYMENT_STATUS_LABELS[order.payment_status || 'unpaid'] || 'No Pagado'}
+                                                </span>
+                                            </div>
                                         </td>
                                         <td className="px-8 py-5">
                                             {order.delivery_user ? (
@@ -593,6 +618,57 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                     </div>
                                 </section>
                             </div>
+
+                            {/* Payment & Xero Integration */}
+                            <section className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm transition-all hover:shadow-md">
+                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2 mb-6">
+                                    <ShoppingBag size={14} className="text-primary" /> Detalles de Pago y Facturación
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100 flex flex-col gap-3">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Información Financiera</p>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-slate-500">Estado de Pago:</span>
+                                            <span className={`px-3 py-1 rounded-xl text-[10px] font-black uppercase border shadow-sm ${PAYMENT_STATUS_COLORS[selectedOrder.payment_status || 'unpaid'] || PAYMENT_STATUS_COLORS.unpaid}`}>
+                                                {PAYMENT_STATUS_LABELS[selectedOrder.payment_status || 'unpaid'] || 'No Pagado'}
+                                            </span>
+                                        </div>
+                                        {selectedOrder.payment_gateway && (
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-bold text-slate-500">Pasarela:</span>
+                                                <span className="text-xs font-black uppercase text-slate-700">{selectedOrder.payment_gateway}</span>
+                                            </div>
+                                        )}
+                                        {selectedOrder.payment_transaction_id && (
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-[10px] font-bold text-slate-500">ID Transacción:</span>
+                                                <span className="text-xs font-mono font-bold text-slate-600 bg-white px-2 py-1 rounded-lg border border-slate-100 break-all">{selectedOrder.payment_transaction_id}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100 flex flex-col gap-3">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Sincronización Xero</p>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-slate-500">Estado de Factura:</span>
+                                            {selectedOrder.xero_invoice_id ? (
+                                                <span className="bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-xl text-[10px] font-black uppercase shadow-sm">
+                                                    Sincronizado
+                                                </span>
+                                            ) : (
+                                                <span className="bg-slate-100 text-slate-400 border border-slate-200 px-3 py-1 rounded-xl text-[10px] font-black uppercase shadow-sm">
+                                                    No Sincronizado
+                                                </span>
+                                            )}
+                                        </div>
+                                        {selectedOrder.xero_invoice_id && (
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-[10px] font-bold text-slate-500">ID de Factura Xero:</span>
+                                                <span className="text-xs font-mono font-bold text-slate-600 bg-white px-2 py-1 rounded-lg border border-slate-100 break-all">{selectedOrder.xero_invoice_id}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </section>
 
                             {/* Cart Management */}
                             <section className="space-y-6">

@@ -450,22 +450,28 @@
           "id": "TASK-10-01",
           "label": "TECH/INFRA",
           "desc": "Recrear tabla 'payments' y campos de pago en 'orders' en SQLite.",
-          "status": "DONE",
-          "detail_doc": "vault/runtime/detail_docs/TASK-10-01.md"
+          "status": "IN_PROGRESS",
+          "detail_doc": "vault/runtime/detail_docs/TASK-10-01.md",
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
         },
         {
           "id": "TASK-10-02",
           "label": "TECH/DOMAIN",
           "desc": "Reintegrar módulos de pagos backend y procesadores Xero exiliados.",
-          "status": "DONE",
-          "detail_doc": "vault/runtime/detail_docs/TASK-10-02.md"
+          "status": "IN_PROGRESS",
+          "detail_doc": "vault/runtime/detail_docs/TASK-10-02.md",
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
         },
         {
           "id": "TASK-10-03",
           "label": "TECH/UI",
           "desc": "Reintegrar formularios de Stripe y botones de PayPal en el frontend.",
-          "status": "DONE",
-          "detail_doc": "vault/runtime/detail_docs/TASK-10-03.md"
+          "status": "IN_PROGRESS",
+          "detail_doc": "vault/runtime/detail_docs/TASK-10-03.md",
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
         }
       ]
     }

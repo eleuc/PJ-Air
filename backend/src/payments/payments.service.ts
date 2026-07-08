@@ -71,6 +71,7 @@ export class PaymentsService {
     order.status = 'En Producción';
     order.payment_gateway = 'stripe';
     order.payment_transaction_id = 'mock_stripe_tx_' + Math.random().toString(36).substr(2, 9);
+    order.payment_status = 'paid';
     await this.orderRepository.save(order);
 
     const payment = this.paymentRepository.create({
@@ -101,6 +102,7 @@ export class PaymentsService {
     order.status = 'En Producción';
     order.payment_gateway = 'paypal';
     order.payment_transaction_id = transactionId;
+    order.payment_status = 'paid';
     await this.orderRepository.save(order);
 
     // Save a completed payment record
@@ -140,6 +142,7 @@ export class PaymentsService {
           order.status = 'En Producción';
           order.payment_gateway = 'stripe';
           order.payment_transaction_id = paymentIntent.id;
+          order.payment_status = 'paid';
           await this.orderRepository.save(order);
 
           // Update Payment status to completed
@@ -167,5 +170,75 @@ export class PaymentsService {
     }
   }
 
+  async getPaymentStats(): Promise<any> {
+    const orders = await this.orderRepository.find();
+    const payments = await this.paymentRepository.find();
+
+    let totalRevenue = 0;
+    let stripeRevenue = 0;
+    let paypalRevenue = 0;
+
+    const statusCounts: Record<string, number> = {
+      unpaid: 0,
+      pending: 0,
+      paid: 0,
+      failed: 0,
+      refunded: 0,
+    };
+
+    let xeroSyncedCount = 0;
+    let xeroPendingCount = 0;
+
+    for (const order of orders) {
+      const status = order.payment_status || 'unpaid';
+      if (statusCounts[status] !== undefined) {
+        statusCounts[status]++;
+      } else {
+        statusCounts[status] = 1;
+      }
+
+      if (status === 'paid') {
+        const amount = Number(order.total || 0);
+        totalRevenue += amount;
+        if (order.payment_gateway === 'stripe') {
+          stripeRevenue += amount;
+        } else if (order.payment_gateway === 'paypal') {
+          paypalRevenue += amount;
+        }
+
+        if (order.xero_invoice_id) {
+          xeroSyncedCount++;
+        } else {
+          xeroPendingCount++;
+        }
+      }
+    }
+
+    const gatewayBreakdown = {
+      stripe: stripeRevenue,
+      paypal: paypalRevenue,
+    };
+
+    const paymentRecords = payments.map(p => ({
+      id: p.id,
+      order_id: p.order_id,
+      amount: Number(p.amount),
+      status: p.status,
+      gateway: p.gateway,
+      transaction_id: p.transaction_id,
+      created_at: p.created_at,
+    }));
+
+    return {
+      totalRevenue,
+      gatewayBreakdown,
+      statusCounts,
+      xeroSync: {
+        synced: xeroSyncedCount,
+        pending: xeroPendingCount,
+      },
+      recentPayments: paymentRecords.slice(-10).reverse(),
+    };
+  }
 
 }
