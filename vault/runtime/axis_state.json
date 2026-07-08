@@ -1,25 +1,25 @@
 {
-  "timestamp": "2026-07-05T23:22:43.273471",
+  "timestamp": "2026-07-08T08:00:11.076720",
   "kernel": {
     "version": "2.2.11",
-    "status": "CHALLENGED",
+    "status": "NOMINAL",
     "dna_intact": true,
-    "saturation_level": 4,
+    "saturation_level": 2,
     "pulse_breakdown": {
-      "session_cp": 3.57213,
+      "session_cp": 2.0851949999999997,
       "historical_pressure": 10.0,
       "rule_pressure": 0.0,
       "immediate_spike": 0.0,
-      "total_computed": 3.57213
+      "total_computed": 2.0851949999999997
     },
-    "bhi": 98.875,
-    "odometer_bytes": 87821,
+    "bhi": 0.0,
+    "odometer_bytes": 61694,
     "odometer_budget": 2000000,
-    "last_audit": "2026-07-05T23:22:41.514270"
+    "last_audit": "N/A"
   },
   "backlog": {
-    "current_sprint": "S08-PAYMENTS-ACCOUNTING",
-    "sprint_name": "Sprint 08: Integración de Pasarelas de Pago y Xero",
+    "current_sprint": "N/A",
+    "sprint_name": "N/A",
     "active_task": "N/A",
     "version": "2.2.11",
     "pending_tasks": []
@@ -29,12 +29,7 @@
     "role": "GENERAL",
     "agent_id": "ANONYMOUS"
   },
-  "challenge": {
-    "id": "VERACITY-VIOLATION-PJ_AIR",
-    "level": "VOLATILE",
-    "expires_at": "2026-07-06T00:22:17.992936",
-    "deviations": []
-  },
+  "challenge": null,
   "dna": {
     "last_signature_at": "2026-07-05T20:03:15.476605",
     "signed_project": "pj-air",
@@ -67,167 +62,100 @@
   },
   "fleet": [],
   "federated_states": [],
-  "stream": [
-    {
-      "id": "TASK-08-01",
-      "label": "TECH/DOMAIN",
-      "desc": "Compatibilidad de contraseñas legadas (bcrypt) y restauración de base de datos en producción.",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-02",
-      "label": "TECH/DOMAIN",
-      "desc": "Infraestructura DB: Tabla 'payments', tokens de Xero y expansión de status en Orders.",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-03",
-      "label": "TECH/DOMAIN",
-      "desc": "Módulo de Pagos Backend: Setup SDKs Stripe & PayPal y Controladores de Intención de Pago.",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-04",
-      "label": "TECH/UI",
-      "desc": "Frontend: Integración de Stripe Elements (Interfaz Segura de Tarjetas).",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-05",
-      "label": "TECH/UI",
-      "desc": "Frontend: Integración de PayPal Smart Buttons.",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-06",
-      "label": "TECH/DOMAIN",
-      "desc": "Webhooks de Pasarelas: Recepción segura y actualización de estados en DB.",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-07",
-      "label": "TECH/DOMAIN",
-      "desc": "Autenticación Xero: Módulo OAuth 2.0, Almacenamiento y Refresco de Tokens.",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-08",
-      "label": "TECH/DOMAIN",
-      "desc": "Sincronización Xero: Lógica de negocio (Customers, Invoices y Payments).",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-09",
-      "label": "TECH/DOMAIN",
-      "desc": "Cola de Tareas (Queue): Orquestación asíncrona entre Pagos y Sincronización Xero.",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-10",
-      "label": "TECH/DOMAIN",
-      "desc": "Permisión de cambio de estado en órdenes entregadas/canceladas (Admin override).",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-11",
-      "label": "TECH/DOMAIN",
-      "desc": "Campo Nickname en entidad Profile y sincronización en reportes Excel.",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-12",
-      "label": "UI/TEST",
-      "desc": "Pruebas automatizadas de UI (Playwright) para validación de cambio de estado y Nickname.",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-13",
-      "label": "UI",
-      "desc": "Ordenamiento alfabético en listas del panel de administración (Clientes, Usuarios, Productos, Zonas, Rutas).",
-      "status": "DONE",
-      "detail_doc": null
-    },
-    {
-      "id": "TASK-08-14",
-      "label": "TECH/DOMAIN",
-      "desc": "Backend: Módulo admin-actions independiente con endpoint PATCH /admin-actions/users/:id/reset-password. Jerarquía: admin no puede resetear a otro admin. Flag force_pwd_change en system_configs. Sin SMTP.",
-      "status": "DONE",
-      "detail_doc": "vault/runtime/detail_docs/TASK-08-14.md"
-    },
-    {
-      "id": "TASK-08-15",
-      "label": "TECH/DOMAIN",
-      "desc": "Backend: Extender respuesta de login para incluir require_password_change:true cuando el flag esté activo en system_configs. Modificación mínima y quirúrgica de AuthService.",
-      "status": "DONE",
-      "detail_doc": "vault/runtime/detail_docs/TASK-08-15.md"
-    },
-    {
-      "id": "TASK-08-16",
-      "label": "TECH/DOMAIN",
-      "desc": "Backend: Endpoint self-service PATCH /admin-actions/me/change-password. Verifica contraseña actual, actualiza hash con PBKDF2, elimina flag force_pwd_change de system_configs. Sin SMTP.",
-      "status": "DONE",
-      "detail_doc": "vault/runtime/detail_docs/TASK-08-16.md"
-    },
-    {
-      "id": "TASK-08-17",
-      "label": "UI",
-      "desc": "Frontend: Componente ForcePasswordChangeModal que intercepta navegación cuando require_password_change es true. Integración pasiva en layout raíz via AuthContext. Sin SMTP.",
-      "status": "DONE",
-      "detail_doc": "vault/runtime/detail_docs/TASK-08-17.md"
-    },
-    {
-      "id": "TASK-08-18",
-      "label": "UI",
-      "desc": "Frontend: Botón Restablecer Contraseña en detalle de usuario/cliente (admin/users y admin/clients). Botón Nuevo Usuario Staff (rol delivery/produccion/admin). Modificación aditiva mínima. Sin SMTP.",
-      "status": "DONE",
-      "detail_doc": "vault/runtime/detail_docs/TASK-08-18.md"
-    },
-    {
-      "id": "TASK-08-19",
-      "label": "TECH/TEST",
-      "desc": "Suite completa de pruebas: unitarias (Jest mocks), integración e2e backend (Supertest) y automatización UI (Playwright). Usuario de prueba: pwd-test@jhpanesbakery.com. Admin tester: rubendarioc o admin@test.com.",
-      "status": "DONE",
-      "detail_doc": "vault/runtime/detail_docs/TASK-08-19.md"
-    },
-    {
-      "id": "TASK-08-20",
-      "label": "TECH/UI",
-      "desc": "Habilitar formulario de cambio de contraseña para personal Staff (delivery y producción) en sus respectivas vistas de settings.",
-      "status": "DONE",
-      "detail_doc": "vault/runtime/detail_docs/TASK-08-20.md"
-    },
-    {
-      "id": "TASK-08-21",
-      "label": "UI/DOMAIN",
-      "desc": "Auditoría e integración del Nickname (campo nickname en perfiles de clientes) en las vistas internas del panel de administración (listados de órdenes, clientes) y validación de consistencia en reportes Excel.",
-      "status": "DONE",
-      "detail_doc": "vault/runtime/detail_docs/TASK-08-21.md"
-    },
-    {
-      "id": "TASK-08-22",
-      "label": "TECH/TEST",
-      "desc": "Suite de pruebas automatizadas (Jest y Playwright) para el cambio de contraseña de staff y visualización interna del nickname.",
-      "status": "DONE",
-      "detail_doc": "vault/runtime/detail_docs/TASK-08-22.md"
-    }
-  ],
+  "stream": [],
   "nexus_summary": {
     "total_capabilities": 0,
     "nodes_indexed": []
   },
   "forensic_ledger": [
+    {
+      "id": 241,
+      "timestamp": "2026-07-08T07:44:04.995065",
+      "role": "AGENT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "ff06507d0b21436fcd5915e3527593ed528537e6316d8c46d61d631a97a96679",
+      "type": "ODOMETER_RESET",
+      "task": "TAKEOVER",
+      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
+      "hash": "555317c5237f3156dcb97fa14e749aedc4e3d7115cbc4efd3cf9a79c197b0aa3"
+    },
+    {
+      "id": 240,
+      "timestamp": "2026-07-08T07:42:39.581136",
+      "role": "ARCHITECT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "da372df229acdc68a5559be8015b2519dc0c3e1cc733e8dab7a418d5747538c2",
+      "type": "TRACE",
+      "task": "TAKEOVER",
+      "detail": "Ejecución administrativa detectada: logix takeover",
+      "hash": "ff06507d0b21436fcd5915e3527593ed528537e6316d8c46d61d631a97a96679"
+    },
+    {
+      "id": 239,
+      "timestamp": "2026-07-08T07:42:35.986777",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "18e1d2d6f28af2dd84e659540dba3b261326d6a436cf1b04180e5f561578fdaa",
+      "type": "TRACE",
+      "task": "UNKNOWN",
+      "detail": "Ejecución administrativa detectada: logix unknown",
+      "hash": "da372df229acdc68a5559be8015b2519dc0c3e1cc733e8dab7a418d5747538c2"
+    },
+    {
+      "id": 238,
+      "timestamp": "2026-07-08T05:14:05.555226",
+      "role": "AGENT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "9d08d2ae3c8fd91e10d192aa65d013e076c37680ad1c10365d7cd754c33cf231",
+      "type": "ODOMETER_RESET",
+      "task": "TAKEOVER",
+      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
+      "hash": "18e1d2d6f28af2dd84e659540dba3b261326d6a436cf1b04180e5f561578fdaa"
+    },
+    {
+      "id": 237,
+      "timestamp": "2026-07-08T04:59:16.085892",
+      "role": "ARCHITECT",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "43851e3f10dd5ad5459be81164b167aec5994243a67a771dda28651922b3bcc5",
+      "type": "TRACE",
+      "task": "TAKEOVER",
+      "detail": "Ejecución administrativa detectada: logix takeover",
+      "hash": "9d08d2ae3c8fd91e10d192aa65d013e076c37680ad1c10365d7cd754c33cf231"
+    },
+    {
+      "id": 236,
+      "timestamp": "2026-07-08T04:59:13.553377",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "a0d496e7a56663c00144031a1fd32285c17f46c7fcd7d1b9fd5a05842ebd0b15",
+      "type": "TRACE",
+      "task": "UNKNOWN",
+      "detail": "Ejecución administrativa detectada: logix unknown",
+      "hash": "43851e3f10dd5ad5459be81164b167aec5994243a67a771dda28651922b3bcc5"
+    },
+    {
+      "id": 235,
+      "timestamp": "2026-07-05T23:25:26.928095",
+      "role": "AI",
+      "sessionid": "RELAY-1783308326913",
+      "prevhash": "b7106aefe2f4cb3fd561cb88024e46100ac5060cbaf5a6bb838cbd70f2e67ad4",
+      "type": "HANDOVER",
+      "task": "Session Transfer",
+      "detail": "Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED.",
+      "hash": "a0d496e7a56663c00144031a1fd32285c17f46c7fcd7d1b9fd5a05842ebd0b15"
+    },
+    {
+      "id": 234,
+      "timestamp": "2026-07-05T23:25:24.562257",
+      "role": "GENERAL",
+      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
+      "prevhash": "50a521d527965d6b501c1d133d1604670bae4b3e0a184327cfb643069465088e",
+      "type": "TRACE",
+      "task": "HANDOVER",
+      "detail": "Ejecución administrativa detectada: logix handover",
+      "hash": "b7106aefe2f4cb3fd561cb88024e46100ac5060cbaf5a6bb838cbd70f2e67ad4"
+    },
     {
       "id": 233,
       "timestamp": "2026-07-05T23:22:41.521780",
@@ -689,94 +617,6 @@
       "task": "SYNC-CONTEXT",
       "detail": "Ejecución administrativa detectada: logix sync-context",
       "hash": "6ecbdfa22d4eeaab46182d2e914ab573d31d5d0b464c96c108b6e7ab03948185"
-    },
-    {
-      "id": 191,
-      "timestamp": "2026-07-05T19:41:29.747948",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "d6feac31f2be7e494cd9ac0301de479fb92dddc5122dc1eea8989a850c97d0a4",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "500c2786d86e5da00fb15794a40e4ce5f290a307ec5f2e3db5695192a9cca3e7"
-    },
-    {
-      "id": 190,
-      "timestamp": "2026-07-05T19:41:23.549074",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "ff08ff13bd5ef5c1750ab58b0a04a599627e62a6411b5715153978f367a6c4a6",
-      "type": "TRACE",
-      "task": "SYNC-CONTEXT",
-      "detail": "Ejecución administrativa detectada: logix sync-context",
-      "hash": "d6feac31f2be7e494cd9ac0301de479fb92dddc5122dc1eea8989a850c97d0a4"
-    },
-    {
-      "id": 189,
-      "timestamp": "2026-07-05T19:40:35.293194",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "8d38664a1ba9f56ce649b16726590ba6ec8e0abc76ab01cfedd3905c2ae04dfc",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "ff08ff13bd5ef5c1750ab58b0a04a599627e62a6411b5715153978f367a6c4a6"
-    },
-    {
-      "id": 188,
-      "timestamp": "2026-07-05T19:40:15.484603",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "35935d251d1a7d73a89e1a59bdd0897f1ff560092d7fba16695bceb73897e7d0",
-      "type": "TRACE",
-      "task": "SYNC-CONTEXT",
-      "detail": "Ejecución administrativa detectada: logix sync-context",
-      "hash": "8d38664a1ba9f56ce649b16726590ba6ec8e0abc76ab01cfedd3905c2ae04dfc"
-    },
-    {
-      "id": 187,
-      "timestamp": "2026-07-05T19:39:09.124090",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "f3b3aa021bd70d707396fc699b774a0d89587bfce0479afb39f7cd4f2c26d675",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "35935d251d1a7d73a89e1a59bdd0897f1ff560092d7fba16695bceb73897e7d0"
-    },
-    {
-      "id": 186,
-      "timestamp": "2026-07-05T19:38:52.159596",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "3cc630969ffe69b05417414dfee1ab78f3fe17605e2a9f495af07db3a073bccc",
-      "type": "TRACE",
-      "task": "SYNC-CONTEXT",
-      "detail": "Ejecución administrativa detectada: logix sync-context",
-      "hash": "f3b3aa021bd70d707396fc699b774a0d89587bfce0479afb39f7cd4f2c26d675"
-    },
-    {
-      "id": 185,
-      "timestamp": "2026-07-05T19:37:11.398093",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "34b01801ee6706db0dbca12395b52124f4d3f6fcb02fb5303aa444ecfd681491",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "3cc630969ffe69b05417414dfee1ab78f3fe17605e2a9f495af07db3a073bccc"
-    },
-    {
-      "id": 184,
-      "timestamp": "2026-07-05T19:36:37.118970",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "3966a5eb4e26a3dd18021e93c839ce3ae6c319b26a988ce10c4373d354156006",
-      "type": "TRACE",
-      "task": "SYNC-CONTEXT",
-      "detail": "Ejecución administrativa detectada: logix sync-context",
-      "hash": "34b01801ee6706db0dbca12395b52124f4d3f6fcb02fb5303aa444ecfd681491"
     }
   ]
 }

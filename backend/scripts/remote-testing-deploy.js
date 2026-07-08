@@ -41,9 +41,9 @@ conn.on('ready', async () => {
         const checkRepoCmd = 'if [ ! -d "/var/www/pj-air-testing" ]; then git clone -b testing --single-branch https://github.com/eleuc/PJ-Air.git /var/www/pj-air-testing; else cd /var/www/pj-air-testing && git fetch origin && git checkout testing && git reset --hard origin/testing; fi';
         await executeCommand(conn, checkRepoCmd);
 
-        // 2. Setup database from production snapshot (optional/clean database)
+        // 2. Setup database from test snapshot (clean database)
         console.log('2. Aprovisonando base de datos de testing...');
-        const setupDbCmd = 'cp /var/www/pj-air/database.sqlite /var/www/pj-air-testing/database-testing.sqlite';
+        const setupDbCmd = 'cp /var/www/pj-air/backend/database.test.sqlite /var/www/pj-air-testing/database-testing.sqlite';
         await executeCommand(conn, setupDbCmd);
 
         // 3. Build Backend

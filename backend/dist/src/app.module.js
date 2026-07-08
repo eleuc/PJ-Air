@@ -21,6 +21,8 @@ const devtools_module_1 = require("./devtools/devtools.module");
 const auth_module_1 = require("./auth/auth.module");
 const system_configs_module_1 = require("./system-configs/system-configs.module");
 const admin_actions_module_1 = require("./admin-actions/admin-actions.module");
+const payments_module_1 = require("./payments/payments.module");
+const xero_module_1 = require("./xero/xero.module");
 const product_entity_1 = require("./products/product.entity");
 const category_entity_1 = require("./products/category.entity");
 const user_entity_1 = require("./users/user.entity");
@@ -30,6 +32,7 @@ const order_entity_1 = require("./orders/order.entity");
 const order_item_entity_1 = require("./orders/order-item.entity");
 const product_discount_entity_1 = require("./users/product-discount.entity");
 const system_config_entity_1 = require("./system-configs/system-config.entity");
+const payment_entity_1 = require("./payments/payment.entity");
 let AppModule = AppModule_1 = class AppModule {
     logger = new common_1.Logger(AppModule_1.name);
     onModuleInit() {
@@ -43,8 +46,8 @@ exports.AppModule = AppModule = AppModule_1 = __decorate([
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'sqlite',
                 database: config_1.DATABASE_PATH,
-                entities: [product_entity_1.Product, category_entity_1.Category, user_entity_1.User, profile_entity_1.Profile, address_entity_1.Address, order_entity_1.Order, order_item_entity_1.OrderItem, product_discount_entity_1.ProductDiscount, system_config_entity_1.SystemConfig],
-                synchronize: config_1.NODE_ENV !== 'production',
+                entities: [product_entity_1.Product, category_entity_1.Category, user_entity_1.User, profile_entity_1.Profile, address_entity_1.Address, order_entity_1.Order, order_item_entity_1.OrderItem, product_discount_entity_1.ProductDiscount, system_config_entity_1.SystemConfig, payment_entity_1.Payment],
+                synchronize: config_1.NODE_ENV !== 'production' || process.env.BACKEND_PORT === '3201',
                 logging: false,
             }),
             users_module_1.UsersModule,
@@ -55,6 +58,8 @@ exports.AppModule = AppModule = AppModule_1 = __decorate([
             auth_module_1.AuthModule,
             system_configs_module_1.SystemConfigsModule,
             admin_actions_module_1.AdminActionsModule,
+            payments_module_1.PaymentsModule,
+            xero_module_1.XeroModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

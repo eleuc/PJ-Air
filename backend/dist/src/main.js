@@ -12,7 +12,7 @@ catch (error) {
     process.exit(1);
 }
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, { rawBody: true });
     app.enableCors();
     const uploadsPath = (0, path_1.resolve)(config_1.UPLOAD_PATH);
     console.log('UPLOADS PATH RESOLVED TO:', uploadsPath);

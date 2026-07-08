@@ -13,6 +13,10 @@ export declare class Order {
     notes: string;
     delivery_type: string;
     delivery_address_text: string;
+    payment_gateway: string;
+    payment_transaction_id: string;
+    payment_status: string;
+    xero_invoice_id: string;
     created_at: Date;
     delivery_user: User;
     user: User;

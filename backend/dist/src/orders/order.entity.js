@@ -26,6 +26,10 @@ let Order = class Order {
     notes;
     delivery_type;
     delivery_address_text;
+    payment_gateway;
+    payment_transaction_id;
+    payment_status;
+    xero_invoice_id;
     created_at;
     delivery_user;
     user;
@@ -77,6 +81,22 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true, type: 'text' }),
     __metadata("design:type", String)
 ], Order.prototype, "delivery_address_text", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Order.prototype, "payment_gateway", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Order.prototype, "payment_transaction_id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 'unpaid' }),
+    __metadata("design:type", String)
+], Order.prototype, "payment_status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Order.prototype, "xero_invoice_id", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
