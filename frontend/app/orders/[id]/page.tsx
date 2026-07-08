@@ -6,6 +6,7 @@ import { CheckCircle2, Package, Calendar, Clock, MapPin, ChevronRight, ShoppingB
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
+import PaymentGateway from '@/components/payment/PaymentGateway';
 
 export default function OrderConfirmationPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: orderId } = use(params);
@@ -111,8 +112,18 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
                     </div>
 
                     {/* Order Summary */}
-                    <div className="lg:col-span-5">
-                        <div className="bg-card rounded-[32px] border border-border p-8 shadow-xl sticky top-28">
+                    <div className="lg:col-span-5 space-y-6">
+                        {order.status === 'Pedido Enviado' && (
+                            <PaymentGateway
+                                orderId={orderId}
+                                amount={Number(order.total)}
+                                onSuccess={() => {
+                                    setOrder({ ...order, status: 'En Producción' });
+                                }}
+                                locale={locale}
+                            />
+                        )}
+                        <div className="bg-card rounded-[32px] border border-border p-8 shadow-xl">
                             <div className="flex justify-between items-center mb-8">
                                 <h3 className="text-xl font-bold flex items-center gap-2 font-serif"><ShoppingBag size={20} className="text-primary" /> {t.orders.yourPurchase}</h3>
                                 <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-1 rounded uppercase tracking-widest">#{order.id.toString().slice(0, 8)}</span>
