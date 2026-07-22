@@ -313,5 +313,47 @@
     "exile_name": "1783510960554_database.sqlite",
     "hash": "D127ACF17C0E777D2A390ED9C139DC422EFB8AB2B0134079A5BD2068D7AE37C0",
     "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\database.sqlite"
+  },
+  {
+    "timestamp": "2026-07-19T16:18:22.798802",
+    "original_name": "AGENTS.md",
+    "exile_name": "1784492302792_AGENTS.md",
+    "hash": "F714A612033D148C8A9BA3A13F32E711AB14F10444BEA62BFD86EEBBE124DB3A",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\AGENTS.md"
+  },
+  {
+    "timestamp": "2026-07-19T16:18:22.819434",
+    "original_name": "GENESIS_REFERENCE.md",
+    "exile_name": "1784492302813_GENESIS_REFERENCE.md",
+    "hash": "8176D545DB2FE860DB1E59025478CCB04C575E74A16B74E577963FF51D402EA4",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\GENESIS_REFERENCE.md"
+  },
+  {
+    "timestamp": "2026-07-19T16:18:23.660413",
+    "original_name": "logix.old",
+    "exile_name": "1784492302821_logix.old",
+    "hash": "EDA0ED9E9AE319C07DD766F6FDB6C7A9A5EAD8A58CF9CF373B98DBC1E62795BE",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\bin\\logix.old"
+  },
+  {
+    "timestamp": "2026-07-19T16:18:24.498996",
+    "original_name": "pulse.old",
+    "exile_name": "1784492303675_pulse.old",
+    "hash": "CB8BEDE4DF5A89173BC3D651E2317B36DA4F62CEEAC75921DF7FFBC0420FB090",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\bin\\pulse.old"
+  },
+  {
+    "timestamp": "2026-07-19T16:18:24.510013",
+    "original_name": "sentinel.old",
+    "exile_name": "1784492304502_sentinel.old",
+    "hash": "E28CA3B42C3C30B70F16B500B7FD478F62096FB0360DF9C1FA2A31A9F22479D5",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\bin\\sentinel.old"
+  },
+  {
+    "timestamp": "2026-07-19T16:18:25.290518",
+    "original_name": "watcher.old",
+    "exile_name": "1784492304514_watcher.old",
+    "hash": "098FBBC27B79376C7A91C8073BA2C0AD40D02140A5A630950F6C2BF3B99F34FB",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\bin\\watcher.old"
   }
 ]

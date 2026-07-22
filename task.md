@@ -1,7 +1,6 @@
-# SPRINT S10-PAYMENTS-DEBT - Sprint 10: Reintegración de Pasarelas de Pago y Xero (Deuda Técnica)
-**Objetivo**: Reintegrar y probar los archivos exiliados en purgatory para Stripe, PayPal y Xero.
-**Fecha**: 2026-07-05
+# SPRINT S12-EXTERNAL-BACKUPS - Respaldos Periódicos Automáticos en Google Drive
+**Objetivo**: Configuración de rclone en el VPS para respaldos automatizados diarios de la base de datos y uploads hacia Google Drive.
+**Fecha**: 2026-07-22
 
-- [x] **TASK-10-01** [TECH/INFRA] Recrear tabla 'payments' y campos de pago en 'orders' en SQLite.
-- [x] **TASK-10-02** [TECH/DOMAIN] Reintegrar módulos de pagos backend y procesadores Xero exiliados.
-- [x] **TASK-10-03** [TECH/UI] Reintegrar formularios de Stripe y botones de PayPal en el frontend.
+- [x] **TASK-12-01** [TECH/INFRA] Instalación y vinculación interactiva de rclone en el VPS con la cuenta de Google Drive del cliente.
+- [x] **TASK-12-02** [TECH/INFRA] Creación del script de respaldo automático (/root/backup_to_gdrive.sh) e integración incremental con crontab (2:00 AM diario).

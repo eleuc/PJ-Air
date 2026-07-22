@@ -1,10 +1,10 @@
 {
   "project": "pj-air",
-  "version": "2.2.11",
-  "kernel_version": "2.2.11",
+  "version": "3.2.0",
+  "kernel_version": "3.2.0",
   "status": "COMPLETED",
-  "current_sprint": "S10-PAYMENTS-DEBT",
-  "current_task": "TASK-10-01",
+  "current_sprint": "S12-EXTERNAL-BACKUPS",
+  "current_task": "TASK-12-01",
   "sprints": [
     {
       "id": "S01-INCEPTION",
@@ -472,6 +472,112 @@
           "detail_doc": "vault/runtime/detail_docs/TASK-10-03.md",
           "audit_required": true,
           "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+        },
+        {
+          "id": "TASK-S10-PAYMENTS-DEBT-01",
+          "desc": "[GOV] Disgregación de Identidades: Modificar `logix bump` en el core para que no altere ni exija paridad entre `kKernelVersion` y la versión de negocio.",
+          "status": "IN_PROGRESS",
+          "required_signatures": [
+            "PO"
+          ],
+          "veracity_hash": null,
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+        },
+        {
+          "id": "TASK-S10-PAYMENTS-DEBT-02",
+          "desc": "[GOV] Modificar `verify_veracity.dart` (Gate 0) en conext_core para separar el control de versión de negocio del control criptográfico del binario congelado.",
+          "status": "IN_PROGRESS",
+          "required_signatures": [
+            "TECH"
+          ],
+          "veracity_hash": null,
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+        },
+        {
+          "id": "TASK-S10-PAYMENTS-DEBT-03",
+          "desc": "[GOV] Actualizar `logix upgrade` para realizar la inyección de `kernel_version` en `backlog.json` de forma independiente a la versión del proyecto de negocio.",
+          "status": "IN_PROGRESS",
+          "required_signatures": [
+            "TECH"
+          ],
+          "veracity_hash": null,
+          "audit_required": true,
+          "audit_reason": "RELIANCE_AMNESTY: Relay perdido, se requiere re-validación de lógica."
+        }
+      ]
+    },
+    {
+      "id": "S11-PRODUCTION-DIAGNOSTICS",
+      "name": "Sprint 11: Diagnóstico y Resolución Estructural en Producción",
+      "status": "COMPLETED",
+      "start_date": "2026-07-22",
+      "goal": "Diagnóstico NHC, corrección del volumen de Docker (imágenes), estandarización criptográfica (Bcrypt) y sanitización de catálogo (productos huérfanos).",
+      "tasks": [
+        {
+          "id": "TASK-11-01",
+          "label": "TECH/INFRA",
+          "desc": "Diagnóstico NHC de producción: Análisis de contenedor, SQLite y fallos de autenticación.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-11-01.md"
+        },
+        {
+          "id": "TASK-11-02",
+          "label": "TECH/INFRA",
+          "desc": "Fix: Modificar docker-compose.yml en el VPS para montar volumen de /app/uploads persistente.",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-11-03",
+          "label": "TECH/DOMAIN",
+          "desc": "Fix: Estandarizar contraseñas de cuentas owner a Bcrypt directamente en la base de datos.",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-11-04",
+          "label": "TECH/DOMAIN",
+          "desc": "Fix: Reasignar productos con category_id NULL a una categoría válida en producción.",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-11-05",
+          "label": "TECH/INFRA",
+          "desc": "Fix: Compilación y despliegue del contenedor backend actualizado en el VPS (incorporando bcryptjs, endpoint de categorías y rutas UPLOAD_PATH fijas).",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-11-06",
+          "label": "TECH/DATA",
+          "desc": "Fix: Restaurar imágenes extraviadas del volumen efímero del contenedor obsoleto hacia el volumen persistente de uploads desde el último backup manual del VPS.",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-11-07",
+          "label": "TECH/SEC",
+          "desc": "Fix: Ejecución del reset maestro de contraseñas hacia PBKDF2 (\"jhoanes\") y activación del flag force_pwd_change para forzar la estandarización en el siguiente login de cada cliente.",
+          "status": "DONE"
+        }
+      ]
+    },
+    {
+      "id": "S12-EXTERNAL-BACKUPS",
+      "name": "Sprint 12: Respaldos Periódicos Automáticos en Google Drive",
+      "status": "COMPLETED",
+      "start_date": "2026-07-22",
+      "goal": "Configuración de rclone en el VPS para respaldos automatizados diarios de la base de datos y uploads hacia Google Drive sin costo.",
+      "tasks": [
+        {
+          "id": "TASK-12-01",
+          "label": "TECH/INFRA",
+          "desc": "Instalación y vinculación interactiva de rclone en el VPS con la cuenta de Google Drive del cliente.",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-12-02",
+          "label": "TECH/INFRA",
+          "desc": "Creación del script de respaldo automático y programación de la tarea en crontab (2:00 AM diario).",
+          "status": "DONE"
         }
       ]
     }

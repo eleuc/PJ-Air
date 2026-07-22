@@ -1,16 +1,5 @@
 | Timestamp | Role | SessionID | PrevHash | Type | Task | Detail |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-06-28 03:35 | AI | Sentinel | e19a6b3 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260628T033510-6evuZ-KolwC5PQfKja7XfByQa95G2QHEHrGjDM4o_1o | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: 6evuZ-KolwC5PQfKja7XfByQa95G2QHEHrGjDM4o_1o |
-| 2026-06-28 03:36 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 59cde68 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
-| 2026-06-28 04:37 | AI | Sentinel | f20e304 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260628T043703-HTURuuXv8G4_VhYoGbRKIsMRmo9rpWSKBifKYPGkKHg | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: HTURuuXv8G4_VhYoGbRKIsMRmo9rpWSKBifKYPGkKHg |
-| 2026-06-28 04:38 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | f1da982 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-06-28 04:38 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | e810076 | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
-| 2026-06-28 04:39 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 130a55a | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
-| 2026-06-28 04:52 | AI | Sentinel | 297321c | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260628T045225-Gs0GIPcsVb6kHwHjCklThzbfaDNYulwEBCJVeHflEFE | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: Gs0GIPcsVb6kHwHjCklThzbfaDNYulwEBCJVeHflEFE |
-| 2026-06-28 09:50 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 1d29cdf | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-06-28 09:51 | AI | CLEANUP | a922269 | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260628T045225-Gs0GIPcsVb6kHwHjCklThzbfaDNYulwEBCJVeHflEFE expirado al iniciar handover. |
-| 2026-06-28 11:34 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d89e116 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-06-28 11:34 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 99add10 | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
 | 2026-06-28 11:34 | AI | Sentinel | 644f48c | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260628T113458-TNmgIW1BUQWpjojedAYcgcbzsZxLn-pC60pF8kO_6lo | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: TNmgIW1BUQWpjojedAYcgcbzsZxLn-pC60pF8kO_6lo |
 | 2026-06-28 11:36 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | f76c00e | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
 | 2026-06-28 12:55 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | fa440e3 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
@@ -200,3 +189,14 @@
 | 2026-07-05 23:22 | AI | 1783308161514 | 2090692 | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
 | 2026-07-05 23:25 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 50a521d | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-05 23:25 | AI | 1783308326913 | b7106ae | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
+| 2026-07-08 04:59 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | a0d496e | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
+| 2026-07-08 04:59 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 43851e3 | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
+| 2026-07-08 05:14 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 9d08d2a | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-07-08 07:42 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 18e1d2d | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
+| 2026-07-08 07:42 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | da372df | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
+| 2026-07-08 07:44 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | ff06507 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-07-08 08:01 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 555317c | TRACE | PUSH | Ejecución administrativa detectada: logix push |
+| 2026-07-08 08:01 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 01a4371 | TRACE | FLEET-PUSH | Ejecución administrativa detectada: logix fleet-push |
+| 2026-07-14 00:27 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 726dd1d | TRACE | SYNC-VERSION | Ejecución administrativa detectada: logix sync-version |
+| 2026-07-17 12:07 | AI | DEV_BYPASS | e4fe3db | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-17 12:07 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 5e803e7 | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
