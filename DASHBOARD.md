@@ -1,18 +1,18 @@
-# DASHBOARD — 3.1.4
-**Generado**: 2026-07-05T20:03:06.057723
-**Profundidad de Sesión**: 🟢 BAJA (3.2%)
-**Integridad del Búnker**: 🟢 NOMINAL (98.9%)
+# DASHBOARD — 3.4.2
+**Generado**: 2026-08-01T17:05:45.905049
+**Profundidad de Sesión**: 🟢 BAJA (1.8%)
+**Integridad del Búnker**: 🔴 COMPROMETIDA (88.9%)
 
 ## 📊 Métricas Disgregadas
 | Métrica | Valor | Umbral | Estado |
 | :--- | :--- | :--- | :--- |
-| **Profundidad (Odometer)** | 3.2% | ⚠️ 60% / 🔴 80% | 🟢 BAJA |
-| **Integridad (Stability)** | 98.9% | 🔴 90% | 🟢 NOMINAL |
-| **Deriva (DNA Drift)** | 0.0% | Informativo | ℹ️ Mínima |
+| **Profundidad (Odometer)** | 1.8% | ⚠️ 60% / 🔴 80% | 🟢 BAJA |
+| **Integridad (Stability)** | 88.9% | 🔴 90% | 🔴 COMPROMETIDA |
+| **Deriva (DNA Drift)** | 5.0% | Informativo | 🟡 Moderada |
 | **Densidad (Swelling)** | 3/36 | 🔴 >36 | 🟢 NOMINAL |
-| **Turnos Activos** | 10 | — | 🔄 Acumulativo |
-| **Carga Volumétrica** | 72.5 KB | 1.9 MB | 📦 Volumétrico |
-| **Ventana de Contexto** | 8.4% | ⚠️ 30% / 🔴 70% | 🟢 BAJA |
+| **Turnos Activos** | 4 | — | 🔄 Acumulativo |
+| **Carga Volumétrica** | 0.0 KB | 1.9 MB | 📦 Volumétrico |
+| **Ventana de Contexto** | 7.5% | ⚠️ 30% / 🔴 70% | 🟢 BAJA |
 | **Plataforma (Native)** | unknown | Windows | 🟢 NATIVE |
 
 ## 🚢 Fleet Status (Multi-Node)
@@ -26,14 +26,16 @@ Total: **0** capacidades activas en **0** nodos.
 | :--- | :--- | :--- | :--- | :--- | :--- |
 
 ## 🚀 Sesión Activa
-- **Sprint**: S08-PAYMENTS-ACCOUNTING - Sprint 08: Integración de Pasarelas de Pago y Xero
+- **Sprint**: N/A
 - **Tarea**: N/A
+
+## 🕵️‍♂️ Jules Centinela
+- **Estado**: No configurado
 
 ## 🛡️ Seguridad & Independencia
 - **Isomorphism**: CERTIFIED
-- **Kernel Version**: 3.1.4
+- **Kernel Version**: 3.4.2
 - **Node Isolation**: ACTIVE
-- **Git Trace**: `master` @ `4db40d84` (⚠️ Dirty)
 
 ---
-*Actualizado via VOLUMETRIC-TELEMETRY v1.0 — N/A*
+*Actualizado via VOLUMETRIC-TELEMETRY v1.0 — NUCLEUS-V9*

@@ -1,6 +1,6 @@
-# SPRINT S12-EXTERNAL-BACKUPS - Respaldos Periódicos Automáticos en Google Drive
-**Objetivo**: Configuración de rclone en el VPS para respaldos automatizados diarios de la base de datos y uploads hacia Google Drive.
-**Fecha**: 2026-07-22
+# SPRINT S12 - Sprint 12: Respaldos Periódicos Automáticos en Google Drive
+**Objetivo**: Configuración de rclone en el VPS para respaldos automatizados diarios de la base de datos y uploads hacia Google Drive sin costo.
+**Fecha**: 2026-08-01
 
 - [x] **TASK-12-01** [TECH/INFRA] Instalación y vinculación interactiva de rclone en el VPS con la cuenta de Google Drive del cliente.
-- [x] **TASK-12-02** [TECH/INFRA] Creación del script de respaldo automático (/root/backup_to_gdrive.sh) e integración incremental con crontab (2:00 AM diario).
+- [x] **TASK-12-02** [TECH/INFRA] Creación del script de respaldo automático y programación de la tarea en crontab (2:00 AM diario).

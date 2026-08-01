@@ -1,31 +1,5 @@
 | Timestamp | Role | SessionID | PrevHash | Type | Task | Detail |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-06-28 11:34 | AI | Sentinel | 644f48c | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260628T113458-TNmgIW1BUQWpjojedAYcgcbzsZxLn-pC60pF8kO_6lo | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: TNmgIW1BUQWpjojedAYcgcbzsZxLn-pC60pF8kO_6lo |
-| 2026-06-28 11:36 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | f76c00e | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
-| 2026-06-28 12:55 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | fa440e3 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-06-29 09:43 | AI | Sentinel | 5361af1 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T094300-VYl-KxzWxJwLXhVZOD3LmcedGhsOKbAbwHO0t79LgBs | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: VYl-KxzWxJwLXhVZOD3LmcedGhsOKbAbwHO0t79LgBs |
-| 2026-06-29 09:44 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 03fec1c | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-06-29 13:53 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | caec139 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-06-29 13:53 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 72018fa | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
-| 2026-06-29 13:53 | AI | Sentinel | c88f95a | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T135303-FXWbKHdtF6kcj9JMx5p--GEatcCi6IphbLdVAInjJdg | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: FXWbKHdtF6kcj9JMx5p--GEatcCi6IphbLdVAInjJdg |
-| 2026-06-29 13:55 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | d895a9d | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
-| 2026-06-29 14:02 | AI | Sentinel | 459b034 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T140229-EcWDnPgGVUXxa6Dyx2fFXw5gHqY7ujt6_LOAaGuOOeg | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: EcWDnPgGVUXxa6Dyx2fFXw5gHqY7ujt6_LOAaGuOOeg |
-| 2026-06-29 14:09 | AI | Sentinel | 59b6072 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T140957-odgciLUc1PJNImpijqqq6rLyw9ZKKdscWhPbeeE4I3I | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: odgciLUc1PJNImpijqqq6rLyw9ZKKdscWhPbeeE4I3I |
-| 2026-06-29 14:19 | AI | Sentinel | 97257bd | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T141929-oV3580zN2PUbobm1ZvZHpx0XEl3JFulE-HyBf_xr-YI | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: oV3580zN2PUbobm1ZvZHpx0XEl3JFulE-HyBf_xr-YI |
-| 2026-06-29 21:00 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 02c702a | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
-| 2026-06-29 21:00 | AI | Sentinel | 17d4347 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210027-gOnGyhSc45vEhMplJOOEwXfNkAckMun7cp5rTeJNDug | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: gOnGyhSc45vEhMplJOOEwXfNkAckMun7cp5rTeJNDug |
-| 2026-06-29 21:00 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | ba63d5c | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
-| 2026-06-29 21:01 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 1cb0e8b | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-06-29 21:01 | AI | CLEANUP | a905649 | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210027-gOnGyhSc45vEhMplJOOEwXfNkAckMun7cp5rTeJNDug expirado al iniciar handover. |
-| 2026-06-29 21:02 | AI | Sentinel | 2d5b440 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210240-qo_BMiHc9m9FeNjn2n33wtD2z6nNaWnmVFDAsOHBnCw | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: qo_BMiHc9m9FeNjn2n33wtD2z6nNaWnmVFDAsOHBnCw |
-| 2026-06-29 21:04 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 20d5f2d | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-06-29 21:04 | AI | CLEANUP | 75a8ada | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210240-qo_BMiHc9m9FeNjn2n33wtD2z6nNaWnmVFDAsOHBnCw expirado al iniciar handover. |
-| 2026-06-29 21:06 | AI | Sentinel | e2a9e36 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210624-t_9E_4ReaRfCcBF4vSxizzJ4h8zMKtNNm-OJPrJr2w8 | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: t_9E_4ReaRfCcBF4vSxizzJ4h8zMKtNNm-OJPrJr2w8 |
-| 2026-06-29 21:07 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | a680050 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-06-29 21:07 | AI | CLEANUP | dd88e02 | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210624-t_9E_4ReaRfCcBF4vSxizzJ4h8zMKtNNm-OJPrJr2w8 expirado al iniciar handover. |
-| 2026-06-29 21:08 | AI | Sentinel | 9868245 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210813-cUz1TJLRTu8_k7mFrHh49IWkZrDVEqyCrLH9Yw8jdB8 | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: cUz1TJLRTu8_k7mFrHh49IWkZrDVEqyCrLH9Yw8jdB8 |
-| 2026-06-29 21:09 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 6085030 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-06-29 21:09 | AI | CLEANUP | dd3fbb6 | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210813-cUz1TJLRTu8_k7mFrHh49IWkZrDVEqyCrLH9Yw8jdB8 expirado al iniciar handover. |
 | 2026-06-29 21:09 | AI | Sentinel | 619fcd1 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210945-JZrwXTNqinNvxXqLuixrIwpx5QSazk-DlEsRWMNnoEI | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: JZrwXTNqinNvxXqLuixrIwpx5QSazk-DlEsRWMNnoEI |
 | 2026-06-29 21:10 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 8d1a82f | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-06-29 21:10 | AI | CLEANUP | b492abe | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210945-JZrwXTNqinNvxXqLuixrIwpx5QSazk-DlEsRWMNnoEI expirado al iniciar handover. |
@@ -200,3 +174,29 @@
 | 2026-07-14 00:27 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 726dd1d | TRACE | SYNC-VERSION | Ejecución administrativa detectada: logix sync-version |
 | 2026-07-17 12:07 | AI | DEV_BYPASS | e4fe3db | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
 | 2026-07-17 12:07 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 5e803e7 | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
+| 2026-07-19 16:18 | AI | DEV_BYPASS | f201612 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-19 16:18 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 90b90de | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-19 16:18 | AI | DEV_BYPASS | 85be3d6 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-19 16:18 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 2628abd | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
+| 2026-07-19 16:18 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 6f7c3e4 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-07-22 08:50 | AI | DEV_BYPASS | 24d087a | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-22 08:50 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 37ee481 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
+| 2026-07-22 08:50 | AI | DEV_BYPASS | 600cd9e | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-22 08:50 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | c59a561 | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
+| 2026-07-22 08:50 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 3a60faa | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
+| 2026-07-22 17:23 | AI | DEV_BYPASS | 2a17b7c | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-22 17:23 | AI | DEV_BYPASS | 8e1249f | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-22 17:23 | AI | DEV_BYPASS | be359a3 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-22 17:41 | AI | DEV_BYPASS | ec8c697 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-30 16:32 | AI | DEV_BYPASS | 144f3f5 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-30 16:32 | AI | DEV_BYPASS | dfa456b | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-30 16:33 | AI | DEV_BYPASS | 7aeaa9f | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-30 16:34 | AI | DEV_BYPASS | abe06c8 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-30 16:34 | AI | DEV_BYPASS | 52bede0 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-30 16:34 | AI | DEV_BYPASS | 8e1edeb | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-07-30 16:40 | AI | DEV_BYPASS | ae1be60 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría. |
+| 2026-08-01 17:03 | AI | DEV_BYPASS | a5d380d | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-01 17:04 | AI | DEV_BYPASS | 2cf42e4 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-01 17:33 | AI | DEV_BYPASS | ff555b9 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-01 17:33 | AI | WARN | 90942e8 | SECURITY-WARNING | Handover Perímetro 1 | Cierre de sesión con firma delegada en Perímetro 1 (GATE-1). |
+| 2026-08-01 17:34 | AI | 1785620040322 | 98ccbcf | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: DNA-DRIFTED. |

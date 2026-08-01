@@ -41,7 +41,5 @@ bin/vault/runtime/purgatory/
 backups/
 bin.old/
 scratch/
-**/node_modules/
-.tmp.driveupload/
 **/RESTART_REQUIRED
 *.db

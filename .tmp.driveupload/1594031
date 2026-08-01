@@ -1,0 +1,14 @@
+{
+  "session_uuid": "SESS-1785618249373-2770",
+  "session_start_ts": "2026-08-01T17:04:09.373062",
+  "total_bytes": 0,
+  "total_bytes_out": 0,
+  "context_base_bytes": 0,
+  "cli_bytes": 0,
+  "chat_bytes": 0,
+  "total_tokens": 0,
+  "turns": 0,
+  "peak_bytes": 0,
+  "strike_count": 0,
+  "hwc_complete": true,
+  "last_update": "2026-08-01T17:04:09
