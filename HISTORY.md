@@ -1,17 +1,5 @@
 | Timestamp | Role | SessionID | PrevHash | Type | Task | Detail |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-06-29 21:09 | AI | Sentinel | 619fcd1 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210945-JZrwXTNqinNvxXqLuixrIwpx5QSazk-DlEsRWMNnoEI | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: JZrwXTNqinNvxXqLuixrIwpx5QSazk-DlEsRWMNnoEI |
-| 2026-06-29 21:10 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 8d1a82f | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-06-29 21:10 | AI | CLEANUP | b492abe | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260629T210945-JZrwXTNqinNvxXqLuixrIwpx5QSazk-DlEsRWMNnoEI expirado al iniciar handover. |
-| 2026-06-29 21:10 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 085b4af | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-06-29 21:11 | AI | Sentinel | 88bfc30 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T211124-JS7XFM7xZWii9g5m22V58HSOigh1bFeImTdGXCaVFFM | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: JS7XFM7xZWii9g5m22V58HSOigh1bFeImTdGXCaVFFM |
-| 2026-06-29 21:12 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 816f7d6 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-06-29 21:12 | AI | CLEANUP | 25cc702 | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260629T211124-JS7XFM7xZWii9g5m22V58HSOigh1bFeImTdGXCaVFFM expirado al iniciar handover. |
-| 2026-06-29 21:12 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | ccf09f5 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
-| 2026-06-29 21:12 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 9391285 | TRACE | ACT | Ejecución administrativa detectada: logix act |
-| 2026-06-29 21:12 | AI | Sentinel | 3d74147 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T211256-hKZYVD4xvOgr20UjOEsQnzeUDMTa4py2MD_HcHGtdC8 | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: hKZYVD4xvOgr20UjOEsQnzeUDMTa4py2MD_HcHGtdC8 |
-| 2026-06-29 21:14 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 36e2d7a | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-06-29 21:14 | AI | CLEANUP | 938a865 | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260629T211256-hKZYVD4xvOgr20UjOEsQnzeUDMTa4py2MD_HcHGtdC8 expirado al iniciar handover. |
 | 2026-06-29 21:14 | AI | Sentinel | cd09075 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260629T211448-QKSE0Z4wq8pzZm6hud0eMF4q-z0bWqaqndFHw2c_L04 | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: QKSE0Z4wq8pzZm6hud0eMF4q-z0bWqaqndFHw2c_L04 |
 | 2026-06-29 21:15 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 96cc2e6 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-06-29 21:15 | AI | CLEANUP | 938e738 | CHALLENGE_EXPIRED | Handover Cleanup | Challenge SENTINEL-RESUME-AUTH-PJ_AIR-20260629T211448-QKSE0Z4wq8pzZm6hud0eMF4q-z0bWqaqndFHw2c_L04 expirado al iniciar handover. |
@@ -200,3 +188,15 @@
 | 2026-08-01 17:33 | AI | DEV_BYPASS | ff555b9 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
 | 2026-08-01 17:33 | AI | WARN | 90942e8 | SECURITY-WARNING | Handover Perímetro 1 | Cierre de sesión con firma delegada en Perímetro 1 (GATE-1). |
 | 2026-08-01 17:34 | AI | 1785620040322 | 98ccbcf | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: DNA-DRIFTED. |
+| 2026-08-02 04:42 | AI | DEV_BYPASS | 3b31ec9 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-02 04:42 | AI | DEV_BYPASS | d99a9a4 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-02 04:42 | AI | DEV_BYPASS | 19f04e5 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-02 05:21 | AI | DEV_BYPASS | fb7bf7d | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-02 05:22 | AI | DEV_BYPASS | e3a34f2 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-02 05:22 | AI | DEV_BYPASS | 7e0aee3 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-02 05:23 | AI | DEV_BYPASS | ba81bcc | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-02 06:03 | AI | DEV_BYPASS | aa9a8ca | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-02 06:03 | AI | WARN | 0cea838 | SECURITY-WARNING | Handover Perímetro 1 | Cierre de sesión con firma delegada en Perímetro 1 (GATE-1). |
+| 2026-08-02 06:05 | AI | DEV_BYPASS | 5091046 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-02 06:05 | AI | WARN | d6ec5c2 | SECURITY-WARNING | Handover Perímetro 1 | Cierre de sesión con firma delegada en Perímetro 1 (GATE-1). |
+| 2026-08-02 06:05 | AI | 1785665112811 | a04e0af | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |

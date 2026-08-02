@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-01T17:05:59.908127",
+  "timestamp": "2026-08-02T04:45:16.129081",
   "kernel": {
     "version": "3.4.2",
     "status": "EVOLVING",
@@ -12,10 +12,10 @@
       "immediate_spike": 0.0,
       "total_computed": 1.8432000000000002
     },
-    "bhi": 0.0,
+    "bhi": 88.875,
     "odometer_bytes": 0,
     "odometer_budget": 2000000,
-    "last_audit": "N/A"
+    "last_audit": "2026-08-01T17:34:00.322407"
   },
   "backlog": {
     "current_sprint": "S12",
@@ -40,7 +40,7 @@
       },
       {
         "name": "CHROME-AGENT",
-        "status": "DEVIATED"
+        "status": "INTACT"
       },
       {
         "name": "CHROME-SCRIPTS",
@@ -83,6 +83,72 @@
     "nodes_indexed": []
   },
   "forensic_ledger": [
+    {
+      "id": 275,
+      "timestamp": "2026-08-02T04:42:52.259559",
+      "role": "AI",
+      "sessionid": "DEV_BYPASS",
+      "prevhash": "19f04e505f76af15453ec2a59445c6b8ab0b8a43826f716a13793dcb3002c265",
+      "type": "ALERT",
+      "task": "GOV_MODE",
+      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría.",
+      "hash": "fb7bf7d8e3d71999d88b7ecdc3048b17903791bf9a8fb6189a78afed95e7436d"
+    },
+    {
+      "id": 274,
+      "timestamp": "2026-08-02T04:42:48.665513",
+      "role": "AI",
+      "sessionid": "DEV_BYPASS",
+      "prevhash": "d99a9a483ae9766a0d19f6553de5f0badaac2d63f67941c255f930589b4bbd88",
+      "type": "ALERT",
+      "task": "GOV_MODE",
+      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría.",
+      "hash": "19f04e505f76af15453ec2a59445c6b8ab0b8a43826f716a13793dcb3002c265"
+    },
+    {
+      "id": 273,
+      "timestamp": "2026-08-02T04:42:43.636482",
+      "role": "AI",
+      "sessionid": "DEV_BYPASS",
+      "prevhash": "3b31ec963593613f1aa3f6bbefde16b805eee564368aa88e77ad345982b2699d",
+      "type": "ALERT",
+      "task": "GOV_MODE",
+      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría.",
+      "hash": "d99a9a483ae9766a0d19f6553de5f0badaac2d63f67941c255f930589b4bbd88"
+    },
+    {
+      "id": 272,
+      "timestamp": "2026-08-01T17:34:00.336186",
+      "role": "AI",
+      "sessionid": "RELAY-1785620040322",
+      "prevhash": "98ccbcfd00418f914353cf80f557b51029247006162fe7f2047aaead369345dc",
+      "type": "HANDOVER",
+      "task": "Session Transfer",
+      "detail": "Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: DNA-DRIFTED.",
+      "hash": "3b31ec963593613f1aa3f6bbefde16b805eee564368aa88e77ad345982b2699d"
+    },
+    {
+      "id": 271,
+      "timestamp": "2026-08-01T17:33:57.824813",
+      "role": "AI",
+      "sessionid": "DRIFT-WARN",
+      "prevhash": "90942e83f053995d1baae6c2dc6a92fdb07502f15fd29879e9660ddda0624e01",
+      "type": "SECURITY-WARNING",
+      "task": "Handover Perímetro 1",
+      "detail": "Cierre de sesión con firma delegada en Perímetro 1 (GATE-1).",
+      "hash": "98ccbcfd00418f914353cf80f557b51029247006162fe7f2047aaead369345dc"
+    },
+    {
+      "id": 270,
+      "timestamp": "2026-08-01T17:33:42.896913",
+      "role": "AI",
+      "sessionid": "DEV_BYPASS",
+      "prevhash": "ff555b925a17266f904614776a76ee2f07a441f6291b9720296dfcf5dbddc5db",
+      "type": "ALERT",
+      "task": "GOV_MODE",
+      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría.",
+      "hash": "90942e83f053995d1baae6c2dc6a92fdb07502f15fd29879e9660ddda0624e01"
+    },
     {
       "id": 269,
       "timestamp": "2026-08-01T17:04:04.155495",
@@ -566,72 +632,6 @@
       "task": "HANDOVER",
       "detail": "Ejecución administrativa detectada: logix handover",
       "hash": "8100555b298fc7e3dfb43063b9efdabec246b5366868571836183f17c2799657"
-    },
-    {
-      "id": 225,
-      "timestamp": "2026-07-05T19:58:59.877998",
-      "role": "AGENT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "813b0d7f39003094985577f4d53a53e1e503f6e0c4508afbf71cbf38e0e90f28",
-      "type": "ODOMETER_RESET",
-      "task": "TAKEOVER",
-      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
-      "hash": "6e98763ad1bb0970ff92d9fee0b72bc67bc065fd3afd32f4471d515a9bc6a9cf"
-    },
-    {
-      "id": 224,
-      "timestamp": "2026-07-05T19:58:31.710998",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "24e07fad0516ddd7b565457458e0358f5a91e034e2b92adc7b3fd1d6a5f9bc83",
-      "type": "TRACE",
-      "task": "TAKEOVER",
-      "detail": "Ejecución administrativa detectada: logix takeover",
-      "hash": "813b0d7f39003094985577f4d53a53e1e503f6e0c4508afbf71cbf38e0e90f28"
-    },
-    {
-      "id": 223,
-      "timestamp": "2026-07-05T19:58:29.541199",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "e88efad611d35f7eeac9224c70900e8f87a0adc92a6cc5ed1c7e9a3266510845",
-      "type": "TRACE",
-      "task": "SYNC-CONTEXT",
-      "detail": "Ejecución administrativa detectada: logix sync-context",
-      "hash": "24e07fad0516ddd7b565457458e0358f5a91e034e2b92adc7b3fd1d6a5f9bc83"
-    },
-    {
-      "id": 222,
-      "timestamp": "2026-07-05T19:57:47.208602",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "59c8017f34d436aad5700713eb2d76be3ecaba6a30ca6b10a5b6a99ff0d6e1c9",
-      "type": "TRACE",
-      "task": "UNKNOWN",
-      "detail": "Ejecución administrativa detectada: logix unknown",
-      "hash": "e88efad611d35f7eeac9224c70900e8f87a0adc92a6cc5ed1c7e9a3266510845"
-    },
-    {
-      "id": 221,
-      "timestamp": "2026-07-05T19:54:23.102105",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "791576ec9900695df665008dbc6244c0c00a2c1cebad02e36a899c0dfe6d5f03",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "59c8017f34d436aad5700713eb2d76be3ecaba6a30ca6b10a5b6a99ff0d6e1c9"
-    },
-    {
-      "id": 220,
-      "timestamp": "2026-07-05T19:54:18.110977",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "299133140076b584966afd5e39b2ec11c51c06cbd1b547ffe025f720d9939f56",
-      "type": "TRACE",
-      "task": "SYNC-CONTEXT",
-      "detail": "Ejecución administrativa detectada: logix sync-context",
-      "hash": "791576ec9900695df665008dbc6244c0c00a2c1cebad02e36a899c0dfe6d5f03"
     }
   ]
 }
