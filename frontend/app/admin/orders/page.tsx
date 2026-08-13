@@ -164,6 +164,8 @@ export default function AdminOrdersPage() {
         } finally {
             setSyncingXero(false);
         }
+    };
+
     const openOrderDetail = (order: Order) => {
         setSelectedOrder(order);
         setEditMode(false);
