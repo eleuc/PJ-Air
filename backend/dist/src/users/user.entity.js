@@ -25,6 +25,7 @@ let User = class User {
     orders;
     general_discount;
     delivery_fee;
+    min_order_amount;
     productDiscounts;
 };
 exports.User = User;
@@ -64,6 +65,10 @@ __decorate([
     (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, default: 0 }),
     __metadata("design:type", Number)
 ], User.prototype, "delivery_fee", void 0);
+__decorate([
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: true, default: null }),
+    __metadata("design:type", Object)
+], User.prototype, "min_order_amount", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => product_discount_entity_1.ProductDiscount, (pd) => pd.user),
     __metadata("design:type", Array)

@@ -7,6 +7,7 @@ export declare class UsersService {
     private profileRepository;
     private productDiscountRepository;
     constructor(userRepository: Repository<User>, profileRepository: Repository<Profile>, productDiscountRepository: Repository<ProductDiscount>);
+    remove(userId: string): Promise<void>;
     findAll(): Promise<User[]>;
     findOne(id: string): Promise<User>;
     updateProfile(userId: string, profileData: Partial<Profile>): Promise<Profile>;
@@ -20,6 +21,7 @@ export declare class UsersService {
     updatePassword(userId: string, newPassword: string): Promise<void>;
     updateGeneralDiscount(userId: string, discount: number): Promise<void>;
     updateDeliveryFee(userId: string, fee: number): Promise<void>;
+    updateMinOrderAmount(userId: string, amount: number | null): Promise<void>;
     setProductDiscount(userId: string, productId: number, data: {
         discount_percentage?: number;
         special_price?: number;

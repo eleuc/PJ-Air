@@ -96,6 +96,9 @@ let UsersController = class UsersController {
     async updateDeliveryFee(id, body) {
         return this.usersService.updateDeliveryFee(id, body.fee);
     }
+    async updateMinOrderAmount(id, body) {
+        return this.usersService.updateMinOrderAmount(id, body.amount);
+    }
     async getProductDiscounts(id) {
         return this.usersService.getProductDiscounts(id);
     }
@@ -104,6 +107,10 @@ let UsersController = class UsersController {
             discount_percentage: body.discount_percentage,
             special_price: body.special_price
         });
+    }
+    async remove(id) {
+        await this.usersService.remove(id);
+        return { message: 'User deleted successfully' };
     }
     async deleteProductDiscount(discountId) {
         return this.usersService.deleteProductDiscount(discountId);
@@ -195,6 +202,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "updateDeliveryFee", null);
 __decorate([
+    (0, common_1.Patch)(':id/min-order-amount'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "updateMinOrderAmount", null);
+__decorate([
     (0, common_1.Get)(':id/product-discounts'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -209,6 +224,13 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "setProductDiscount", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "remove", null);
 __decorate([
     (0, common_1.Delete)('product-discounts/:discountId'),
     __param(0, (0, common_1.Param)('discountId')),

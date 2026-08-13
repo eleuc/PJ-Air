@@ -54,8 +54,8 @@ let OrdersController = class OrdersController {
         });
         res.end(buffer);
     }
-    async findInRange(startDate, endDate, userId) {
-        return this.ordersService.findInRange(startDate, endDate, userId);
+    async findInRange(startDate, endDate, userId, filterBy) {
+        return this.ordersService.findInRange(startDate, endDate, userId, filterBy);
     }
     async findOne(id) {
         return this.ordersService.findOne(id);
@@ -66,6 +66,9 @@ let OrdersController = class OrdersController {
     }
     async assignDelivery(id, deliveryUserId) {
         return this.ordersService.assignDelivery(id, deliveryUserId);
+    }
+    async updatePaymentInfo(id, body) {
+        return this.ordersService.updatePaymentInfo(id, body);
     }
     async update(id, body, req) {
         const userRole = req.user?.role;
@@ -116,8 +119,9 @@ __decorate([
     __param(0, (0, common_1.Query)('startDate')),
     __param(1, (0, common_1.Query)('endDate')),
     __param(2, (0, common_1.Query)('userId')),
+    __param(3, (0, common_1.Query)('filterBy')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "findInRange", null);
 __decorate([
@@ -145,6 +149,15 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "assignDelivery", null);
+__decorate([
+    (0, common_1.Patch)(':id/payment'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "updatePaymentInfo", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),

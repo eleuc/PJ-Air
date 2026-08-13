@@ -95,8 +95,8 @@ let OrdersService = class OrdersService {
             total: Math.round((calculatedTotal + Number.EPSILON) * 100) / 100,
         };
     }
-    async findInRange(startDate, endDate, userId) {
-        console.log('findInRange called with:', { startDate, endDate, userId });
+    async findInRange(startDate, endDate, userId, filterBy = 'created_at') {
+        console.log('findInRange called with:', { startDate, endDate, userId, filterBy });
         const rawStart = startDate.split(' ')[0].split('T')[0];
         const rawEnd = endDate.split(' ')[0].split('T')[0];
         const startD = new Date(rawStart + 'T12:00:00');
@@ -113,14 +113,23 @@ let OrdersService = class OrdersService {
             .leftJoinAndSelect('user.profile', 'profile')
             .leftJoinAndSelect('order.delivery_user', 'delivery_user')
             .leftJoinAndSelect('delivery_user.profile', 'delivery_profile')
-            .leftJoinAndSelect('order.address', 'address')
-            .where('order.created_at >= :start', { start: queryStart })
-            .andWhere('order.created_at <= :end', { end: queryEnd });
+            .leftJoinAndSelect('order.address', 'address');
+        if (filterBy === 'delivery_date') {
+            qb.where('order.delivery_date >= :rawStart', { rawStart })
+                .andWhere('order.delivery_date <= :rawEnd', { rawEnd });
+        }
+        else {
+            qb.where('order.created_at >= :start', { start: queryStart })
+                .andWhere('order.created_at <= :end', { end: queryEnd });
+        }
         if (userId) {
             qb.andWhere('order.user_id = :userId', { userId });
         }
         qb.orderBy('order.created_at', 'DESC');
         const allMatching = await qb.getMany();
+        if (filterBy === 'delivery_date') {
+            return allMatching;
+        }
         const getProductionDate = (dateVal) => {
             if (!dateVal)
                 return '';
@@ -209,6 +218,18 @@ let OrdersService = class OrdersService {
         const order = await this.findOne(id);
         order.delivery_user_id = deliveryUserId;
         return this.orderRepository.save(order);
+    }
+    async updatePaymentInfo(orderId, data) {
+        const order = await this.findOne(orderId);
+        if (data.payment_status)
+            order.payment_status = data.payment_status;
+        if (data.payment_gateway !== undefined)
+            order.payment_gateway = data.payment_gateway;
+        if (data.payment_transaction_id !== undefined) {
+            order.payment_transaction_id = data.payment_transaction_id;
+        }
+        await this.orderRepository.save(order);
+        return this.findOne(orderId);
     }
     async update(id, updateData, userRole) {
         const order = await this.findOne(id);

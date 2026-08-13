@@ -12,5 +12,6 @@ export declare class User {
     orders: Order[];
     general_discount: number;
     delivery_fee: number;
+    min_order_amount: number | null;
     productDiscounts: ProductDiscount[];
 }

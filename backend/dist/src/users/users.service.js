@@ -28,6 +28,22 @@ let UsersService = class UsersService {
         this.profileRepository = profileRepository;
         this.productDiscountRepository = productDiscountRepository;
     }
+    async remove(userId) {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['orders', 'addresses', 'productDiscounts'],
+        });
+        if (!user)
+            throw new common_1.NotFoundException('User not found');
+        const activeOrders = (user.orders || []).filter(o => ['pending', 'pedido enviado', 'confirmed', 'shipped'].includes((o.status || '').toLowerCase()));
+        if (activeOrders.length > 0) {
+            throw new common_1.BadRequestException(`No se puede eliminar el usuario: tiene ${activeOrders.length} orden(es) activa(s).`);
+        }
+        if (user.productDiscounts?.length) {
+            await this.productDiscountRepository.delete({ user_id: userId });
+        }
+        await this.userRepository.remove(user);
+    }
     async findAll() {
         return this.userRepository.find({ relations: ['profile', 'addresses', 'orders'] });
     }
@@ -106,6 +122,9 @@ let UsersService = class UsersService {
     }
     async updateDeliveryFee(userId, fee) {
         await this.userRepository.update(userId, { delivery_fee: fee });
+    }
+    async updateMinOrderAmount(userId, amount) {
+        await this.userRepository.update(userId, { min_order_amount: amount });
     }
     async setProductDiscount(userId, productId, data) {
         let discount = await this.productDiscountRepository.findOne({ where: { user_id: userId, product_id: productId } });

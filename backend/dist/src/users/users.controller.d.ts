@@ -15,11 +15,17 @@ export declare class UsersController {
     updateDeliveryFee(id: string, body: {
         fee: number;
     }): Promise<void>;
+    updateMinOrderAmount(id: string, body: {
+        amount: number | null;
+    }): Promise<void>;
     getProductDiscounts(id: string): Promise<import("./product-discount.entity").ProductDiscount[]>;
     setProductDiscount(id: string, body: {
         productId: number;
         discount_percentage?: number;
         special_price?: number;
     }): Promise<import("./product-discount.entity").ProductDiscount>;
+    remove(id: string): Promise<{
+        message: string;
+    }>;
     deleteProductDiscount(discountId: string): Promise<void>;
 }
