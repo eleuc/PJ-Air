@@ -1,59 +1,49 @@
-# Workflow: /recovery (Protocolo de Auto-Sanación Sónica)
-// Protocolo de Recuperación de Emergencia (/recovery)
-
-Este workflow detalla los pasos críticos para la reanudación autárquica tras un crash del sistema o una pérdida de contexto masiva. Su objetivo es garantizar que la IA entrante pueda establecer una línea base de verdad sin heredar deriva del estado fallido.
-
-## 1. Fase de Sincronización (Takeover)
-Antes de cualquier análisis, es imperativo sincronizar el búnker con la realidad física del repositorio.
-## 1. FASE 0: Sincronización de Red [MANDATORIO]
-Antes de iniciar la recuperación, sincronizar el ADN con el repositorio remoto para evitar desincronización cognitiva.
-1. Ejecutar `git pull origin HEAD --rebase`.
-2. Si falla (offline): Continuar con estado local y alertar al PO sobre posible desincronización de hilos.
-3. Si hay conflictos: Resolver a favor de `origin` si es un nodo Fleet, o manual si es el Oracle.
-
-## 2. FASE 1: Diagnóstico de Integridad (Autonomous Audit)
-Identificar dónde se detuvo el motor antes de la falla.
-
-- [ ] **Ejecutar Takeover**: `logix takeover --force`
-- [ ] **Validar ADN**: `logix audit`
-  - Si `Drift > 0`: Identificar si es deuda delegada (backlog/sprints) o corrupción real.
-  - Si es deuda delegada válida: `logix baseline` para sellar el ADN y resetear deriva.
-- [ ] **Verificar Bitácora**: `view_file` sobre `backlog.json` y `HISTORY.md`.
-- [ ] **Validar Tareas**:
-  - Comparar el `current_task` en `backlog.json` con los commits de Git recientes.
-  - Si una tarea está marcada como `DONE` pero el código no refleja el cambio: Marcar como `PENDING/IN_PROGRESS` y re-ejecutar.
-  - Si la tarea estaba en `IN_PROGRESS`: Verificar la integridad de los archivos modificados parcialmente.
-
-## 3. Asimilación de Continuidad Cognitiva
-- Leer el mensaje del Agente Saliente (si existe) inyectado en el `relay`.
-- Incorporar la nota estratégica al contexto actual y reportarla al PO antes de iniciar el workflow `/act`.
-
-## 4. Purga de Saturación (Healing)
-Neutralizar la fatiga cognitiva residual (SHS) para prevenir alucinaciones de continuidad.
-
-- [ ] 1. **Purga de Artefactos (Diferenciada)**:
-   - **En Servidor Oracle (tiene `lib/`)**: Ejecutar limpieza profunda de compilación: `Remove-Item .dart_tool, build -Recurse -Force`.
-   - **En Nodos Fleet (solo `bin/`)**: Omitir purga de artefactos. Solo ejecutar `logix purge`.
-- [ ] 2. **Purga del Búnker**: Ejecutar protocol `/purge-saturation`.
-- [ ] **Reset de Odometer**: Verificar que `vault/runtime/turns_since_act.txt` esté en 0 tras el takeover.
-
-## 5. Bifurcación de Escenario
-El protocolo de recuperación varía según el objetivo (Target).
-
-### Caso A: Núcleo de Gobernanza (Kernel)
-- [ ] **Certificación de Binarios**: Ejecutar `logix audit` y verificar que el `logix.exe` no esté en estado `Dirty/Mismatch`.
-- [ ] **Sello de Manifiesto**: Asegurar que `vault/kernel.hashes.sig` coincida con el estado actual.
-
-### Caso B: Nodo de Flota (ej. miniduo)
-- [ ] **Validación de Registro**: Consultar `vault/runtime/fleet_registry.json`.
-- [ ] **Purga Local**: Eliminar `build/`, `.dart_tool/` y archivos `.lock` que puedan haber quedado "zombies".
-- [ ] **Veracity Check**: Ejecutar `logix fleet-audit` desde el Kernel para certificar el nodo.
-
-## 5. Re-Encausamiento Nominal
-- [ ] **Activar Tarea**: `logix act --task-id <ID_PENDIENTE>`.
-- [ ] **Actualizar Dashboard**: Verificar que `DASHBOARD.md` muestre Integridad NOMINAL y el Sprint correcto.
-- [ ] **Notificar al PO**: Resumir el estado de recuperación y los hitos rescatados.
-
 ---
-> [!IMPORTANT]
-> **REGLA DE ORO**: Nunca proceder con lógica de negocio si el ADN reporta `DRIFT`. El sellado mediante `baseline` es la única "medicina" autorizada.
+description: Protocolo de Auto-Sanación. Recupera continuidad cognitiva tras crash o pérdida de contexto.
+Regla: Toda comunicación en español.
+---
+
+## FASE 0: Brain-First — Relay Cognitivo [G83-GENESIS] [MANDATORIO]
+1. Buscar `vault/runtime/cognitive_relay.md`:
+   - Si existe y NO es esqueleto (`brain_sweep_skeleton` / `[PENDIENTE]`): **leerlo íntegramente**. Es la fuente primaria de contexto.
+   - Si es esqueleto vacío o no existe → continuar a Fase 0.5.
+2. **Fase 0.5 — Fallback Transcript (P4: 10 pasos) [ANTI-AMNESIA]**:
+   - Leer `vault/runtime/current_brain.json` (SSSoT de continuidad) para obtener la ruta exacta (`brain_path`) de la sesión crasheada a recuperar.
+   - Ubicar el archivo `<brain_path>\.system_generated\logs\transcript.jsonl`.
+   - Leer las **últimas 10 interacciones** (`USER_INPUT` y `PLANNER_RESPONSE`) para recuperar el hilo conceptual.
+   - Contrastar la información hallada con `backlog.json` y regenerar `task.md`.
+   - Extraer: tarea activa, último archivo modificado, bloqueos, próximos pasos.
+3. Reportar al PO: "Contexto recuperado de [cognitive_relay / transcript]" con resumen de 3 líneas antes de proceder a /act.
+
+## FASE -1: Detección de Lock Zombie [MANDATORIO]
+- Si existe `.meta/session.lock` y ha expirado (>8h de inactividad o bloqueo persistente en UI): Lock Zombie.
+- Purgar: `.\bin\logix.exe purge` para restaurar estado limpio antes de reanudar.
+
+## 1. Sincronización de Red
+- `git pull origin HEAD --rebase`. Si falla, continuar localmente y alertar.
+- Conflictos: Resolver a favor de `origin` en Fleet; manual en Oracle.
+
+## 2. Diagnóstico de Integridad y Auto-Sanación Sintáctica
+- `logix takeover --force -c "<CONVERSATION_ID>"`.
+- **Auto-Sanación Sintáctica Post-Crash**: `dart fix --apply && dart format .` (Sanación sintáctica de archivos heridos tras el crash).
+- **Prueba de Resiliencia**: `dart test` (Garantiza veracidad de la lógica post-sanación).
+- `logix audit`. Si `Drift > 0` es legítimo: `logix baseline`.
+- **Silencio Forense**: Si pide firma RSA, detenerse y reportar.
+- Validar sincronía de tareas de `backlog.json` con commits recientes.
+
+## 3. Asimilación Cognitiva
+- `logix recovery --brain` (ejecuta `syncBrainContinuity` con el path correcto post-G83-01).
+- El binario mostrará `[COG-RELAY]` con el contenido del relay cognitivo si existe.
+- Si el binario muestra `[COG-RELAY-CRITICAL]` (AMNESTY sin relay): completar el esqueleto generado automáticamente ANTES de /act.
+- Reportar asimilación al PO.
+
+## 4. Purga de Saturación
+- **Oracle (con `lib/`)**: Eliminar `.dart_tool/` y `build/`.
+- **Fleet (solo `bin/`)**: Omitir borrado físico, usar `logix purge`.
+- **Auditoría Forense de Archivos (Mandatoria)**: Al encontrar archivos huérfanos o temporales, queda prohibido eliminarlos directamente. Se deben contrastar con el progreso en `backlog.json` y `task.md`. "No debemos borrar sin auditar".
+- Limpieza cognitiva: `dart run tool/brain_sweep.dart` (genera esqueleto de `cognitive_relay.md` si no existe).
+
+## 5. Bifurcación y Activación
+- **Kernel (Oracle)**: Verificar `logix.exe` (no `Dirty`) y firmas en `vault/kernel.hashes.sig`.
+- **Fleet**: Consultar `vault/runtime/fleet_registry.json` y certificar con `logix fleet-audit`.
+- Re-encausar: `logix act --task-id <ID_PENDIENTE>` y regenerar `task.md` desde cero con base en `backlog.json`.
