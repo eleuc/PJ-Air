@@ -125,11 +125,53 @@ export default function AdminOrdersPage() {
         setTimeout(() => setToast(null), 3000);
     };
 
+    // Payment & Xero handlers
+    const [editingPaymentStatus, setEditingPaymentStatus] = useState<string>('');
+    const [editingPaymentGateway, setEditingPaymentGateway] = useState<string>('');
+    const [editingPaymentRef, setEditingPaymentRef] = useState<string>('');
+    const [updatingPayment, setUpdatingPayment] = useState(false);
+    const [syncingXero, setSyncingXero] = useState(false);
+
+    const handleUpdatePaymentInfo = async () => {
+        if (!selectedOrder) return;
+        setUpdatingPayment(true);
+        try {
+            const updated = await api.patch(`/orders/${selectedOrder.id}/payment`, {
+                payment_status: editingPaymentStatus || undefined,
+                payment_gateway: editingPaymentGateway || undefined,
+                payment_transaction_id: editingPaymentRef || undefined,
+            }) as Order;
+            setSelectedOrder(updated);
+            setOrders(prev => prev.map(o => o.id === updated.id ? updated : o));
+            showToast('✅ Información de pago actualizada');
+        } catch (err: any) {
+            showToast(`❌ ${err.message || 'Error actualizando pago'}`, 'error');
+        } finally {
+            setUpdatingPayment(false);
+        }
+    };
+
+    const handleTriggerXeroSync = async (orderId: string) => {
+        setSyncingXero(true);
+        try {
+            await api.post(`/xero/sync/${orderId}`, {});
+            showToast('✅ Factura sincronizada con Xero');
+            const updated = await api.get(`/orders/${orderId}`) as Order;
+            setSelectedOrder(updated);
+            setOrders(prev => prev.map(o => o.id === updated.id ? updated : o));
+        } catch (err: any) {
+            showToast(`❌ ${err.message || 'Error en sincronización con Xero'}`, 'error');
+        } finally {
+            setSyncingXero(false);
+        }
     const openOrderDetail = (order: Order) => {
         setSelectedOrder(order);
         setEditMode(false);
         setEditedItems(order.items || []);
         setMotivo('');
+        setEditingPaymentStatus(order.payment_status || 'unpaid');
+        setEditingPaymentGateway(order.payment_gateway || '');
+        setEditingPaymentRef(order.payment_transaction_id || '');
     };
 
     const toggleEditMode = () => {
@@ -626,46 +668,90 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100 flex flex-col gap-3">
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Información Financiera</p>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-xs font-bold text-slate-500">Estado de Pago:</span>
-                                            <span className={`px-3 py-1 rounded-xl text-[10px] font-black uppercase border shadow-sm ${PAYMENT_STATUS_COLORS[selectedOrder.payment_status || 'unpaid'] || PAYMENT_STATUS_COLORS.unpaid}`}>
-                                                {PAYMENT_STATUS_LABELS[selectedOrder.payment_status || 'unpaid'] || 'No Pagado'}
-                                            </span>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Gestión Financiera</p>
+                                        
+                                        <div>
+                                            <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Estado de Pago</label>
+                                            <select
+                                                value={editingPaymentStatus}
+                                                onChange={e => setEditingPaymentStatus(e.target.value)}
+                                                className="w-full text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 bg-white outline-none"
+                                            >
+                                                <option value="unpaid">No Pagado</option>
+                                                <option value="paid">Pagado</option>
+                                                <option value="pending">Pendiente</option>
+                                                <option value="refunded">Reembolsado</option>
+                                            </select>
                                         </div>
-                                        {selectedOrder.payment_gateway && (
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-xs font-bold text-slate-500">Pasarela:</span>
-                                                <span className="text-xs font-black uppercase text-slate-700">{selectedOrder.payment_gateway}</span>
+
+                                        <div>
+                                            <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Método / Pasarela</label>
+                                            <select
+                                                value={editingPaymentGateway}
+                                                onChange={e => setEditingPaymentGateway(e.target.value)}
+                                                className="w-full text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 bg-white outline-none"
+                                            >
+                                                <option value="">Sin especificar</option>
+                                                <option value="bank_transfer">Transferencia Bancaria</option>
+                                                <option value="xero">Xero / Factura</option>
+                                                <option value="cash">Efectivo</option>
+                                                <option value="stripe">Stripe</option>
+                                                <option value="paypal">PayPal</option>
+                                            </select>
+                                        </div>
+
+                                        {editingPaymentGateway === 'bank_transfer' && (
+                                            <div>
+                                                <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Ref. Transferencia Bancaria</label>
+                                                <input
+                                                    type="text"
+                                                    value={editingPaymentRef}
+                                                    onChange={e => setEditingPaymentRef(e.target.value)}
+                                                    placeholder="Ej: TRF-2026-9948"
+                                                    className="w-full text-xs font-mono font-bold px-3 py-2 rounded-xl border border-slate-200 bg-white outline-none"
+                                                />
                                             </div>
                                         )}
-                                        {selectedOrder.payment_transaction_id && (
-                                            <div className="flex flex-col gap-1">
-                                                <span className="text-[10px] font-bold text-slate-500">ID Transacción:</span>
-                                                <span className="text-xs font-mono font-bold text-slate-600 bg-white px-2 py-1 rounded-lg border border-slate-100 break-all">{selectedOrder.payment_transaction_id}</span>
-                                            </div>
-                                        )}
+
+                                        <button
+                                            onClick={handleUpdatePaymentInfo}
+                                            disabled={updatingPayment}
+                                            className="mt-2 w-full py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                        >
+                                            {updatingPayment ? <Loader2 size={14} className="animate-spin" /> : 'Guardar Estado de Pago'}
+                                        </button>
                                     </div>
-                                    <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100 flex flex-col gap-3">
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Sincronización Xero</p>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-xs font-bold text-slate-500">Estado de Factura:</span>
-                                            {selectedOrder.xero_invoice_id ? (
-                                                <span className="bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-xl text-[10px] font-black uppercase shadow-sm">
-                                                    Sincronizado
-                                                </span>
-                                            ) : (
-                                                <span className="bg-slate-100 text-slate-400 border border-slate-200 px-3 py-1 rounded-xl text-[10px] font-black uppercase shadow-sm">
-                                                    No Sincronizado
-                                                </span>
+
+                                    <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100 flex flex-col gap-3 justify-between">
+                                        <div>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Sincronización Xero</p>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <span className="text-xs font-bold text-slate-500">Estado Factura:</span>
+                                                {selectedOrder.xero_invoice_id ? (
+                                                    <span className="bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-xl text-[10px] font-black uppercase shadow-sm">
+                                                        Sincronizado
+                                                    </span>
+                                                ) : (
+                                                    <span className="bg-slate-100 text-slate-400 border border-slate-200 px-3 py-1 rounded-xl text-[10px] font-black uppercase shadow-sm">
+                                                        No Sincronizado
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {selectedOrder.xero_invoice_id && (
+                                                <div className="flex flex-col gap-1 mb-3">
+                                                    <span className="text-[10px] font-bold text-slate-500">ID Factura Xero:</span>
+                                                    <span className="text-xs font-mono font-bold text-slate-600 bg-white px-2 py-1 rounded-lg border border-slate-100 break-all">{selectedOrder.xero_invoice_id}</span>
+                                                </div>
                                             )}
                                         </div>
-                                        {selectedOrder.xero_invoice_id && (
-                                            <div className="flex flex-col gap-1">
-                                                <span className="text-[10px] font-bold text-slate-500">ID de Factura Xero:</span>
-                                                <span className="text-xs font-mono font-bold text-slate-600 bg-white px-2 py-1 rounded-lg border border-slate-100 break-all">{selectedOrder.xero_invoice_id}</span>
-                                            </div>
-                                        )}
+
+                                        <button
+                                            onClick={() => handleTriggerXeroSync(selectedOrder.id)}
+                                            disabled={syncingXero}
+                                            className="w-full py-2.5 bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md hover:bg-black transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                        >
+                                            {syncingXero ? <Loader2 size={14} className="animate-spin" /> : 'Sincronizar a Xero'}
+                                        </button>
                                     </div>
                                 </div>
                             </section>

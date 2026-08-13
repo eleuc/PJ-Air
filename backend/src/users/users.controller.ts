@@ -97,6 +97,11 @@ export class UsersController {
     return this.usersService.updateDeliveryFee(id, body.fee);
   }
 
+  @Patch(':id/min-order-amount')
+  async updateMinOrderAmount(@Param('id') id: string, @Body() body: { amount: number | null }) {
+    return this.usersService.updateMinOrderAmount(id, body.amount);
+  }
+
   @Get(':id/product-discounts')
   async getProductDiscounts(@Param('id') id: string) {
     return this.usersService.getProductDiscounts(id);
@@ -108,6 +113,12 @@ export class UsersController {
       discount_percentage: body.discount_percentage,
       special_price: body.special_price
     });
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    await this.usersService.remove(id);
+    return { message: 'User deleted successfully' };
   }
 
   @Delete('product-discounts/:discountId')

@@ -335,6 +335,12 @@ export default function CheckoutPage() {
 
     // ── Fetch min order amount configuration ──────────────────────────────────
     useEffect(() => {
+        const userMin = (profile as any)?.min_order_amount;
+        if (userMin !== null && userMin !== undefined && userMin !== '') {
+            setMinOrderAmount(Number(userMin));
+            return;
+        }
+
         api.get('/configs/min_order_amount')
             .then((res: any) => {
                 if (res && res.value) {
@@ -342,7 +348,7 @@ export default function CheckoutPage() {
                 }
             })
             .catch(err => console.error('Error fetching min_order_amount:', err));
-    }, []);
+    }, [profile]);
 
     // ── Calculation logic ─────────────────────────────────────────────────────
     const rawSubtotal = getRawSubtotal();
@@ -352,19 +358,25 @@ export default function CheckoutPage() {
     const deliveryFee = profile?.delivery_fee || 0;
     const subtotal = rawSubtotal;
 
-    // ── Delivery date (NY timezone) ───────────────────────────────────────────
+    // ── Delivery date (NY timezone) & Selectable future date ───────────────────
+    const [minDeliveryDate, setMinDeliveryDate] = useState<string>('');
+    const [deliveryDateISO, setDeliveryDateISO] = useState<string>('');
+    const [deliveryDateDisplay, setDeliveryDateDisplay] = useState<string>('');
+
     useEffect(() => {
         const nowNY = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
         const before = nowNY.getHours() < 13;
         const daysToAdd = before ? 2 : 3;
         const delDate = new Date(nowNY);
         delDate.setDate(nowNY.getDate() + daysToAdd);
-        const payDate = new Date(delDate);
-        payDate.setDate(delDate.getDate() + 6);
+        
+        const iso = delDate.toISOString().split('T')[0];
+        setMinDeliveryDate(iso);
+        setDeliveryDateISO(iso);
         setIsBeforeCutoff(before);
-        setDeliveryDate(delDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' }));
-        setPaymentDate(payDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' }));
-    }, []);
+        setDeliveryDate(iso);
+        setDeliveryDateDisplay(delDate.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { weekday: 'long', day: 'numeric', month: 'long' }));
+    }, [locale]);
 
     // ── Submit ────────────────────────────────────────────────────────────────
     const handleSubmit = async () => {
@@ -618,77 +630,63 @@ export default function CheckoutPage() {
                             )}
                         </section>
 
-                        {/* ── Delivery date ────────────────────────────────── */}
-                        {deliveryType !== 'pickup' && (
-                            <section className="bg-[#0f0f0f] rounded-3xl border border-[#222] p-8">
-                                <div className="flex items-start gap-4">
-                                    <div className="p-3 bg-white/10 text-white rounded-2xl shadow-md shrink-0">
-                                        <Calendar size={24} />
-                                    </div>
-                                    <div className="w-full">
-                                        <h3 className="text-xl font-bold text-white mb-3">
-                                            {lbl('Fecha de Entrega Estimada', 'Estimated Delivery Date')}
-                                        </h3>
-                                        <div className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full mb-3 ${
-                                            isBeforeCutoff
-                                                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                                : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                                        }`}>
-                                            <Clock size={12} />
-                                            {isBeforeCutoff
-                                                ? lbl('Pedido antes de la 1:00 PM hora NY → entrega en 2 días', 'Order before 1:00 PM NY → delivery in 2 days')
-                                                : lbl('Pedido después de la 1:00 PM hora NY → entrega en 3 días', 'Order after 1:00 PM NY → delivery in 3 days')}
+                        {/* ── Selectable Delivery Date ────────────────────── */}
+                        <section className="bg-card rounded-3xl border border-border p-8 shadow-sm">
+                            <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
+                                <Calendar className="text-primary" size={22} />
+                                {lbl('Fecha de Entrega', 'Delivery Date')}
+                            </h2>
+
+                            <div className="space-y-4">
+                                <div className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full ${
+                                    isBeforeCutoff
+                                        ? 'bg-green-500/10 text-green-700 border border-green-500/20'
+                                        : 'bg-amber-500/10 text-amber-700 border border-amber-500/20'
+                                }`}>
+                                    <Clock size={12} />
+                                    {isBeforeCutoff
+                                        ? lbl('Pedido antes de la 1:00 PM (NY) → entrega sugerida en 2 días', 'Order before 1:00 PM (NY) → suggested delivery in 2 days')
+                                        : lbl('Pedido después de la 1:00 PM (NY) → entrega sugerida en 3 días', 'Order after 1:00 PM (NY) → suggested delivery in 3 days')}
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground mb-1 block px-1">
+                                        {lbl('Selecciona la fecha de entrega:', 'Select delivery date:')}
+                                    </label>
+                                    <input
+                                        type="date"
+                                        min={minDeliveryDate}
+                                        value={deliveryDateISO}
+                                        onChange={e => {
+                                            const iso = e.target.value;
+                                            if (!iso) return;
+                                            setDeliveryDateISO(iso);
+                                            setDeliveryDate(iso);
+                                            const parts = iso.split('-');
+                                            const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+                                            setDeliveryDateDisplay(d.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { weekday: 'long', day: 'numeric', month: 'long' }));
+                                        }}
+                                        className="w-full px-4 py-3 rounded-2xl border-2 border-primary/30 bg-primary/5 text-foreground font-bold text-sm outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                                    />
+                                </div>
+
+                                {deliveryDateDisplay && (
+                                    <div className="p-4 bg-muted/40 rounded-2xl border border-border flex items-center gap-3">
+                                        <Calendar className="text-primary shrink-0" size={20} />
+                                        <div>
+                                            <p className="text-xs text-muted-foreground font-medium">{lbl('Fecha seleccionada:', 'Selected date:')}</p>
+                                            <p className="text-sm font-bold text-foreground capitalize">{deliveryDateDisplay}</p>
                                         </div>
-                                        <p className="text-3xl font-black text-white capitalize">{deliveryDate}</p>
-                                        <p className="text-xs text-white/40 mt-3 leading-relaxed">
-                                            {lbl(
-                                                'Pedidos recibidos antes de la 1:00 PM (hora Nueva York) se entregan en 2 días. Pedidos recibidos a partir de la 1:00 PM se entregan en 3 días.',
-                                                'Orders received before 1:00 PM (New York time) are delivered in 2 days. Orders received from 1:00 PM are delivered in 3 days.'
-                                            )}
-                                        </p>
                                     </div>
-                                </div>
-                            </section>
-                        )}
-
-                        {/* Pickup date info */}
-                        {deliveryType === 'pickup' && (
-                            <section className="bg-[#0f0f0f] rounded-3xl border border-[#222] p-8">
-                                <div className="flex items-start gap-4">
-                                    <div className="p-3 bg-white/10 text-white rounded-2xl shadow-md shrink-0">
-                                        <Calendar size={24} />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white mb-1">
-                                            {lbl('Fecha de Disponibilidad Estimada', 'Estimated Ready Date')}
-                                        </h3>
-                                        <p className="text-3xl font-black text-white capitalize">{deliveryDate}</p>
-                                        <p className="text-xs text-white/40 mt-2">
-                                            {lbl('Tu pedido estará listo para recoger en tienda.', 'Your order will be ready for pickup at our store.')}
-                                        </p>
-                                    </div>
-                                </div>
-                            </section>
-                        )}
-
-                        {/* ── Payment note ─────────────────────────────────── */}
-                        <section className="bg-accent/5 rounded-3xl border border-accent/20 p-8 text-black">
-                            <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
-                                <CreditCard size={20} />
-                                {lbl('Política de Pago', 'Payment Policy')}
-                            </h3>
-                            <p className="text-sm">
-                                {lbl(
-                                    'El producto será cobrado ',
-                                    'The product will be charged '
                                 )}
-                                <strong>{lbl('6 días después', '6 days after')}</strong>
-                                {lbl(' de haber sido recibido. ', ' of being received. ')}
-                            </p>
-                            <p className="text-sm mt-2">
-                                {lbl('Tu fecha límite de pago para este pedido será: ', 'Your payment deadline for this order will be: ')}
-                                <strong className="text-foreground capitalize underline">{paymentDate}</strong>
-                            </p>
+
+                                <p className="text-[11px] text-muted-foreground leading-snug">
+                                    {lbl(
+                                        '⚠️ Tu pedido se programará para la fecha seleccionada y aparecerá en el reporte de producción de ese día.',
+                                        '⚠️ Your order will be scheduled for the selected date and will appear in that day\'s production report.'
+                                    )}
+                                </p>
+                            </div>
                         </section>
                     </div>
 

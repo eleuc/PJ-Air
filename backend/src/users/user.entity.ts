@@ -33,6 +33,9 @@ export class User {
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
   delivery_fee: number;
 
+  @Column('decimal', { precision: 10, scale: 2, nullable: true, default: null })
+  min_order_amount: number | null;
+
   @OneToMany(() => ProductDiscount, (pd) => pd.user)
   productDiscounts: ProductDiscount[];
 }

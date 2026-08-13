@@ -92,8 +92,8 @@ export class OrdersService {
     };
   }
 
-  async findInRange(startDate: string, endDate: string, userId?: string): Promise<Order[]> {
-    console.log('findInRange called with:', { startDate, endDate, userId });
+  async findInRange(startDate: string, endDate: string, userId?: string, filterBy: 'created_at' | 'delivery_date' = 'created_at'): Promise<Order[]> {
+    console.log('findInRange called with:', { startDate, endDate, userId, filterBy });
     
     // Normalize input to date string: YYYY-MM-DD
     const rawStart = startDate.split(' ')[0].split('T')[0];
@@ -116,9 +116,15 @@ export class OrdersService {
       .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('order.delivery_user', 'delivery_user')
       .leftJoinAndSelect('delivery_user.profile', 'delivery_profile')
-      .leftJoinAndSelect('order.address', 'address')
-      .where('order.created_at >= :start', { start: queryStart })
-      .andWhere('order.created_at <= :end', { end: queryEnd });
+      .leftJoinAndSelect('order.address', 'address');
+
+    if (filterBy === 'delivery_date') {
+      qb.where('order.delivery_date >= :rawStart', { rawStart })
+        .andWhere('order.delivery_date <= :rawEnd', { rawEnd });
+    } else {
+      qb.where('order.created_at >= :start', { start: queryStart })
+        .andWhere('order.created_at <= :end', { end: queryEnd });
+    }
 
     if (userId) {
       qb.andWhere('order.user_id = :userId', { userId });
@@ -128,6 +134,10 @@ export class OrdersService {
     
     const allMatching = await qb.getMany();
     
+    if (filterBy === 'delivery_date') {
+      return allMatching;
+    }
+
     // Client-side production date timezone conversion logic
     const getProductionDate = (dateVal: any) => {
       if (!dateVal) return '';
@@ -228,6 +238,24 @@ export class OrdersService {
     const order = await this.findOne(id);
     order.delivery_user_id = deliveryUserId;
     return this.orderRepository.save(order);
+  }
+
+  async updatePaymentInfo(
+    orderId: string,
+    data: {
+      payment_status?: string;
+      payment_gateway?: string;
+      payment_transaction_id?: string;
+    }
+  ): Promise<Order> {
+    const order = await this.findOne(orderId);
+    if (data.payment_status) order.payment_status = data.payment_status;
+    if (data.payment_gateway !== undefined) order.payment_gateway = data.payment_gateway;
+    if (data.payment_transaction_id !== undefined) {
+      order.payment_transaction_id = data.payment_transaction_id;
+    }
+    await this.orderRepository.save(order);
+    return this.findOne(orderId);
   }
 
   async update(id: string, updateData: any, userRole?: string): Promise<Order> {

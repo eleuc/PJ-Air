@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -15,6 +15,29 @@ export class UsersService {
     @InjectRepository(ProductDiscount)
     private productDiscountRepository: Repository<ProductDiscount>,
   ) {}
+
+  async remove(userId: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['orders', 'addresses', 'productDiscounts'],
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    const activeOrders = (user.orders || []).filter(o =>
+      ['pending', 'pedido enviado', 'confirmed', 'shipped'].includes((o.status || '').toLowerCase())
+    );
+    if (activeOrders.length > 0) {
+      throw new BadRequestException(
+        `No se puede eliminar el usuario: tiene ${activeOrders.length} orden(es) activa(s).`
+      );
+    }
+
+    if (user.productDiscounts?.length) {
+      await this.productDiscountRepository.delete({ user_id: userId });
+    }
+
+    await this.userRepository.remove(user);
+  }
 
   async findAll(): Promise<User[]> {
     return this.userRepository.find({ relations: ['profile', 'addresses', 'orders'] });
@@ -109,6 +132,10 @@ export class UsersService {
 
   async updateDeliveryFee(userId: string, fee: number): Promise<void> {
     await this.userRepository.update(userId, { delivery_fee: fee });
+  }
+
+  async updateMinOrderAmount(userId: string, amount: number | null): Promise<void> {
+    await this.userRepository.update(userId, { min_order_amount: amount });
   }
 
   async setProductDiscount(userId: string, productId: number, data: { discount_percentage?: number; special_price?: number }): Promise<ProductDiscount> {

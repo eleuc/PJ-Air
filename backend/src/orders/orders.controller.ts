@@ -63,8 +63,9 @@ export class OrdersController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
     @Query('userId') userId?: string,
+    @Query('filterBy') filterBy?: 'created_at' | 'delivery_date',
   ) {
-    return this.ordersService.findInRange(startDate, endDate, userId);
+    return this.ordersService.findInRange(startDate, endDate, userId, filterBy);
   }
 
   @Get(':id')
@@ -82,6 +83,15 @@ export class OrdersController {
   @Patch(':id/assign')
   async assignDelivery(@Param('id') id: string, @Body('deliveryUserId') deliveryUserId: string) {
     return this.ordersService.assignDelivery(id, deliveryUserId);
+  }
+
+  @Patch(':id/payment')
+  @UseGuards(AuthGuard)
+  async updatePaymentInfo(
+    @Param('id') id: string,
+    @Body() body: { payment_status?: string; payment_gateway?: string; payment_transaction_id?: string }
+  ) {
+    return this.ordersService.updatePaymentInfo(id, body);
   }
 
   @Patch(':id')

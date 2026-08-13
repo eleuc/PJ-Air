@@ -66,6 +66,8 @@ export default function AdminUsersPage() {
     const [isSavingDiscount, setIsSavingDiscount] = useState(false);
     const [deliveryFee, setDeliveryFee] = useState<number>(0);
     const [isSavingFee, setIsSavingFee] = useState(false);
+    const [minOrderAmountState, setMinOrderAmountState] = useState<string>('');
+    const [isSavingMinOrder, setIsSavingMinOrder] = useState(false);
 
     // Password reset & New Staff states
     const [resetPasswordModal, setResetPasswordModal] = useState<UserRecord | null>(null);
@@ -78,6 +80,25 @@ export default function AdminUsersPage() {
     const [newStaffPassword, setNewStaffPassword] = useState('');
     const [newStaffRole, setNewStaffRole] = useState<'admin' | 'delivery' | 'produccion'>('delivery');
     const [isCreatingStaff, setIsCreatingStaff] = useState(false);
+
+    // Delete user confirmation state
+    const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; userId: string; name: string }>({ open: false, userId: '', name: '' });
+    const [isDeletingUser, setIsDeletingUser] = useState(false);
+
+    const handleDeleteUser = async (userId: string) => {
+        setIsDeletingUser(true);
+        try {
+            await api.delete(`/users/${userId}`);
+            setUsers(prev => prev.filter(u => u.id !== userId));
+            if (selectedUser?.id === userId) setSelectedUser(null);
+            setDeleteConfirm({ open: false, userId: '', name: '' });
+            showToast('✅ Cliente/Usuario eliminado correctamente');
+        } catch (err: any) {
+            alert(err.message || 'Error al eliminar el usuario');
+        } finally {
+            setIsDeletingUser(false);
+        }
+    };
 
     const handleResetPasswordSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -171,12 +192,24 @@ export default function AdminUsersPage() {
             setSelectedUser(detail);
             setGeneralDiscount(Number(detail.general_discount) || 0);
             setDeliveryFee(Number(detail.delivery_fee) || 0);
+            setMinOrderAmountState(detail.min_order_amount !== null && detail.min_order_amount !== undefined ? String(detail.min_order_amount) : '');
             
             // Get product discounts
             const discounts = await api.get(`/users/${user.id}/product-discounts`) as any[];
             setProductDiscounts(discounts || []);
         } catch { /* keep what we have */ }
         finally { setLoadingDetail(false); }
+    };
+
+    const handleUpdateMinOrderAmount = async () => {
+        if (!selectedUser) return;
+        setIsSavingMinOrder(true);
+        try {
+            const val = minOrderAmountState.trim() === '' ? null : Number(minOrderAmountState);
+            await api.patch(`/users/${selectedUser.id}/min-order-amount`, { amount: val });
+            showToast('✅ Mínimo de orden actualizado');
+        } catch (err: any) { showToast(`❌ ${err.message}`); }
+        finally { setIsSavingMinOrder(false); }
     };
 
     const handleRoleChange = async (userId: string, newRole: string, e: React.MouseEvent) => {
@@ -416,8 +449,26 @@ export default function AdminUsersPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <ChevronRight size={18} className="ml-auto text-muted-foreground" />
+                                        <td className="px-6 py-4 text-right" onClick={e => e.stopPropagation()}>
+                                            <div className="flex items-center justify-end gap-2">
+                                                {u.role !== 'admin' && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setDeleteConfirm({
+                                                                open: true,
+                                                                userId: u.id,
+                                                                name: u.profile?.full_name || u.profile?.username || u.email
+                                                            });
+                                                        }}
+                                                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                        title="Eliminar usuario/cliente"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                )}
+                                                <ChevronRight size={18} className="text-muted-foreground" />
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -658,6 +709,31 @@ export default function AdminUsersPage() {
                                             </button>
                                         </div>
                                         <p className="text-[9px] text-amber-600/70 mt-3 font-medium italic">Este monto se sumará al total en cada pedido de este cliente.</p>
+                                    </div>
+
+                                    {/* Minimum Order Amount per Client */}
+                                    <div className="bg-blue-50/50 border border-blue-200 rounded-[2rem] p-6 mb-8">
+                                        <label className="text-[10px] font-black uppercase text-blue-700/60 mb-3 block">Mínimo de Orden Personalizado</label>
+                                        <div className="flex gap-3">
+                                            <div className="relative flex-1">
+                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-blue-600">$</span>
+                                                <input 
+                                                    type="number" 
+                                                    value={minOrderAmountState}
+                                                    onChange={e => setMinOrderAmountState(e.target.value)}
+                                                    placeholder="Por defecto (Global $500)"
+                                                    className="w-full pl-8 pr-6 py-3 rounded-xl border border-blue-300 outline-none focus:ring-2 focus:ring-blue-500/20 font-bold bg-white text-blue-900 text-xs"
+                                                />
+                                            </div>
+                                            <button 
+                                                onClick={handleUpdateMinOrderAmount}
+                                                disabled={isSavingMinOrder}
+                                                className="bg-blue-600 text-white px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:shadow-lg hover:shadow-blue-500/20 transition-all disabled:opacity-50"
+                                            >
+                                                {isSavingMinOrder ? <Loader2 size={16} className="animate-spin" /> : 'Guardar'}
+                                            </button>
+                                        </div>
+                                        <p className="text-[9px] text-blue-600/70 mt-3 font-medium italic">Si se deja vacío, aplicará el mínimo global predeterminado ($500).</p>
                                     </div>
 
                                     {/* Product Specific Discounts */}
@@ -959,6 +1035,43 @@ export default function AdminUsersPage() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+            {/* Delete Confirmation Modal */}
+            {deleteConfirm.open && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeleteConfirm({ open: false, userId: '', name: '' })} />
+                    <div className="bg-background w-full max-w-md rounded-[2.5rem] shadow-2xl relative overflow-hidden p-8 animate-zoom-in">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center font-bold">
+                                <Trash2 size={24} />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold">¿Eliminar Cliente/Usuario?</h2>
+                                <p className="text-xs text-muted-foreground">Esta acción no se puede deshacer.</p>
+                            </div>
+                        </div>
+                        <p className="text-sm text-foreground/80 mb-6 bg-muted/30 p-4 rounded-2xl border border-border">
+                            Se eliminará a <strong>{deleteConfirm.name}</strong> del sistema. Sus órdenes activas deben estar finalizadas o canceladas.
+                        </p>
+                        <div className="flex gap-4">
+                            <button
+                                type="button"
+                                onClick={() => setDeleteConfirm({ open: false, userId: '', name: '' })}
+                                className="flex-1 py-3 text-xs font-black uppercase tracking-widest border border-border rounded-2xl hover:bg-muted transition-all"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                disabled={isDeletingUser}
+                                onClick={() => handleDeleteUser(deleteConfirm.userId)}
+                                className="flex-1 py-3 bg-red-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all disabled:opacity-50"
+                            >
+                                {isDeletingUser ? <Loader2 size={18} className="animate-spin mx-auto" /> : 'Eliminar'}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -8,131 +8,80 @@
   "sprints": [
     {
       "id": "S10",
-      "name": "Sprint 10: Reintegración de Pasarelas de Pago y Xero (Deuda Técnica)",
+      "name": "Sprint 10: Reintegracion de Pasarelas de Pago y Xero (Deuda Tecnica)",
       "status": "COMPLETED",
       "start_date": "2026-07-10",
       "goal": "Reintegrar y probar los archivos exiliados en purgatory para Stripe, PayPal y Xero.",
       "tasks": [
-        {
-          "id": "TASK-10-01",
-          "label": "TECH/INFRA",
-          "desc": "Recrear tabla 'payments' y campos de pago en 'orders' en SQLite.",
-          "status": "DONE",
-          "detail_doc": "vault/runtime/detail_docs/TASK-10-01.md"
-        },
-        {
-          "id": "TASK-10-02",
-          "label": "TECH/DOMAIN",
-          "desc": "Reintegrar módulos de pagos backend y procesadores Xero exiliados.",
-          "status": "DONE",
-          "detail_doc": "vault/runtime/detail_docs/TASK-10-02.md"
-        },
-        {
-          "id": "TASK-10-03",
-          "label": "TECH/UI",
-          "desc": "Reintegrar formularios de Stripe y botones de PayPal en el frontend.",
-          "status": "DONE",
-          "detail_doc": "vault/runtime/detail_docs/TASK-10-03.md"
-        },
-        {
-          "id": "TASK-10-04",
-          "desc": "[GOV] Disgregación de Identidades: Modificar `logix bump` en el core para que no altere ni exija paridad entre `kKernelVersion` y la versión de negocio.",
-          "status": "DONE",
-          "required_signatures": [
-            "PO"
-          ],
-          "veracity_hash": null
-        },
-        {
-          "id": "TASK-10-05",
-          "desc": "[GOV] Modificar `verify_veracity.dart` (Gate 0) en conext_core para separar el control de versión de negocio del control criptográfico del binario congelado.",
-          "status": "DONE",
-          "required_signatures": [
-            "TECH"
-          ],
-          "veracity_hash": null
-        },
-        {
-          "id": "TASK-10-06",
-          "desc": "[GOV] Actualizar `logix upgrade` para realizar la inyección de `kernel_version` en `backlog.json` de forma independiente a la versión del proyecto de negocio.",
-          "status": "DONE",
-          "required_signatures": [
-            "TECH"
-          ],
-          "veracity_hash": null
-        }
+        { "id": "TASK-10-01", "label": "TECH/INFRA", "desc": "Recrear tabla payments y campos de pago en orders en SQLite.", "status": "DONE", "detail_doc": "vault/runtime/detail_docs/TASK-10-01.md" },
+        { "id": "TASK-10-02", "label": "TECH/DOMAIN", "desc": "Reintegrar modulos de pagos backend y procesadores Xero exiliados.", "status": "DONE", "detail_doc": "vault/runtime/detail_docs/TASK-10-02.md" },
+        { "id": "TASK-10-03", "label": "TECH/UI", "desc": "Reintegrar formularios de Stripe y botones de PayPal en el frontend.", "status": "DONE", "detail_doc": "vault/runtime/detail_docs/TASK-10-03.md" },
+        { "id": "TASK-10-04", "desc": "[GOV] Disgregacion de Identidades.", "status": "DONE", "required_signatures": ["PO"], "veracity_hash": null },
+        { "id": "TASK-10-05", "desc": "[GOV] Modificar verify_veracity.dart (Gate 0).", "status": "DONE", "required_signatures": ["TECH"], "veracity_hash": null },
+        { "id": "TASK-10-06", "desc": "[GOV] Actualizar logix upgrade para inyeccion de kernel_version.", "status": "DONE", "required_signatures": ["TECH"], "veracity_hash": null }
       ]
     },
     {
       "id": "S11",
-      "name": "Sprint 11: Diagnóstico y Resolución Estructural en Producción",
+      "name": "Sprint 11: Diagnostico y Resolucion Estructural en Produccion",
       "status": "COMPLETED",
       "start_date": "2026-07-22",
-      "goal": "Diagnóstico NHC, corrección del volumen de Docker (imágenes), estandarización criptográfica (Bcrypt) y sanitización de catálogo (productos huérfanos).",
+      "goal": "Diagnostico NHC, correccion del volumen de Docker, estandarizacion criptografica (Bcrypt) y sanitizacion de catalogo.",
       "tasks": [
-        {
-          "id": "TASK-11-01",
-          "label": "TECH/INFRA",
-          "desc": "Diagnóstico NHC de producción: Análisis de contenedor, SQLite y fallos de autenticación.",
-          "status": "DONE",
-          "detail_doc": "vault/runtime/detail_docs/TASK-11-01.md"
-        },
-        {
-          "id": "TASK-11-02",
-          "label": "TECH/INFRA",
-          "desc": "Fix: Modificar docker-compose.yml en el VPS para montar volumen de /app/uploads persistente.",
-          "status": "DONE"
-        },
-        {
-          "id": "TASK-11-03",
-          "label": "TECH/DOMAIN",
-          "desc": "Fix: Estandarizar contraseñas de cuentas owner a Bcrypt directamente en la base de datos.",
-          "status": "DONE"
-        },
-        {
-          "id": "TASK-11-04",
-          "label": "TECH/DOMAIN",
-          "desc": "Fix: Reasignar productos con category_id NULL a una categoría válida en producción.",
-          "status": "DONE"
-        },
-        {
-          "id": "TASK-11-05",
-          "label": "TECH/INFRA",
-          "desc": "Fix: Compilación y despliegue del contenedor backend actualizado en el VPS (incorporando bcryptjs, endpoint de categorías y rutas UPLOAD_PATH fijas).",
-          "status": "DONE"
-        },
-        {
-          "id": "TASK-11-06",
-          "label": "TECH/DATA",
-          "desc": "Fix: Restaurar imágenes extraviadas del volumen efímero del contenedor obsoleto hacia el volumen persistente de uploads desde el último backup manual del VPS.",
-          "status": "DONE"
-        },
-        {
-          "id": "TASK-11-07",
-          "label": "TECH/SEC",
-          "desc": "Fix: Ejecución del reset maestro de contraseñas hacia PBKDF2 (\"jhoanes\") y activación del flag force_pwd_change para forzar la estandarización en el siguiente login de cada cliente.",
-          "status": "DONE"
-        }
+        { "id": "TASK-11-01", "label": "TECH/INFRA", "desc": "Diagnostico NHC de produccion.", "status": "DONE", "detail_doc": "vault/runtime/detail_docs/TASK-11-01.md" },
+        { "id": "TASK-11-02", "label": "TECH/INFRA", "desc": "Fix: Montar volumen de uploads persistente en docker-compose.yml.", "status": "DONE" },
+        { "id": "TASK-11-03", "label": "TECH/DOMAIN", "desc": "Fix: Estandarizar contrasenas de cuentas owner a Bcrypt.", "status": "DONE" },
+        { "id": "TASK-11-04", "label": "TECH/DOMAIN", "desc": "Fix: Reasignar productos con category_id NULL a categoria valida.", "status": "DONE" },
+        { "id": "TASK-11-05", "label": "TECH/INFRA", "desc": "Fix: Compilacion y despliegue del contenedor backend actualizado.", "status": "DONE" },
+        { "id": "TASK-11-06", "label": "TECH/DATA", "desc": "Fix: Restaurar imagenes extraviadas al volumen persistente.", "status": "DONE" },
+        { "id": "TASK-11-07", "label": "TECH/SEC", "desc": "Fix: Reset de contrasenas a PBKDF2 y activacion de force_pwd_change.", "status": "DONE" }
       ]
     },
     {
       "id": "S12",
-      "name": "Sprint 12: Respaldos Periódicos Automáticos en Google Drive",
+      "name": "Sprint 12: Respaldos Periodicos Automaticos en Google Drive",
       "status": "COMPLETED",
       "start_date": "2026-07-22",
-      "goal": "Configuración de rclone en el VPS para respaldos automatizados diarios de la base de datos y uploads hacia Google Drive sin costo.",
+      "goal": "Configuracion de rclone en el VPS para respaldos automatizados diarios de la base de datos y uploads hacia Google Drive.",
+      "tasks": [
+        { "id": "TASK-12-01", "label": "TECH/INFRA", "desc": "Instalacion y vinculacion de rclone en el VPS con Google Drive.", "status": "DONE" },
+        { "id": "TASK-12-02", "label": "TECH/INFRA", "desc": "Creacion del script de respaldo automatico y crontab (2:00 AM diario).", "status": "DONE" }
+      ]
+    },
+    {
+      "id": "S13",
+      "name": "Sprint 13: Mejoras de Gestion Operacional",
+      "status": "COMPLETED",
+      "start_date": "2026-08-13",
+      "goal": "Implementar minimo de orden por cliente, eliminacion de usuarios, entrega diferida con fecha seleccionable y gestion de estado de pagos (Xero + transferencia bancaria).",
       "tasks": [
         {
-          "id": "TASK-12-01",
-          "label": "TECH/INFRA",
-          "desc": "Instalación y vinculación interactiva de rclone en el VPS con la cuenta de Google Drive del cliente.",
-          "status": "DONE"
+          "id": "TASK-13-01",
+          "label": "FEAT/FULL-STACK",
+          "desc": "Minimo de orden configurable por cliente: campo min_order_amount en users + PATCH endpoint + UI admin editable + logica checkout con fallback al global.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-13-01.md"
         },
         {
-          "id": "TASK-12-02",
-          "label": "TECH/INFRA",
-          "desc": "Creación del script de respaldo automático y programación de la tarea en crontab (2:00 AM diario).",
-          "status": "DONE"
+          "id": "TASK-13-02",
+          "label": "FEAT/FULL-STACK",
+          "desc": "Gestion de clientes: ADD DELETE /users/:id con validacion de ordenes activas + modal confirmacion en admin UI + unificacion terminologica Clientes/Usuarios.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-13-02.md"
+        },
+        {
+          "id": "TASK-13-03",
+          "label": "FEAT/UI+BACKEND",
+          "desc": "Entrega diferida: date picker en checkout con fecha minima automatica + eliminacion del bloque Payment Policy + filtro de reporte por delivery_date en findInRange.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-13-03.md"
+        },
+        {
+          "id": "TASK-13-04",
+          "label": "FEAT/FULL-STACK",
+          "desc": "Integracion de pago: PATCH /orders/:id/payment para estado + referencia bancaria + trigger sincronizacion Xero desde admin + aviso pago pendiente en vista cliente.",
+          "status": "DONE",
+          "detail_doc": "vault/runtime/detail_docs/TASK-13-04.md"
         }
       ]
     }

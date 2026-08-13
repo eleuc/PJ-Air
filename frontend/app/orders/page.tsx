@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import { Package, Truck, CheckCircle2, AlertCircle, Clock, Eye, Loader2, ShoppingBag, ChevronDown } from 'lucide-react';
+import { Package, Truck, CheckCircle2, AlertCircle, Clock, Eye, Loader2, ShoppingBag, ChevronDown, CreditCard } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
@@ -142,6 +142,20 @@ export default function ClientOrdersPage() {
                                             <Clock size={14} /> {t.orders.paymentDueNotice} <span className="underline uppercase">{order.payment_due_date}</span>
                                         </p>
                                         <button className="text-[10px] font-black text-primary border border-primary px-3 py-1 rounded hover:bg-primary hover:text-white transition-all uppercase">{t.orders.viewInvoice}</button>
+                                    </div>
+                                )}
+
+                                {order.payment_status === 'unpaid' && (
+                                    <div className="bg-amber-50/80 px-8 py-4 border-t border-amber-200/60 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                                        <div className="flex items-center gap-2 text-amber-800 text-xs font-bold">
+                                            <CreditCard size={16} className="text-amber-600 shrink-0" />
+                                            <span>
+                                                Pago Pendiente — Para pagar vía Transferencia Bancaria o Xero, coordina con tu representante. Tu referencia se actualizará una vez verificado.
+                                            </span>
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase tracking-wider bg-amber-200/60 text-amber-900 px-3 py-1 rounded-full shrink-0">
+                                            Sin Confirmar
+                                        </span>
                                     </div>
                                 )}
                             </div>
