@@ -288,7 +288,7 @@ function InlineAddressForm({
 export default function CheckoutPage() {
     const { cart, clearCart, updateQuantity, getRawSubtotal, getDiscountedSubtotal, getFinalTotal } = useCart();
     const { user, profile } = useAuth();
-    const { locale } = useLanguage();
+    const { locale, t } = useLanguage();
     const router = useRouter();
 
     const [deliveryDate, setDeliveryDate] = useState('');
