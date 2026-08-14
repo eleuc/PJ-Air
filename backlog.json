@@ -149,7 +149,7 @@
     {
       "id": "S15",
       "name": "Sprint 15: Internacionalizacion Completa del Panel de Administracion y Selector de Idioma",
-      "status": "ACTIVE",
+      "status": "COMPLETED",
       "start_date": "2026-08-14",
       "goal": "Normalizar e internacionalizar el 100% de las vistas del panel de administracion (pedidos, clientes, usuarios, productos) e incorporar switchers de idioma accesibles en el sidebar y header administrativo.",
       "tasks": [
@@ -157,21 +157,21 @@
           "id": "TASK-15-01",
           "label": "FEAT/UI-UX",
           "desc": "Selector de idioma interactivo en AdminSidebar y Header administrativo.",
-          "status": "TODO",
+          "status": "DONE",
           "detail_doc": "vault/runtime/detail_docs/TASK-15-01.md"
         },
         {
           "id": "TASK-15-02",
           "label": "FEAT/I18N",
           "desc": "Internacionalizacion total de Gestion de Pedidos (/admin/orders): estados, filtros, modales, items y Xero.",
-          "status": "TODO",
+          "status": "DONE",
           "detail_doc": "vault/runtime/detail_docs/TASK-15-02.md"
         },
         {
           "id": "TASK-15-03",
           "label": "FEAT/I18N",
           "desc": "Internacionalizacion de Clientes, Usuarios y Productos (/admin/clients, /admin/users, /admin/products).",
-          "status": "TODO",
+          "status": "DONE",
           "detail_doc": "vault/runtime/detail_docs/TASK-15-03.md"
         }
       ]
