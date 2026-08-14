@@ -293,6 +293,7 @@ export default function CheckoutPage() {
 
     const [deliveryDate, setDeliveryDate] = useState('');
     const [paymentDate, setPaymentDate] = useState('');
+    const [notes, setNotes] = useState('');
     const [isBeforeCutoff, setIsBeforeCutoff] = useState(true);
     const [showMinAmountModal, setShowMinAmountModal] = useState(false);
     const [minOrderAmount, setMinOrderAmount] = useState<number>(500);
@@ -468,6 +469,7 @@ export default function CheckoutPage() {
                 deliveryAddressText,
                 total: finalTotal,
                 status: 'Pedido Enviado',
+                notes: notes.trim() || undefined,
                 deliveryDate,
                 paymentDueDate: paymentDate,
                 paymentGateway: paymentMethod,
