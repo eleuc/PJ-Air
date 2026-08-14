@@ -358,6 +358,33 @@ export default function CheckoutPage() {
     const deliveryFee = profile?.delivery_fee || 0;
     const subtotal = rawSubtotal;
 
+    // ── Payment method & Bank transfer ───────────────────────────────────────
+    const [paymentMethod, setPaymentMethod] = useState<'bank_transfer' | 'on_account'>('bank_transfer');
+    const [paymentReference, setPaymentReference] = useState('');
+    const [bankInfo, setBankInfo] = useState<{
+        bankName?: string;
+        accountHolder?: string;
+        accountNumber?: string;
+        routingNumber?: string;
+        bankEmail?: string;
+        bankNotes?: string;
+    }>({});
+
+    useEffect(() => {
+        api.get('/configs/bank_transfer_info')
+            .then((res: any) => {
+                if (res && res.value) {
+                    try {
+                        const parsed = JSON.parse(res.value);
+                        setBankInfo(parsed);
+                    } catch (e) {
+                        console.error('Error parsing bank_transfer_info:', e);
+                    }
+                }
+            })
+            .catch(err => console.error('Error fetching bank_transfer_info:', err));
+    }, []);
+
     // ── Delivery date (NY timezone) & Selectable future date ───────────────────
     const [minDeliveryDate, setMinDeliveryDate] = useState<string>('');
     const [deliveryDateISO, setDeliveryDateISO] = useState<string>('');
@@ -378,6 +405,14 @@ export default function CheckoutPage() {
         setDeliveryDateDisplay(delDate.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { weekday: 'long', day: 'numeric', month: 'long' }));
     }, [locale]);
 
+    const handleQuickEditDate = () => {
+        const el = document.getElementById('delivery-date-input');
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.focus();
+        }
+    };
+
     // ── Submit ────────────────────────────────────────────────────────────────
     const handleSubmit = async () => {
         if (!user || cart.length === 0) return;
@@ -393,7 +428,7 @@ export default function CheckoutPage() {
 
         if (deliveryType === 'saved') {
             if (!selectedAddressId) {
-                alert(lbl('Por favor selecciona una dirección guardada.', 'Please select a saved address.'));
+                alert(t.checkout.selectAddress);
                 return;
             }
             finalAddressId = selectedAddressId;
@@ -435,6 +470,9 @@ export default function CheckoutPage() {
                 status: 'Pedido Enviado',
                 deliveryDate,
                 paymentDueDate: paymentDate,
+                paymentGateway: paymentMethod,
+                paymentTransactionId: paymentReference.trim() || null,
+                paymentStatus: 'unpaid',
                 items: cart.map(item => {
                     let unitPrice = item.originalPrice || item.price;
                     
@@ -506,12 +544,15 @@ export default function CheckoutPage() {
                             {lbl('Confirmar Pedido', 'Confirm Order')}
                         </h1>
 
-                        {/* ── Delivery type selector ───────────────────────── */}
+                        {/* ── Paso 1: Tipo de Entrega ──────────────────────── */}
                         <section className="bg-card rounded-3xl border border-border p-8 shadow-sm">
-                            <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
-                                <Truck className="text-primary" size={20} />
-                                {lbl('Tipo de Entrega', 'Delivery Type')}
-                            </h2>
+                            <div className="flex items-center gap-3 mb-6">
+                                <span className="w-8 h-8 rounded-full bg-primary/10 text-primary font-black text-xs flex items-center justify-center">1</span>
+                                <h2 className="text-xl font-bold flex items-center gap-2">
+                                    <Truck className="text-primary" size={20} />
+                                    {t.checkout.step1}
+                                </h2>
+                            </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {typeOptions.map(opt => (
@@ -542,7 +583,7 @@ export default function CheckoutPage() {
                                     <Store size={20} className="text-green-600 shrink-0 mt-0.5" />
                                     <div>
                                         <p className="font-bold text-green-800 text-sm">
-                                            {lbl('Recoger en tienda', 'Store Pickup')}
+                                            {t.checkout.pickupLocation}
                                         </p>
                                         <p className="text-xs text-green-600 mt-0.5">
                                             {lbl(
@@ -559,7 +600,7 @@ export default function CheckoutPage() {
                                 <div className="mt-6 animate-fade-in">
                                     <div className="flex items-center justify-between mb-4">
                                         <p className="text-sm font-bold text-muted-foreground">
-                                            {lbl('Selecciona tu dirección de entrega:', 'Select your delivery address:')}
+                                            {t.checkout.selectAddress}:
                                         </p>
                                         <button
                                             type="button"
@@ -630,12 +671,15 @@ export default function CheckoutPage() {
                             )}
                         </section>
 
-                        {/* ── Selectable Delivery Date ────────────────────── */}
+                        {/* ── Paso 2: Fecha de Entrega ────────────────────── */}
                         <section className="bg-card rounded-3xl border border-border p-8 shadow-sm">
-                            <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
-                                <Calendar className="text-primary" size={22} />
-                                {lbl('Fecha de Entrega', 'Delivery Date')}
-                            </h2>
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="w-8 h-8 rounded-full bg-primary/10 text-primary font-black text-xs flex items-center justify-center">2</span>
+                                <h2 className="text-xl font-bold flex items-center gap-2">
+                                    <Calendar className="text-primary" size={22} />
+                                    {t.checkout.step2}
+                                </h2>
+                            </div>
 
                             <div className="space-y-4">
                                 <div className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full ${
@@ -644,16 +688,15 @@ export default function CheckoutPage() {
                                         : 'bg-amber-500/10 text-amber-700 border border-amber-500/20'
                                 }`}>
                                     <Clock size={12} />
-                                    {isBeforeCutoff
-                                        ? lbl('Pedido antes de la 1:00 PM (NY) → entrega sugerida en 2 días', 'Order before 1:00 PM (NY) → suggested delivery in 2 days')
-                                        : lbl('Pedido después de la 1:00 PM (NY) → entrega sugerida en 3 días', 'Order after 1:00 PM (NY) → suggested delivery in 3 days')}
+                                    {isBeforeCutoff ? t.checkout.beforeCutoff : t.checkout.afterCutoff}
                                 </div>
 
                                 <div>
                                     <label className="text-[10px] font-black uppercase text-muted-foreground mb-1 block px-1">
-                                        {lbl('Selecciona la fecha de entrega:', 'Select delivery date:')}
+                                        {t.checkout.selectDeliveryDate}
                                     </label>
                                     <input
+                                        id="delivery-date-input"
                                         type="date"
                                         min={minDeliveryDate}
                                         value={deliveryDateISO}
@@ -674,28 +717,154 @@ export default function CheckoutPage() {
                                     <div className="p-4 bg-muted/40 rounded-2xl border border-border flex items-center gap-3">
                                         <Calendar className="text-primary shrink-0" size={20} />
                                         <div>
-                                            <p className="text-xs text-muted-foreground font-medium">{lbl('Fecha seleccionada:', 'Selected date:')}</p>
+                                            <p className="text-xs text-muted-foreground font-medium">{t.checkout.selectedDate}:</p>
                                             <p className="text-sm font-bold text-foreground capitalize">{deliveryDateDisplay}</p>
                                         </div>
                                     </div>
                                 )}
 
                                 <p className="text-[11px] text-muted-foreground leading-snug">
-                                    {lbl(
-                                        '⚠️ Tu pedido se programará para la fecha seleccionada y aparecerá en el reporte de producción de ese día.',
-                                        '⚠️ Your order will be scheduled for the selected date and will appear in that day\'s production report.'
-                                    )}
+                                    {t.checkout.dateNotice}
                                 </p>
                             </div>
                         </section>
+
+                        {/* ── Paso 3: Método de Pago ──────────────────────── */}
+                        <section className="bg-card rounded-3xl border border-border p-8 shadow-sm">
+                            <div className="flex items-center gap-3 mb-6">
+                                <span className="w-8 h-8 rounded-full bg-primary/10 text-primary font-black text-xs flex items-center justify-center">3</span>
+                                <h2 className="text-xl font-bold flex items-center gap-2">
+                                    <CreditCard className="text-primary" size={20} />
+                                    {t.checkout.step3}
+                                </h2>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setPaymentMethod('bank_transfer')}
+                                    className={`p-5 rounded-2xl border-2 text-left transition-all flex flex-col gap-2 ${
+                                        paymentMethod === 'bank_transfer'
+                                            ? 'border-primary bg-primary/5 shadow-md shadow-primary/5'
+                                            : 'border-border hover:border-primary/30'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${paymentMethod === 'bank_transfer' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>
+                                            <CreditCard size={18} />
+                                        </div>
+                                        {paymentMethod === 'bank_transfer' && <Check size={16} className="text-primary font-bold" />}
+                                    </div>
+                                    <p className="font-black text-sm text-foreground">{t.checkout.payBankTransfer}</p>
+                                    <p className="text-[11px] text-muted-foreground">{t.checkout.transferInstructions}</p>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setPaymentMethod('on_account')}
+                                    className={`p-5 rounded-2xl border-2 text-left transition-all flex flex-col gap-2 ${
+                                        paymentMethod === 'on_account'
+                                            ? 'border-primary bg-primary/5 shadow-md shadow-primary/5'
+                                            : 'border-border hover:border-primary/30'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${paymentMethod === 'on_account' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>
+                                            <Store size={18} />
+                                        </div>
+                                        {paymentMethod === 'on_account' && <Check size={16} className="text-primary font-bold" />}
+                                    </div>
+                                    <p className="font-black text-sm text-foreground">{t.checkout.payOnAccount}</p>
+                                    <p className="text-[11px] text-muted-foreground">{lbl('Facturación y cobro acordado', 'Agreed billing and settlement')}</p>
+                                </button>
+                            </div>
+
+                            {/* Bank Details Display */}
+                            {paymentMethod === 'bank_transfer' && (
+                                <div className="space-y-4 bg-muted/30 p-6 rounded-2xl border border-border/80 animate-fade-in">
+                                    <h4 className="text-xs font-black uppercase tracking-wider text-primary flex items-center gap-2">
+                                        🏦 {t.checkout.bankDetailsTitle}
+                                    </h4>
+                                    
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                        {bankInfo.bankName && (
+                                            <div className="bg-white p-3 rounded-xl border border-border">
+                                                <span className="text-[9px] font-black uppercase text-muted-foreground block">{t.checkout.bankName}</span>
+                                                <span className="font-bold text-slate-800">{bankInfo.bankName}</span>
+                                            </div>
+                                        )}
+                                        {bankInfo.accountHolder && (
+                                            <div className="bg-white p-3 rounded-xl border border-border">
+                                                <span className="text-[9px] font-black uppercase text-muted-foreground block">{t.checkout.accountHolder}</span>
+                                                <span className="font-bold text-slate-800">{bankInfo.accountHolder}</span>
+                                            </div>
+                                        )}
+                                        {bankInfo.accountNumber && (
+                                            <div className="bg-white p-3 rounded-xl border border-border">
+                                                <span className="text-[9px] font-black uppercase text-muted-foreground block">{t.checkout.accountNumber}</span>
+                                                <span className="font-mono font-bold text-slate-800">{bankInfo.accountNumber}</span>
+                                            </div>
+                                        )}
+                                        {bankInfo.routingNumber && (
+                                            <div className="bg-white p-3 rounded-xl border border-border">
+                                                <span className="text-[9px] font-black uppercase text-muted-foreground block">{t.checkout.routingNumber}</span>
+                                                <span className="font-mono font-bold text-slate-800">{bankInfo.routingNumber}</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {bankInfo.bankEmail && (
+                                        <p className="text-[11px] text-muted-foreground">
+                                            ✉️ <strong>Email:</strong> {bankInfo.bankEmail}
+                                        </p>
+                                    )}
+
+                                    {bankInfo.bankNotes && (
+                                        <p className="text-[11px] text-muted-foreground italic">
+                                            ℹ️ {bankInfo.bankNotes}
+                                        </p>
+                                    )}
+
+                                    <div className="pt-2">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground mb-1 block">
+                                            {t.checkout.referenceNumber}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={paymentReference}
+                                            onChange={e => setPaymentReference(e.target.value)}
+                                            placeholder={t.checkout.referencePlaceholder}
+                                            className="w-full px-4 py-3 rounded-xl border border-border bg-white text-foreground font-bold text-xs outline-none focus:ring-2 focus:ring-primary/20 font-mono"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </section>
+
+                        {/* ── Paso 4: Notas ───────────────────────────────── */}
+                        <section className="bg-card rounded-3xl border border-border p-8 shadow-sm">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="w-8 h-8 rounded-full bg-primary/10 text-primary font-black text-xs flex items-center justify-center">4</span>
+                                <h2 className="text-xl font-bold flex items-center gap-2">
+                                    {t.checkout.step4}
+                                </h2>
+                            </div>
+                            <textarea
+                                value={notes}
+                                onChange={e => setNotes(e.target.value)}
+                                placeholder={t.checkout.notes}
+                                rows={3}
+                                className="w-full px-4 py-3 rounded-2xl border border-border bg-white text-foreground font-medium text-xs outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                            />
+                        </section>
                     </div>
 
-                    {/* ── Right sidebar ─────────────────────────────────────── */}
+                    {/* ── Right sidebar (Resumen Flotante) ─────────────────── */}
                     <div className="w-full lg:w-[400px]">
                         <div className="bg-card rounded-3xl border border-border p-8 shadow-xl sticky top-28">
                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                                 <ShoppingBag size={20} />
-                                {lbl('Resumen', 'Order Summary')}
+                                {t.checkout.summaryTitle}
                             </h2>
 
                             <div className="space-y-4 mb-8">
@@ -750,28 +919,53 @@ export default function CheckoutPage() {
                                     </p>
                                 )}
 
-                                {/* Delivery type badge in summary */}
-                                <div className="pt-2 flex items-center gap-2">
-                                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border ${
-                                        deliveryType === 'pickup'
-                                            ? 'bg-green-50 text-green-700 border-green-200'
-                                            : 'bg-primary/5 text-primary border-primary/20'
-                                    }`}>
-                                        {deliveryType === 'pickup'
-                                            ? lbl('🏪 Pick Up en tienda', '🏪 Store Pickup')
-                                            : lbl('🚛 Delivery', '🚛 Delivery')}
-                                    </span>
+                                {/* Delivery type, Delivery Date & Payment badges in summary */}
+                                <div className="pt-2 flex flex-col gap-2">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border ${
+                                            deliveryType === 'pickup'
+                                                ? 'bg-green-50 text-green-700 border-green-200'
+                                                : 'bg-primary/5 text-primary border-primary/20'
+                                        }`}>
+                                            {deliveryType === 'pickup'
+                                                ? `🏪 ${t.checkout.deliveryTypePickup}`
+                                                : `🚛 ${t.checkout.deliveryTypeSaved}`}
+                                        </span>
+
+                                        <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border bg-slate-50 text-slate-700 border-slate-200">
+                                            {paymentMethod === 'bank_transfer' ? '🏦 Transferencia' : '📦 En Cuenta'}
+                                        </span>
+                                    </div>
+
+                                    {deliveryDateDisplay && (
+                                        <div className="flex items-center justify-between p-3 bg-muted/40 rounded-xl border border-border/80 text-xs">
+                                            <div className="flex items-center gap-2">
+                                                <Calendar size={14} className="text-primary shrink-0" />
+                                                <div>
+                                                    <span className="text-[9px] font-black uppercase text-muted-foreground block">{t.checkout.selectedDate}</span>
+                                                    <span className="font-bold text-foreground capitalize">{deliveryDateDisplay}</span>
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={handleQuickEditDate}
+                                                className="text-[10px] font-black uppercase tracking-wider text-primary hover:underline bg-primary/10 hover:bg-primary/20 px-2.5 py-1 rounded-lg transition-colors"
+                                            >
+                                                {t.checkout.quickEditDate}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
 
                                  <div className="border-t border-border pt-4 flex flex-col gap-1">
                                     <div className="flex justify-between items-center text-xs mb-1">
-                                        <span className="text-muted-foreground">{lbl('Subtotal', 'Subtotal')}</span>
+                                        <span className="text-muted-foreground">{t.checkout.subtotal}</span>
                                         <span className="font-bold">${subtotal.toFixed(2)}</span>
                                     </div>
 
                                     {deliveryFee > 0 && (
                                         <div className="flex justify-between items-center text-xs mb-1">
-                                            <span className="text-muted-foreground">{lbl('Cargo por Delivery', 'Delivery Fee')}</span>
+                                            <span className="text-muted-foreground">{t.checkout.delivery}</span>
                                             <span className="font-bold text-amber-600">+${deliveryFee.toFixed(2)}</span>
                                         </div>
                                     )}
@@ -789,16 +983,13 @@ export default function CheckoutPage() {
                                     {finalTotal < minOrderAmount && (
                                         <div className="p-3 bg-red-50 rounded-xl border border-red-100 mb-2">
                                             <p className="text-[10px] text-red-600 font-black uppercase tracking-tight leading-tight">
-                                                {lbl(
-                                                    `Monto mínimo para pedido: $${minOrderAmount.toFixed(2)}. Te invitamos a completar tu pedido.`,
-                                                    `Minimum order amount: $${minOrderAmount.toFixed(2)}. Please add more items to complete.`
-                                                )}
+                                                {`${t.checkout.minimumAmountNotice}: $${minOrderAmount.toFixed(2)}`}
                                             </p>
                                         </div>
                                     )}
 
                                     <div className="flex justify-between items-center mt-2">
-                                        <span className="font-bold text-lg">{lbl('Total a Pagar', 'Final Total')}</span>
+                                        <span className="font-bold text-lg">{t.checkout.total}</span>
                                         <span className="text-3xl font-black text-primary">${finalTotal.toFixed(2)}</span>
                                     </div>
 
@@ -821,7 +1012,7 @@ export default function CheckoutPage() {
                                     )}
 
                                     <p className="text-[9px] text-muted-foreground font-bold mt-2 text-center">
-                                        {lbl(`Monto mínimo por pedido: $${minOrderAmount.toFixed(2)}`, `Minimum order amount: $${minOrderAmount.toFixed(2)}`)}
+                                        {`${t.checkout.minimumAmountNotice}: $${minOrderAmount.toFixed(2)}`}
                                     </p>
                                 </div>
                             </div>
@@ -833,7 +1024,7 @@ export default function CheckoutPage() {
                             >
                                 {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
                                     <>
-                                        {lbl('Confirmar Pedido', 'Place Order')}
+                                        {t.checkout.confirmAndPlaceOrder}
                                         <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                     </>
                                 )}
@@ -843,7 +1034,7 @@ export default function CheckoutPage() {
                                 onClick={() => router.push('/')}
                                 className="w-full py-3 mt-4 text-sm font-bold text-primary hover:bg-primary/5 rounded-2xl transition-colors"
                             >
-                                {lbl('Seguir Comprando', 'Continue Shopping')}
+                                {t.checkout.continueShopping}
                             </button>
 
                             <div className="mt-8 pt-8 border-t border-border">

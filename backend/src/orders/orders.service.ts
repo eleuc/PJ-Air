@@ -209,6 +209,9 @@ export class OrdersService {
       delivery_address_text: deliveryAddressText || null,
       user_id: userId,
       total: finalTotal,
+      payment_gateway: rest.paymentGateway || rest.payment_gateway || 'bank_transfer',
+      payment_transaction_id: rest.paymentTransactionId || rest.payment_transaction_id || null,
+      payment_status: rest.paymentStatus || rest.payment_status || 'unpaid',
     });
     
     const savedResult = await this.orderRepository.save(orderToCreate);

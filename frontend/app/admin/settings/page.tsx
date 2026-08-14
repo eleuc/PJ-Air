@@ -22,6 +22,14 @@ export default function AdminSettingsPage() {
     });
     const [selectedDefault, setSelectedDefault] = useState<Locale>(defaultLocale);
     const [minOrderAmount, setMinOrderAmount] = useState<number>(500);
+    const [bankInfo, setBankInfo] = useState({
+        bankName: '',
+        accountHolder: '',
+        accountNumber: '',
+        routingNumber: '',
+        bankEmail: '',
+        bankNotes: ''
+    });
 
     useEffect(() => {
         const saved = localStorage.getItem('admin_notification_settings');
@@ -35,6 +43,20 @@ export default function AdminSettingsPage() {
                 }
             })
             .catch(err => console.error('Error fetching min order amount:', err));
+
+        // Fetch bank transfer configuration
+        api.get('/configs/bank_transfer_info')
+            .then((res: any) => {
+                if (res && res.value) {
+                    try {
+                        const parsed = JSON.parse(res.value);
+                        setBankInfo(prev => ({ ...prev, ...parsed }));
+                    } catch (e) {
+                        console.error('Error parsing bank_transfer_info:', e);
+                    }
+                }
+            })
+            .catch(err => console.error('Error fetching bank_transfer_info:', err));
     }, []);
 
     // Keep selectedDefault in sync if defaultLocale changes externally
@@ -56,6 +78,9 @@ export default function AdminSettingsPage() {
             
             // Save the min order amount config
             await api.patch('/configs/min_order_amount', { value: String(minOrderAmount) });
+
+            // Save bank info config
+            await api.patch('/configs/bank_transfer_info', { value: JSON.stringify(bankInfo) });
 
             await new Promise(r => setTimeout(r, 600));
             showToast(t.adminSettings.savedOk);
@@ -145,6 +170,101 @@ export default function AdminSettingsPage() {
                                     value={minOrderAmount}
                                     onChange={e => setMinOrderAmount(Number(e.target.value) || 0)}
                                     className="bg-white border-2 border-slate-200 rounded-2xl px-6 py-4 text-lg font-black text-slate-800 outline-none focus:border-primary transition-all"
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ── Bank Information Section ─────────────────────────── */}
+                    <section className="bg-white rounded-[2.5rem] border border-border shadow-sm overflow-hidden">
+                        <div className="p-8 border-b border-border bg-slate-50/50 flex items-center gap-4">
+                            <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
+                                <DollarSign size={24} />
+                            </div>
+                            <div>
+                                <h2 className="font-black text-slate-800 text-xl leading-none mb-1">{t.adminSettings.bankInfoTitle}</h2>
+                                <p className="text-sm text-muted-foreground">{t.adminSettings.bankInfoDesc}</p>
+                            </div>
+                        </div>
+
+                        <div className="p-10 space-y-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                        {t.adminSettings.bankName}
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        value={bankInfo.bankName}
+                                        placeholder="Ej: Chase Bank / Bank of America"
+                                        onChange={e => setBankInfo(prev => ({ ...prev, bankName: e.target.value }))}
+                                        className="w-full bg-white border-2 border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 outline-none focus:border-primary transition-all"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                        {t.adminSettings.accountHolder}
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        value={bankInfo.accountHolder}
+                                        placeholder="Ej: Jhoanes Bakery LLC"
+                                        onChange={e => setBankInfo(prev => ({ ...prev, accountHolder: e.target.value }))}
+                                        className="w-full bg-white border-2 border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 outline-none focus:border-primary transition-all"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                        {t.adminSettings.accountNumber}
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        value={bankInfo.accountNumber}
+                                        placeholder="Ej: 1234567890"
+                                        onChange={e => setBankInfo(prev => ({ ...prev, accountNumber: e.target.value }))}
+                                        className="w-full bg-white border-2 border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-mono font-bold text-slate-800 outline-none focus:border-primary transition-all"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                        {t.adminSettings.routingNumber}
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        value={bankInfo.routingNumber}
+                                        placeholder="Ej: 021000021"
+                                        onChange={e => setBankInfo(prev => ({ ...prev, routingNumber: e.target.value }))}
+                                        className="w-full bg-white border-2 border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-mono font-bold text-slate-800 outline-none focus:border-primary transition-all"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                    {t.adminSettings.bankEmail}
+                                </label>
+                                <input 
+                                    type="email" 
+                                    value={bankInfo.bankEmail}
+                                    placeholder="Ej: billing@jhoanes.com"
+                                    onChange={e => setBankInfo(prev => ({ ...prev, bankEmail: e.target.value }))}
+                                    className="w-full bg-white border-2 border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-800 outline-none focus:border-primary transition-all"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                                    {t.adminSettings.bankNotes}
+                                </label>
+                                <textarea 
+                                    rows={2}
+                                    value={bankInfo.bankNotes}
+                                    placeholder="Ej: Enviar comprobante al email o escribir el ID de confirmación al terminar el pedido."
+                                    onChange={e => setBankInfo(prev => ({ ...prev, bankNotes: e.target.value }))}
+                                    className="w-full bg-white border-2 border-slate-200 rounded-2xl px-5 py-3.5 text-sm font-medium text-slate-800 outline-none focus:border-primary transition-all resize-none"
                                 />
                             </div>
                         </div>
