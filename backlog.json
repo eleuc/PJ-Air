@@ -119,7 +119,7 @@
     {
       "id": "S14",
       "name": "Sprint 14: Experiencia de Pago, Transferencia Bancaria e Internacionalizacion Unificada (i18n)",
-      "status": "ACTIVE",
+      "status": "COMPLETED",
       "start_date": "2026-08-14",
       "goal": "Reorganizar flujo de checkout con cambio de fecha de entrega en pago, incorporar seleccion y gestion administrativa de transferencia bancaria con persistencia y unificar el 100% de los textos e interfaces en ingles por defecto y espanol al alternar.",
       "tasks": [
@@ -127,21 +127,21 @@
           "id": "TASK-14-01",
           "label": "FEAT/UI-UX",
           "desc": "Reorganizacion modular del Checkout: bloques limpios de entrega, fecha, pago y notas + edicion rapida de fecha de entrega en el resumen lateral.",
-          "status": "TODO",
+          "status": "DONE",
           "detail_doc": "vault/runtime/detail_docs/TASK-14-01.md"
         },
         {
           "id": "TASK-14-02",
           "label": "FEAT/FULL-STACK",
           "desc": "Flujo y gestion de Transferencia Bancaria: configuracion en admin/settings (bank_transfer_info) + selector de pago en checkout + captura de referencia y confirmacion.",
-          "status": "TODO",
+          "status": "DONE",
           "detail_doc": "vault/runtime/detail_docs/TASK-14-02.md"
         },
         {
           "id": "TASK-14-03",
           "label": "FEAT/I18N",
           "desc": "Unificacion de Internacionalizacion: ingles por defecto para nuevos usuarios/sesiones + catalogo completo en.ts y es.ts sin mezclas de idioma en frontend.",
-          "status": "TODO",
+          "status": "DONE",
           "detail_doc": "vault/runtime/detail_docs/TASK-14-03.md"
         }
       ]
