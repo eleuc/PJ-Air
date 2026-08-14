@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { API_URL } from '@/lib/config';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Address { id: string; address: string; city: string; state?: string; zip_code?: string; country?: string; is_default?: boolean; }
 interface OrderItem { 
@@ -35,6 +36,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function AdminClientsPage() {
+    const { t } = useLanguage();
     const [users, setUsers] = useState<UserRecord[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -248,9 +250,9 @@ export default function AdminClientsPage() {
                 {/* Header */}
                 <div className="flex justify-between items-end mb-8">
                     <div>
-                        <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-2">Clientes</h1>
+                        <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-2">{t.adminClients.title}</h1>
                         <p className="text-slate-500 font-medium flex items-center gap-2">
-                           <Users size={16} /> {filtered.length} Clientes registrados
+                           <Users size={16} /> {filtered.length} {t.adminClients.title}
                         </p>
                     </div>
                 </div>
@@ -261,15 +263,11 @@ export default function AdminClientsPage() {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                         <input 
                             type="text" 
-                            placeholder="Buscar por nombre, email o ID..." 
+                            placeholder={t.adminClients.searchPlaceholder} 
                             value={search}
                             onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
                             className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-slate-700" 
                         />
-                    </div>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-2xl text-slate-500 text-sm font-bold border border-slate-100">
-                        <ListFilter size={16} />
-                        Filtro: Clientes
                     </div>
                 </div>
 
@@ -278,10 +276,10 @@ export default function AdminClientsPage() {
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-widest border-b border-slate-100">
-                                <th className="px-8 py-5">Nombre / Usuario</th>
-                                <th className="px-8 py-5">Contacto</th>
-                                <th className="px-8 py-5 text-center">Info</th>
-                                <th className="px-8 py-5 text-right">Acciones</th>
+                                <th className="px-8 py-5">{t.adminClients.fullName}</th>
+                                <th className="px-8 py-5">{t.adminUsers.email}</th>
+                                <th className="px-8 py-5 text-center">{t.adminClients.discount}</th>
+                                <th className="px-8 py-5 text-right">{t.adminUsers.actions}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">

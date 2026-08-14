@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { API_URL } from '@/lib/config';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface OrderItem {
     id: string;
@@ -76,6 +77,7 @@ const PAYMENT_STATUS_LABELS: Record<string, string> = {
 };
 
 export default function AdminOrdersPage() {
+    const { t, locale } = useLanguage();
     const [orders, setOrders] = useState<Order[]>([]);
     const [deliveryUsers, setDeliveryUsers] = useState<DeliveryUser[]>([]);
     const [loading, setLoading] = useState(true);
@@ -388,8 +390,8 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
             <main className="flex-1 p-8 overflow-auto">
                 <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
                     <div>
-                        <h1 className="text-3xl font-black mb-1 animate-fade-in text-slate-800">Panel de Pedidos</h1>
-                        <p className="text-muted-foreground font-medium">Supervisión y control de ventas en tiempo real</p>
+                        <h1 className="text-3xl font-black mb-1 animate-fade-in text-slate-800">{t.adminOrders.title}</h1>
+                        <p className="text-muted-foreground font-medium">{t.adminOrders.subtitle}</p>
                     </div>
                 </header>
 
@@ -399,7 +401,7 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={18} />
                             <input 
                                 type="text" 
-                                placeholder="Buscar por cliente, email, producto o categoría..." 
+                                placeholder={t.adminOrders.searchPlaceholder} 
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2.5 bg-muted/30 border border-border rounded-xl outline-none focus:ring-4 focus:ring-primary/10 transition-all font-medium"
@@ -412,25 +414,25 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                 onChange={(e) => setStatusFilter(e.target.value)}
                                 className="flex-1 md:w-52 px-4 py-2.5 bg-muted/30 border border-border rounded-xl outline-none font-bold text-slate-700 cursor-pointer"
                             >
-                                <option>Todos</option>
-                                {STATUS_OPTIONS.map(s => <option key={s}>{s}</option>)}
+                                <option value="Todos">{t.adminOrders.allStatuses}</option>
+                                {STATUS_OPTIONS.map(s => <option key={s} value={s}>{(t.adminOrders.statusLabels as any)?.[s] || s}</option>)}
                             </select>
                         </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
                         <CalendarDays size={18} className="text-muted-foreground" />
                         <div className="flex items-center gap-2 bg-muted/30 border border-border rounded-xl px-3 py-1.5">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase">Desde</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">{t.reports.from}</span>
                             <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="bg-transparent outline-none text-xs font-bold text-slate-700 py-1" />
                         </div>
                         <span className="text-slate-300 font-bold">→</span>
                         <div className="flex items-center gap-2 bg-muted/30 border border-border rounded-xl px-3 py-1.5">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase">Hasta</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">{t.reports.to}</span>
                             <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="bg-transparent outline-none text-xs font-bold text-slate-700 py-1" />
                         </div>
                         {(startDate || endDate) && (
                             <button onClick={() => { setStartDate(''); setEndDate(''); }} className="px-3 py-1.5 bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1">
-                                <X size={12} /> Limpiar
+                                <X size={12} /> {t.common.close}
                             </button>
                         )}
                     </div>
@@ -446,12 +448,12 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                         <table className="w-full text-left">
                             <thead className="bg-slate-50/80 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400 border-b border-border">
                                 <tr>
-                                    <th className="px-8 py-5">Orden</th>
-                                    <th className="px-8 py-5">Cliente</th>
-                                    <th className="px-8 py-5">Estado</th>
-                                    <th className="px-8 py-5">Repartidor</th>
-                                    <th className="px-8 py-5 text-right">Total</th>
-                                    <th className="px-8 py-5 text-right">Acciones</th>
+                                    <th className="px-8 py-5">{t.adminOrders.items}</th>
+                                    <th className="px-8 py-5">{t.adminOrders.client}</th>
+                                    <th className="px-8 py-5">{t.adminOrders.status}</th>
+                                    <th className="px-8 py-5">{t.adminOrders.driver}</th>
+                                    <th className="px-8 py-5 text-right">{t.adminOrders.total}</th>
+                                    <th className="px-8 py-5 text-right">{t.adminOrders.actions}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
@@ -483,7 +485,7 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                         <td className="px-8 py-5">
                                             <div className="flex flex-col gap-1.5 items-start">
                                                 <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border shadow-sm transition-all group-hover:scale-105 inline-block ${STATUS_COLORS[order.status] || STATUS_COLORS.pending}`}>
-                                                    {order.status}
+                                                    {(t.adminOrders.statusLabels as any)?.[order.status] || order.status}
                                                 </span>
                                                 <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase border transition-all inline-block ${PAYMENT_STATUS_COLORS[order.payment_status || 'unpaid'] || PAYMENT_STATUS_COLORS.unpaid}`}>
                                                     {PAYMENT_STATUS_LABELS[order.payment_status || 'unpaid'] || 'No Pagado'}
@@ -500,7 +502,7 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                                 </div>
                                             ) : (
                                                 <span className="text-[10px] font-bold text-slate-300 italic flex items-center gap-1.5">
-                                                    <Truck size={12} /> Esperando asignación
+                                                    <Truck size={12} /> {t.adminOrders.unassigned}
                                                 </span>
                                             )}
                                         </td>
@@ -512,7 +514,7 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                                 <button 
                                                     onClick={() => openOrderDetail(order)}
                                                     className="p-2 bg-slate-100 text-slate-400 hover:bg-primary/10 hover:text-primary rounded-xl transition-all"
-                                                    title="Ver detalles"
+                                                    title={t.adminOrders.viewDetails}
                                                 >
                                                     <ChevronRight size={18} />
                                                 </button>
@@ -666,37 +668,36 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                             {/* Payment & Xero Integration */}
                             <section className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm transition-all hover:shadow-md">
                                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2 mb-6">
-                                    <ShoppingBag size={14} className="text-primary" /> Detalles de Pago y Facturación
+                                    <ShoppingBag size={14} className="text-primary" /> {t.adminOrders.paymentBilling}
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100 flex flex-col gap-3">
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Gestión Financiera</p>
-                                        
-                                        <div>
-                                            <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Estado de Pago</label>
+                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-3">{t.adminOrders.paymentStatus}</h4>
+                                        <div className="mb-3">
+                                            <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">{t.adminOrders.paymentStatus}</label>
                                             <select
                                                 value={editingPaymentStatus}
                                                 onChange={e => setEditingPaymentStatus(e.target.value)}
                                                 className="w-full text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 bg-white outline-none"
                                             >
-                                                <option value="unpaid">No Pagado</option>
-                                                <option value="paid">Pagado</option>
-                                                <option value="pending">Pendiente</option>
-                                                <option value="refunded">Reembolsado</option>
+                                                <option value="unpaid">No Pagado / Unpaid</option>
+                                                <option value="paid">Pagado / Paid</option>
+                                                <option value="pending">Pendiente / Pending</option>
+                                                <option value="refunded">Reembolsado / Refunded</option>
                                             </select>
                                         </div>
 
                                         <div>
-                                            <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Método / Pasarela</label>
+                                            <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">{t.adminOrders.paymentMethod}</label>
                                             <select
                                                 value={editingPaymentGateway}
                                                 onChange={e => setEditingPaymentGateway(e.target.value)}
                                                 className="w-full text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 bg-white outline-none"
                                             >
-                                                <option value="">Sin especificar</option>
-                                                <option value="bank_transfer">Transferencia Bancaria</option>
-                                                <option value="xero">Xero / Factura</option>
-                                                <option value="cash">Efectivo</option>
+                                                <option value="">{t.checkout.payOnAccount}</option>
+                                                <option value="bank_transfer">{t.checkout.payBankTransfer}</option>
+                                                <option value="xero">Xero</option>
+                                                <option value="cash">Cash</option>
                                                 <option value="stripe">Stripe</option>
                                                 <option value="paypal">PayPal</option>
                                             </select>
@@ -704,7 +705,7 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
 
                                         {editingPaymentGateway === 'bank_transfer' && (
                                             <div>
-                                                <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">Ref. Transferencia Bancaria</label>
+                                                <label className="text-[9px] font-bold text-slate-500 uppercase block mb-1">{t.adminOrders.bankRef}</label>
                                                 <input
                                                     type="text"
                                                     value={editingPaymentRef}
@@ -720,28 +721,28 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                             disabled={updatingPayment}
                                             className="mt-2 w-full py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                         >
-                                            {updatingPayment ? <Loader2 size={14} className="animate-spin" /> : 'Guardar Estado de Pago'}
+                                            {updatingPayment ? <Loader2 size={14} className="animate-spin" /> : t.adminOrders.savePayment}
                                         </button>
                                     </div>
 
                                     <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100 flex flex-col gap-3 justify-between">
                                         <div>
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Sincronización Xero</p>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">{t.adminOrders.xeroSyncTitle}</p>
                                             <div className="flex items-center justify-between mb-3">
-                                                <span className="text-xs font-bold text-slate-500">Estado Factura:</span>
+                                                <span className="text-xs font-bold text-slate-500">{t.adminOrders.status}:</span>
                                                 {selectedOrder.xero_invoice_id ? (
                                                     <span className="bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-xl text-[10px] font-black uppercase shadow-sm">
-                                                        Sincronizado
+                                                        {t.adminOrders.xeroSynced}
                                                     </span>
                                                 ) : (
                                                     <span className="bg-slate-100 text-slate-400 border border-slate-200 px-3 py-1 rounded-xl text-[10px] font-black uppercase shadow-sm">
-                                                        No Sincronizado
+                                                        {t.adminOrders.xeroNotSynced}
                                                     </span>
                                                 )}
                                             </div>
                                             {selectedOrder.xero_invoice_id && (
                                                 <div className="flex flex-col gap-1 mb-3">
-                                                    <span className="text-[10px] font-bold text-slate-500">ID Factura Xero:</span>
+                                                    <span className="text-[10px] font-bold text-slate-500">{t.adminOrders.xeroInvoiceId}:</span>
                                                     <span className="text-xs font-mono font-bold text-slate-600 bg-white px-2 py-1 rounded-lg border border-slate-100 break-all">{selectedOrder.xero_invoice_id}</span>
                                                 </div>
                                             )}
@@ -752,7 +753,7 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                             disabled={syncingXero}
                                             className="w-full py-2.5 bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md hover:bg-black transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                         >
-                                            {syncingXero ? <Loader2 size={14} className="animate-spin" /> : 'Sincronizar a Xero'}
+                                            {syncingXero ? <Loader2 size={14} className="animate-spin" /> : t.adminOrders.syncToXero}
                                         </button>
                                     </div>
                                 </div>
@@ -762,14 +763,14 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                             <section className="space-y-6">
                                 <div className="flex justify-between items-center px-1">
                                     <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
-                                        <ShoppingBag size={16} className="text-primary" /> Líneas de Productos
+                                        <ShoppingBag size={16} className="text-primary" /> {t.adminOrders.orderItemsTitle}
                                     </h3>
                                     <button 
                                         onClick={toggleEditMode}
                                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-sm transition-all ${editMode ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20'}`}
                                     >
                                         {editMode ? <History size={14} /> : <Edit size={14} />}
-                                        {editMode ? 'No Cancelar' : 'Modificar Pedido'}
+                                        {editMode ? t.common.cancel : t.adminOrders.editItems}
                                     </button>
                                 </div>
                                 

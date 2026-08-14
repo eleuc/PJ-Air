@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { API_URL } from '@/lib/config';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Category {
     id: number;
@@ -42,6 +43,7 @@ const emptyForm: ProductForm = {
 };
 
 export default function AdminProductsPage() {
+    const { t } = useLanguage();
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [products, setProducts] = useState<Product[]>([]);
@@ -203,13 +205,13 @@ export default function AdminProductsPage() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold">Gestión de Productos</h1>
+                        <h1 className="text-3xl font-bold">{t.adminProducts.title}</h1>
                         <p className="text-muted-foreground">
-                            {loading ? 'Cargando catálogo...' : `${products.length} productos en el catálogo`}
+                            {loading ? t.common.loading : `${products.length} ${t.adminProducts.title.toLowerCase()}`}
                         </p>
                     </div>
                     <button onClick={openCreate} className="flex items-center gap-2 bg-primary text-white btn-premium">
-                        <Plus size={20} /> Añadir Producto
+                        <Plus size={20} /> {t.adminProducts.addProduct}
                     </button>
                 </div>
 
@@ -219,7 +221,7 @@ export default function AdminProductsPage() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <input
                             type="text"
-                            placeholder="Buscar por nombre o categoría..."
+                            placeholder={t.adminProducts.searchPlaceholder}
                             className="w-full pl-10 pr-4 py-2 border border-border rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -234,7 +236,7 @@ export default function AdminProductsPage() {
                 {loading && (
                     <div className="flex items-center justify-center py-20 gap-3 text-muted-foreground">
                         <Loader2 size={24} className="animate-spin text-primary" />
-                        <span className="font-medium">Cargando productos...</span>
+                        <span className="font-medium">{t.common.loading}</span>
                     </div>
                 )}
                 {error && !loading && (

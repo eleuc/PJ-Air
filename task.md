@@ -1,36 +1,31 @@
-# task.md — Sprint 14: Experiencia de Pago, Transferencia Bancaria e Internacionalización Unificada (i18n)
-**Bunker**: pj-air (jhoanes) | **Kernel**: 3.6.2 | **Inicio**: 2026-08-14
+# Sprint 15: Internacionalización Completa del Panel de Administración y Selector de Idioma
+
+## TASK-15-01 — Selector de Idioma Interactivo en AdminSidebar y Header Administrativo
+**Label**: `FEAT/UI-UX` | **Detail**: `vault/runtime/detail_docs/TASK-15-01.md`
+
+- `[ ]` Integrar selector de idioma en `frontend/components/layout/AdminSidebar.tsx` (modo expandido y colapsado)
+- `[ ]` Añadir indicador visual activo del idioma seleccionado (🇺🇸 English / 🇪🇸 Español)
+- `[ ]` Garantizar persistencia inmediata en `localStorage` y reactividad global sin recargar página
+- `[ ]` Validar diseño armónico en móvil y desktop
 
 ---
 
-## TASK-14-01 — Reorganización Modular del Checkout y Edición Rápida de Fecha
-**Label**: `FEAT/UI-UX` | **Detail**: `vault/runtime/detail_docs/TASK-14-01.md`
+## TASK-15-02 — Internacionalización Total de Gestión de Pedidos (`/admin/orders`)
+**Label**: `FEAT/I18N` | **Detail**: `vault/runtime/detail_docs/TASK-15-02.md`
 
-- `[x]` Reorganizar layout de `/checkout` en 4 bloques: 1. Entrega, 2. Fecha de Entrega, 3. Método de Pago, 4. Notas
-- `[x]` Implementar botón de edición rápida de fecha en el sticky summary de la columna derecha
-- `[x]` Conectar scroll / focus automático hacia la sección de fecha de entrega
-- `[x]` Mantener consistencia de cálculo de fecha mínima (corte 1:00 PM NY)
-- `[x]` Validar interactividad fluida y responsive en móvil y escritorio
-
----
-
-## TASK-14-02 — Flujo y Gestión de Transferencia Bancaria
-**Label**: `FEAT/FULL-STACK` | **Detail**: `vault/runtime/detail_docs/TASK-14-02.md`
-
-- `[x]` Crear sección "Información Bancaria para Transferencias" en `/admin/settings` (Banco, Titular, Cuenta, Routing, Email)
-- `[x]` Conectar persistencia de datos bancarios con `system_configs` (`bank_transfer_info`)
-- `[x]` Añadir selector de método de pago en `/checkout` (Transferencia Bancaria vs En Cuenta)
-- `[x]` Desplegar datos bancarios dinámicos y campo opcional para número de referencia/comprobante
-- `[x]` Persistir `payment_gateway: 'bank_transfer'`, `payment_status: 'unpaid'` y `payment_transaction_id` al enviar orden
-- `[x]` Añadir modal / pantalla de confirmación con instrucciones bancarias claras post-pedido
+- `[ ]` Crear claves de diccionario completas para `adminOrders` en `en.ts` y `es.ts`
+- `[ ]` Traducir estados de órdenes (`Pedido`, `En Producción`, `Finalizado`, `En camino`, `En Entrega`, `Entregado`, `Cancelado`)
+- `[ ]` Traducir selector de fechas, barra de búsqueda por cliente/nickname y filtros de estado
+- `[ ]` Traducir modales de detalle de pedido, edición de ítems, asignación de chofer y sincronización de Xero
+- `[ ]` Traducir vista de impresión de pedido (`Printer`)
 
 ---
 
-## TASK-14-03 — Unificación y Auditoría de Internacionalización (i18n)
-**Label**: `FEAT/I18N` | **Detail**: `vault/runtime/detail_docs/TASK-14-03.md`
+## TASK-15-03 — Internacionalización de Clientes, Usuarios y Productos (`/admin/clients`, `/admin/users`, `/admin/products`)
+**Label**: `FEAT/I18N` | **Detail**: `vault/runtime/detail_docs/TASK-15-03.md`
 
-- `[x]` Establecer Inglés (`en`) como idioma maestro por defecto para nuevas sesiones
-- `[x]` Centralizar y homologar 100% de las cadenas en `frontend/lib/i18n/en.ts` y `frontend/lib/i18n/es.ts`
-- `[x]` Eliminar helpers temporales `lbl()` y textos hardcodeados en `/checkout`, `/admin/*`, `/orders/*`
-- `[x]` Auditar modales, toasts, alertas y botones para certificar paridad 1-a-1 sin mezclas de idioma
-- `[x]` Verificar cambio instantáneo EN/ES en toda la aplicación
+- `[ ]` Crear claves de diccionario para `adminClients`, `adminUsers` y `adminProducts` en `en.ts` y `es.ts`
+- `[ ]` Traducir tablas y cabeceras de columnas en `/admin/clients` y `/admin/users`
+- `[ ]` Traducir modal de cambio/reseteo de contraseña de usuarios y clientes
+- `[ ]` Traducir formulario de creación/edición de productos y subida de imágenes en `/admin/products`
+- `[ ]` Certificar con prueba automatizada Playwright en `https://testing.jhoanes.com`

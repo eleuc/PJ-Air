@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { API_URL } from '@/lib/config';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Address { id: string; address: string; city: string; state?: string; zip_code?: string; country?: string; is_default?: boolean; }
 interface OrderItem { 
@@ -41,6 +42,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function AdminUsersPage() {
+    const { t } = useLanguage();
     const [users, setUsers] = useState<UserRecord[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -360,7 +362,7 @@ export default function AdminUsersPage() {
                                         : 'hover:bg-muted text-muted-foreground hover:text-foreground'
                                 }`}
                             >
-                                {f === 'all' ? 'Todos' : f === 'client' ? 'Clientes' : f}
+                                {f === 'all' ? t.adminOrders.allStatuses : (t.adminUsers.roles as any)?.[f] || f}
                             </button>
                         ))}
                     </div>
@@ -368,7 +370,7 @@ export default function AdminUsersPage() {
 
                 {loading && (
                     <div className="flex items-center justify-center py-20 gap-3 text-muted-foreground">
-                        <Loader2 size={24} className="animate-spin text-primary" /><span>Cargando usuarios...</span>
+                        <Loader2 size={24} className="animate-spin text-primary" /><span>{t.common.loading}</span>
                     </div>
                 )}
                 {error && !loading && (
@@ -379,7 +381,7 @@ export default function AdminUsersPage() {
                 {!loading && !error && users.length === 0 && (
                     <div className="text-center py-20 bg-card rounded-2xl border border-border">
                         <Users size={48} className="mx-auto text-muted-foreground/20 mb-4" />
-                        <p className="font-medium text-muted-foreground">No hay usuarios registrados</p>
+                        <p className="font-medium text-muted-foreground">{t.adminUsers.title}</p>
                     </div>
                 )}
 
@@ -388,12 +390,12 @@ export default function AdminUsersPage() {
                         <table className="w-full text-left">
                             <thead className="bg-muted text-muted-foreground text-xs uppercase font-bold">
                                 <tr>
-                                    <th className="px-6 py-4">Usuario</th>
-                                    <th className="px-6 py-4">Email</th>
-                                    <th className="px-6 py-4">Teléfono</th>
-                                    <th className="px-6 py-4">Rol</th>
-                                    <th className="px-6 py-4">Actividad</th>
-                                    <th className="px-6 py-4 text-right">Detalle</th>
+                                    <th className="px-6 py-4">{t.adminUsers.title}</th>
+                                    <th className="px-6 py-4">{t.adminUsers.email}</th>
+                                    <th className="px-6 py-4">{t.profile.phone}</th>
+                                    <th className="px-6 py-4">{t.adminUsers.role}</th>
+                                    <th className="px-6 py-4">{t.adminUsers.status}</th>
+                                    <th className="px-6 py-4 text-right">{t.adminOrders.actions}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">

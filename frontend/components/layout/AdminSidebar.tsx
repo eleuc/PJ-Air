@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { LayoutDashboard, ShoppingBag, Layers, Users, Truck, Settings, LogOut, ChevronLeft, ChevronRight, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 
 export default function AdminSidebar() {
     const pathname = usePathname();
@@ -89,8 +90,12 @@ export default function AdminSidebar() {
                 })}
             </nav>
 
-            {/* Logout */}
-            <div className="p-3 border-t border-border">
+            {/* Language Switcher & Logout */}
+            <div className="p-3 border-t border-border space-y-2">
+                <div className={`flex items-center ${collapsed ? 'justify-center' : 'px-2 py-1'}`}>
+                    <LanguageSwitcher variant="pill" />
+                </div>
+
                 <button
                     onClick={handleLogout}
                     title={collapsed ? t.adminSidebar.logout : undefined}
