@@ -1,6 +1,6 @@
 # SPRINT S16 - Sprint 16: Reestructuracion de Pagos, Vista de Confirmacion y Circuito Xero
 **Objetivo**: Reestructurar metodos de pago en checkout (Pago Inmediato Online vs Transferencia Bancaria), adaptar la vista de confirmacion /orders/[id] para respetar pedidos por transferencia y certificar el circuito con Xero.
-**Fecha**: 2026-08-14
+**Fecha**: 2026-08-15
 
 - [x] **TASK-16-01** [FEAT/UI-UX] Reestructuracion de metodos de pago en Checkout: Pago Inmediato Online (Stripe/PayPal) como opcion 1 y Transferencia Bancaria como opcion 2, eliminando Charge to Account.
 - [x] **TASK-16-02** [FEAT/UI-UX] Vista de confirmacion adaptativa (/orders/[id]): mostrar resumen e instrucciones de transferencia para pedidos bank_transfer sin forzar widget de Stripe.
