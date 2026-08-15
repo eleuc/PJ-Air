@@ -360,7 +360,7 @@ export default function CheckoutPage() {
     const subtotal = rawSubtotal;
 
     // ── Payment method & Bank transfer ───────────────────────────────────────
-    const [paymentMethod, setPaymentMethod] = useState<'bank_transfer' | 'on_account'>('bank_transfer');
+    const [paymentMethod, setPaymentMethod] = useState<'online' | 'bank_transfer'>('online');
     const [paymentReference, setPaymentReference] = useState('');
     const [bankInfo, setBankInfo] = useState<{
         bankName?: string;
@@ -744,6 +744,25 @@ export default function CheckoutPage() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                                 <button
                                     type="button"
+                                    onClick={() => setPaymentMethod('online')}
+                                    className={`p-5 rounded-2xl border-2 text-left transition-all flex flex-col gap-2 ${
+                                        paymentMethod === 'online'
+                                            ? 'border-primary bg-primary/5 shadow-md shadow-primary/5'
+                                             : 'border-border hover:border-primary/30'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${paymentMethod === 'online' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>
+                                            <CreditCard size={18} />
+                                        </div>
+                                        {paymentMethod === 'online' && <Check size={16} className="text-primary font-bold" />}
+                                    </div>
+                                    <p className="font-black text-sm text-foreground">{t.checkout.payOnline}</p>
+                                    <p className="text-[11px] text-muted-foreground">{t.checkout.payOnlineDesc}</p>
+                                </button>
+
+                                <button
+                                    type="button"
                                     onClick={() => setPaymentMethod('bank_transfer')}
                                     className={`p-5 rounded-2xl border-2 text-left transition-all flex flex-col gap-2 ${
                                         paymentMethod === 'bank_transfer'
@@ -753,31 +772,12 @@ export default function CheckoutPage() {
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${paymentMethod === 'bank_transfer' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>
-                                            <CreditCard size={18} />
+                                            <Store size={18} />
                                         </div>
                                         {paymentMethod === 'bank_transfer' && <Check size={16} className="text-primary font-bold" />}
                                     </div>
                                     <p className="font-black text-sm text-foreground">{t.checkout.payBankTransfer}</p>
                                     <p className="text-[11px] text-muted-foreground">{t.checkout.transferInstructions}</p>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setPaymentMethod('on_account')}
-                                    className={`p-5 rounded-2xl border-2 text-left transition-all flex flex-col gap-2 ${
-                                        paymentMethod === 'on_account'
-                                            ? 'border-primary bg-primary/5 shadow-md shadow-primary/5'
-                                            : 'border-border hover:border-primary/30'
-                                    }`}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${paymentMethod === 'on_account' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>
-                                            <Store size={18} />
-                                        </div>
-                                        {paymentMethod === 'on_account' && <Check size={16} className="text-primary font-bold" />}
-                                    </div>
-                                    <p className="font-black text-sm text-foreground">{t.checkout.payOnAccount}</p>
-                                    <p className="text-[11px] text-muted-foreground">{lbl('Facturación y cobro acordado', 'Agreed billing and settlement')}</p>
                                 </button>
                             </div>
 
@@ -935,7 +935,7 @@ export default function CheckoutPage() {
                                         </span>
 
                                         <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border bg-slate-50 text-slate-700 border-slate-200">
-                                            {paymentMethod === 'bank_transfer' ? '🏦 Transferencia' : '📦 En Cuenta'}
+                                            {paymentMethod === 'online' ? (locale === 'en' ? '💳 Online Payment' : '💳 Pago Online') : (locale === 'en' ? '🏦 Bank Transfer' : '🏦 Transferencia')}
                                         </span>
                                     </div>
 

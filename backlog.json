@@ -1,10 +1,10 @@
 {
   "project": "pj-air",
-  "version": "3.2.0",
-  "kernel_version": "3.6.2",
+  "version": "0.8.0",
+  "kernel_version": "3.8.0",
   "status": "IN_PROGRESS",
-  "current_sprint": "S15",
-  "current_task": "TASK-15-01",
+  "current_sprint": "S16",
+  "current_task": "TASK-16-01",
   "sprints": [
     {
       "id": "S11",
@@ -173,6 +173,33 @@
           "desc": "Internacionalizacion de Clientes, Usuarios y Productos (/admin/clients, /admin/users, /admin/products).",
           "status": "DONE",
           "detail_doc": "vault/runtime/detail_docs/TASK-15-03.md"
+        }
+      ]
+    },
+    {
+      "id": "S16",
+      "name": "Sprint 16: Reestructuracion de Pagos, Vista de Confirmacion y Circuito Xero",
+      "status": "IN_PROGRESS",
+      "start_date": "2026-08-14",
+      "goal": "Reestructurar metodos de pago en checkout (Pago Inmediato Online vs Transferencia Bancaria), adaptar la vista de confirmacion /orders/[id] para respetar pedidos por transferencia y certificar el circuito con Xero.",
+      "tasks": [
+        {
+          "id": "TASK-16-01",
+          "label": "FEAT/UI-UX",
+          "desc": "Reestructuracion de metodos de pago en Checkout: Pago Inmediato Online (Stripe/PayPal) como opcion 1 y Transferencia Bancaria como opcion 2, eliminando Charge to Account.",
+          "status": "IN_PROGRESS"
+        },
+        {
+          "id": "TASK-16-02",
+          "label": "FEAT/UI-UX",
+          "desc": "Vista de confirmacion adaptativa (/orders/[id]): mostrar resumen e instrucciones de transferencia para pedidos bank_transfer sin forzar widget de Stripe.",
+          "status": "TODO"
+        },
+        {
+          "id": "TASK-16-03",
+          "label": "FEAT/FULL-STACK",
+          "desc": "Certificacion y barrido del circuito de sincronizacion con Xero para pagos online y transferencias aprobadas.",
+          "status": "TODO"
         }
       ]
     }

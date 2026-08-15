@@ -19,6 +19,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
     const [order, setOrder] = useState<any>(null);
     const [items, setItems] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [bankInfo, setBankInfo] = useState<any>({});
 
     useEffect(() => {
         const fetchOrderDetails = async () => {
@@ -34,6 +35,18 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
             }
         };
         fetchOrderDetails();
+
+        api.get('/configs/bank_transfer_info')
+            .then((res: any) => {
+                if (res?.value) {
+                    try {
+                        setBankInfo(JSON.parse(res.value));
+                    } catch (e) {
+                        console.error('Error parsing bank info:', e);
+                    }
+                }
+            })
+            .catch(err => console.error('Error fetching bank info:', err));
     }, [orderId]);
 
     const steps = [
@@ -116,17 +129,83 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
                         </section>
                     </div>
 
-                    {/* Order Summary */}
+                    {/* Order Summary & Payment Condition */}
                     <div className="lg:col-span-5 space-y-6">
-                        {order.status === 'Pedido Enviado' && (
-                            <PaymentGateway
-                                orderId={orderId}
-                                amount={Number(order.total)}
-                                onSuccess={() => {
-                                    setOrder({ ...order, status: 'En Producción' });
-                                }}
-                                locale={locale}
-                            />
+                        {order.payment_gateway === 'bank_transfer' ? (
+                            <div className="bg-card rounded-[32px] border border-border p-8 shadow-xl space-y-6 animate-fade-in">
+                                <div className="border-b border-border pb-4">
+                                    <h3 className="text-xl font-bold font-serif flex items-center gap-2 text-foreground">
+                                        🏦 {t.checkout.transferNoticeTitle}
+                                    </h3>
+                                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                                        {t.checkout.transferNoticeDesc}
+                                    </p>
+                                </div>
+
+                                <div className="p-4 bg-amber-50 text-amber-800 rounded-2xl border border-amber-200 text-xs font-semibold flex items-center gap-2">
+                                    <span>⏳</span>
+                                    <span>{t.checkout.transferPendingApproval}</span>
+                                </div>
+
+                                {order.payment_transaction_id && (
+                                    <div className="bg-muted/40 p-4 rounded-2xl border border-border/80">
+                                        <span className="text-[10px] font-black uppercase text-muted-foreground block mb-1">
+                                            {t.checkout.transferReferenceLabel}
+                                        </span>
+                                        <span className="text-sm font-mono font-black text-primary">
+                                            {order.payment_transaction_id}
+                                        </span>
+                                    </div>
+                                )}
+
+                                <div className="space-y-3 bg-muted/20 p-5 rounded-2xl border border-border">
+                                    <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                                        {t.checkout.bankDetailsTitle}
+                                    </h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                        {bankInfo.bankName && (
+                                            <div>
+                                                <span className="text-[9px] font-black uppercase text-muted-foreground block">{t.checkout.bankName}</span>
+                                                <span className="font-bold text-slate-800">{bankInfo.bankName}</span>
+                                            </div>
+                                        )}
+                                        {bankInfo.accountHolder && (
+                                            <div>
+                                                <span className="text-[9px] font-black uppercase text-muted-foreground block">{t.checkout.accountHolder}</span>
+                                                <span className="font-bold text-slate-800">{bankInfo.accountHolder}</span>
+                                            </div>
+                                        )}
+                                        {bankInfo.accountNumber && (
+                                            <div>
+                                                <span className="text-[9px] font-black uppercase text-muted-foreground block">{t.checkout.accountNumber}</span>
+                                                <span className="font-mono font-bold text-slate-800">{bankInfo.accountNumber}</span>
+                                            </div>
+                                        )}
+                                        {bankInfo.routingNumber && (
+                                            <div>
+                                                <span className="text-[9px] font-black uppercase text-muted-foreground block">{t.checkout.routingNumber}</span>
+                                                <span className="font-mono font-bold text-slate-800">{bankInfo.routingNumber}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {bankInfo.bankEmail && (
+                                        <p className="text-[11px] text-muted-foreground pt-1 border-t border-border/50">
+                                            ✉️ <strong>Email:</strong> {bankInfo.bankEmail}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            order.payment_status === 'unpaid' && (
+                                <PaymentGateway
+                                    orderId={orderId}
+                                    amount={Number(order.total)}
+                                    onSuccess={() => {
+                                        setOrder({ ...order, status: 'En Producción', payment_status: 'paid' });
+                                    }}
+                                    locale={locale}
+                                />
+                            )
                         )}
                         <div className="bg-card rounded-[32px] border border-border p-8 shadow-xl">
                             <div className="flex justify-between items-center mb-8">
