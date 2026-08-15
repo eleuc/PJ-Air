@@ -253,4 +253,32 @@ export class XeroService {
       return { success: false };
     }
   }
+
+  /**
+   * Batch synchronization for paid or in-production orders that have not been synced to Xero yet.
+   */
+  async syncPendingPaidOrders(): Promise<{ processed: number; successCount: number }> {
+    this.logger.log('Running batch Xero synchronization for unsynced orders...');
+    const unsyncedOrders = await this.orderRepository
+      .createQueryBuilder('order')
+      .leftJoinAndSelect('order.items', 'items')
+      .leftJoinAndSelect('items.product', 'product')
+      .leftJoinAndSelect('order.user', 'user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .where('order.xero_invoice_id IS NULL')
+      .andWhere('(order.payment_status = :paid OR order.status = :inProd)', {
+        paid: 'paid',
+        inProd: 'En Producción',
+      })
+      .getMany();
+
+    let successCount = 0;
+    for (const order of unsyncedOrders) {
+      const res = await this.syncOrderToXero(order.id);
+      if (res.success) successCount++;
+    }
+
+    this.logger.log(`Batch Xero sync completed: ${successCount}/${unsyncedOrders.length} orders synced.`);
+    return { processed: unsyncedOrders.length, successCount };
+  }
 }

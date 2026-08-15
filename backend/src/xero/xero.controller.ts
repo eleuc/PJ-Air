@@ -27,4 +27,9 @@ export class XeroController {
   async syncOrder(@Param('orderId') orderId: string) {
     return this.xeroService.syncOrderToXero(orderId);
   }
+
+  @Post('sync-batch')
+  async syncBatch() {
+    return this.xeroService.syncPendingPaidOrders();
+  }
 }

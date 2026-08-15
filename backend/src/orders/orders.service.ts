@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './order.entity';
 import { OrderItem } from './order-item.entity';
 import { User } from '../users/user.entity';
 import { Product } from '../products/product.entity';
+import { XeroService } from '../xero/xero.service';
 
 @Injectable()
 export class OrdersService {
@@ -17,6 +18,8 @@ export class OrdersService {
     private userRepository: Repository<User>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
+    @Inject(forwardRef(() => XeroService))
+    private xeroService?: XeroService,
   ) {}
 
   private validateStatusTransition(currentStatus: string, newStatus: string, userRole?: string) {
@@ -258,6 +261,14 @@ export class OrdersService {
       order.payment_transaction_id = data.payment_transaction_id;
     }
     await this.orderRepository.save(order);
+
+    // Auto-sync with Xero when marked as paid
+    if (data.payment_status === 'paid' && this.xeroService) {
+      this.xeroService.syncOrderToXero(orderId).catch(err => {
+        console.error(`[XERO AUTO-SYNC ERROR] Order ${orderId}:`, err);
+      });
+    }
+
     return this.findOne(orderId);
   }
 
