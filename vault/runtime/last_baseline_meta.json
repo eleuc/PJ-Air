@@ -1,1 +1,1 @@
-{"issuer":"AGENT","timestamp":"2026-07-17T12:07:21.490195","has_critical":true,"version":"3.2.0","changed_files":["vault/po_public.xml","GEMINI.md"]}
+{"issuer":"PO","timestamp":"2026-08-15T11:57:35.540160","has_critical":true,"version":"3.8.0","changed_files":["vault/rules/veracity.json","GEMINI.md","VISION.md"]}

@@ -5,6 +5,7 @@ import { Order } from './order.entity';
 import { OrderItem } from './order-item.entity';
 import { User } from '../users/user.entity';
 import { Product } from '../products/product.entity';
+import { XeroService } from '../xero/xero.service';
 import { BadRequestException } from '@nestjs/common';
 
 describe('OrdersService', () => {
@@ -44,6 +45,13 @@ describe('OrdersService', () => {
         { provide: getRepositoryToken(OrderItem), useValue: orderItemRepository },
         { provide: getRepositoryToken(User), useValue: userRepository },
         { provide: getRepositoryToken(Product), useValue: productRepository },
+        {
+          provide: XeroService,
+          useValue: {
+            createInvoiceFromOrder: jest.fn(),
+            syncPaymentStatus: jest.fn(),
+          },
+        },
       ],
     }).compile();
 

@@ -1,4 +1,4 @@
-# GEMINI.md — conext_core (3.6.3)
+# GEMINI.md — conext_core (3.8.0)
 
 > **ADN Físico**: El mapa completo de archivos de código fuente del proyecto se encuentra en [`vault/runtime/CODE_MAP.md`](vault/runtime/CODE_MAP.md). Consultarlo ante dudas de ruta o responsabilidad de módulo.
 

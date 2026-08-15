@@ -10,6 +10,7 @@ import { Profile } from '../users/profile.entity';
 import { Address } from '../addresses/address.entity';
 import { ProductDiscount } from '../users/product-discount.entity';
 import { Category } from '../products/category.entity';
+import { XeroService } from '../xero/xero.service';
 
 describe('Orders Integration Tests', () => {
   let service: OrdersService;
@@ -28,7 +29,16 @@ describe('Orders Integration Tests', () => {
         }),
         TypeOrmModule.forFeature([Order, OrderItem, User, Product, Category]),
       ],
-      providers: [OrdersService],
+      providers: [
+        OrdersService,
+        {
+          provide: XeroService,
+          useValue: {
+            createInvoiceFromOrder: jest.fn(),
+            syncPaymentStatus: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<OrdersService>(OrdersService);
