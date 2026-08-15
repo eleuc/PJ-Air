@@ -1,13 +1,5 @@
 | Timestamp | Role | SessionID | PrevHash | Type | Task | Detail |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-07-05 01:50 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 6e9e0d4 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-07-05 01:50 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | d5281aa | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
-| 2026-07-05 01:50 | AI | Sentinel | 02d0192 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260705T015022-FIIbiWZhiLZlvBTl9H7hEhGocvPhYQ72pEeGkqCdJlA | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: FIIbiWZhiLZlvBTl9H7hEhGocvPhYQ72pEeGkqCdJlA |
-| 2026-07-05 01:50 | AI | Sentinel | ba5ec8e | CHALLENGE_ISSUED | GATE-GOLD-AUTH-PJ_AIR-20260705T015023-nFRJr1ZPHyBvAUKk4T7DlxivIcO53wi9ZqK-yshQlsk | Level: GATE-GOLD | Project: PJ_AIR | Nonce: nFRJr1ZPHyBvAUKk4T7DlxivIcO53wi9ZqK-yshQlsk |
-| 2026-07-05 01:51 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 2651e4e | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
-| 2026-07-05 17:56 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | f6e8bbc | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-07-05 17:56 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | febba1b | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
-| 2026-07-05 17:56 | AI | Sentinel | 83da8e2 | CHALLENGE_ISSUED | SENTINEL-RESUME-AUTH-PJ_AIR-20260705T175659-dMGoBS6VbGoP8E9QFCeaxuWsBDBUh7GGMz26ewSWmXI | Level: SENTINEL-RESUME | Project: PJ_AIR | Nonce: dMGoBS6VbGoP8E9QFCeaxuWsBDBUh7GGMz26ewSWmXI |
 | 2026-07-05 17:57 | AI | Sentinel | bb8788f | CHALLENGE_ISSUED | GATE-GOLD-AUTH-PJ_AIR-20260705T175704-2jIA7G5_P5Re1Y_RjRNHYRpJQvKKo8RNBhtJpRVocmk | Level: GATE-GOLD | Project: PJ_AIR | Nonce: 2jIA7G5_P5Re1Y_RjRNHYRpJQvKKo8RNBhtJpRVocmk |
 | 2026-07-05 17:57 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 12515e8 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
 | 2026-07-05 18:02 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 6dcae91 | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
@@ -200,3 +192,11 @@
 | 2026-08-15 02:58 | AI | WARN | 7ec9fd7 | SECURITY-WARNING | Handover Perímetro 1 | Cierre de sesión con firma delegada en Perímetro 1 (GATE-1). |
 | 2026-08-15 02:58 | AI | GATE | 9dba9e9 | WARNING | Handover con Drift | Handover ejecutado con drift del 80.0%. warm_start_eligible será false. |
 | 2026-08-15 02:59 | AI | 1786777180517 | 1b96b2a | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: DNA-DRIFTED. |
+| 2026-08-15 08:42 | AI | DEV_BYPASS | 9ac2143 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-15 08:42 | AI | DEV_BYPASS | 11828f5 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-15 11:15 | AI | DEV_BYPASS | cf43898 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-15 11:15 | AI | DEV_BYPASS | a9364ea | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-15 11:15 | AI | DEV_BYPASS | 2f88064 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-15 11:56 | AI | DEV_BYPASS | 8f93c57 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-15 11:57 | AI | DEV_BYPASS | 32bde18 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-15 11:57 | AI | Sentinel | b7bc7dc | CHALLENGE_ISSUED | 09bb1c72abeebdebdfa679c2cdca8370ff1c02672704a9b4db77ce54cdac4706 | Level: GATE-1 | Project: pj-air | Nonce: i18C1-K8IivgDExZnVOrAUWXPVa7-y5B-jgUotezxyY |

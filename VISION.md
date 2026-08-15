@@ -1,4 +1,4 @@
-# VISION.md — Pedidos Jhoanes (PJ-AIR) (2.2.11)
+# VISION.md — Pedidos Jhoanes (PJ-AIR) (3.8.0)
 
 **Versión de Producto**: 2.2.11
 **Versión de Gobernanza (Kernel)**: 3.8.0
