@@ -15,4 +15,8 @@ export declare class XeroService {
         success: boolean;
         invoiceId?: string;
     }>;
+    syncPendingPaidOrders(): Promise<{
+        processed: number;
+        successCount: number;
+    }>;
 }

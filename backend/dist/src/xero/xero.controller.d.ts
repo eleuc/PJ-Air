@@ -9,4 +9,8 @@ export declare class XeroController {
         success: boolean;
         invoiceId?: string;
     }>;
+    syncBatch(): Promise<{
+        processed: number;
+        successCount: number;
+    }>;
 }

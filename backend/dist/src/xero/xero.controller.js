@@ -34,6 +34,9 @@ let XeroController = class XeroController {
     async syncOrder(orderId) {
         return this.xeroService.syncOrderToXero(orderId);
     }
+    async syncBatch() {
+        return this.xeroService.syncPendingPaidOrders();
+    }
 };
 exports.XeroController = XeroController;
 __decorate([
@@ -58,6 +61,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], XeroController.prototype, "syncOrder", null);
+__decorate([
+    (0, common_1.Post)('sync-batch'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], XeroController.prototype, "syncBatch", null);
 exports.XeroController = XeroController = __decorate([
     (0, common_1.Controller)('xero'),
     __metadata("design:paramtypes", [xero_service_1.XeroService])

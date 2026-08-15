@@ -694,7 +694,7 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                                                 onChange={e => setEditingPaymentGateway(e.target.value)}
                                                 className="w-full text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 bg-white outline-none"
                                             >
-                                                <option value="">{t.checkout.payOnAccount}</option>
+                                                <option value="">{t.checkout.payOnline}</option>
                                                 <option value="bank_transfer">{t.checkout.payBankTransfer}</option>
                                                 <option value="xero">Xero</option>
                                                 <option value="cash">Cash</option>

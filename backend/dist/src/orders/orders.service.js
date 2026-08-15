@@ -20,16 +20,19 @@ const order_entity_1 = require("./order.entity");
 const order_item_entity_1 = require("./order-item.entity");
 const user_entity_1 = require("../users/user.entity");
 const product_entity_1 = require("../products/product.entity");
+const xero_service_1 = require("../xero/xero.service");
 let OrdersService = class OrdersService {
     orderRepository;
     orderItemRepository;
     userRepository;
     productRepository;
-    constructor(orderRepository, orderItemRepository, userRepository, productRepository) {
+    xeroService;
+    constructor(orderRepository, orderItemRepository, userRepository, productRepository, xeroService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.xeroService = xeroService;
     }
     validateStatusTransition(currentStatus, newStatus, userRole) {
         if (userRole === 'admin')
@@ -194,6 +197,9 @@ let OrdersService = class OrdersService {
             delivery_address_text: deliveryAddressText || null,
             user_id: userId,
             total: finalTotal,
+            payment_gateway: rest.paymentGateway || rest.payment_gateway || 'bank_transfer',
+            payment_transaction_id: rest.paymentTransactionId || rest.payment_transaction_id || null,
+            payment_status: rest.paymentStatus || rest.payment_status || 'unpaid',
         });
         const savedResult = await this.orderRepository.save(orderToCreate);
         const savedOrder = Array.isArray(savedResult) ? savedResult[0] : savedResult;
@@ -229,6 +235,11 @@ let OrdersService = class OrdersService {
             order.payment_transaction_id = data.payment_transaction_id;
         }
         await this.orderRepository.save(order);
+        if (data.payment_status === 'paid' && this.xeroService) {
+            this.xeroService.syncOrderToXero(orderId).catch(err => {
+                console.error(`[XERO AUTO-SYNC ERROR] Order ${orderId}:`, err);
+            });
+        }
         return this.findOne(orderId);
     }
     async update(id, updateData, userRole) {
@@ -274,9 +285,11 @@ exports.OrdersService = OrdersService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(order_item_entity_1.OrderItem)),
     __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __param(3, (0, typeorm_1.InjectRepository)(product_entity_1.Product)),
+    __param(4, (0, common_1.Inject)((0, common_1.forwardRef)(() => xero_service_1.XeroService))),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        xero_service_1.XeroService])
 ], OrdersService);
 //# sourceMappingURL=orders.service.js.map
