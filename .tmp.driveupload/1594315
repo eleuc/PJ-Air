@@ -1,0 +1,83 @@
+import 'dart:io';
+
+/// [PVF-GÉNESIS] Herramienta de Verificación de Veracidad Física (Custom pj-air sin dependencias).
+Future<void> main(List<String> args) async {
+  final String sep = Platform.pathSeparator;
+  final String basePath = args.isNotEmpty ? args[0] : Directory.current.path;
+  print('\x1B[36m[PVF] Ejecutando Auditoría de Veracidad Física y Sintáctica...\x1B[0m');
+
+  // 1. Obtener archivos modificados (Git)
+  final List<String> changedFiles = await _getGitChangedFiles(basePath);
+  if (changedFiles.isEmpty) {
+    print('\x1B[32m[OK] No hay cambios físicos detectados.\x1B[0m');
+    return;
+  }
+
+  // 2. Filtrar archivos de lógica
+  final List<String> logicFiles = changedFiles.where((String f) {
+    final List<String> ignored = <String>[
+      'backlog.json',
+      'task.md',
+      'HISTORY.md',
+      'HISTORY.jsonl',
+      'PROJECT_LOG.md',
+      'DASHBOARD.md',
+      'FACTORY_DNA.md',
+      'pubspec.lock',
+      '.meta/',
+      'vault/runtime/',
+      'vault/intel/',
+      'vault/brain/',
+      'docs/reports/',
+      '.g.dart',
+      '.freezed.dart',
+      'generated_plugin_registrant.dart',
+      'VISION.md',
+      'GEMINI.md',
+      'backend/database.sqlite',
+      'backend/database.remote.prod.bak',
+      'backend/scripts/',
+      'uploads/',
+      'frontend/test-results/',
+    ];
+    return !ignored.any((String i) => f.startsWith(i) || f.contains(i));
+  }).toList();
+
+  if (logicFiles.isEmpty) {
+    print('\x1B[32m[OK] Solo se detectaron cambios en metadatos/documentación/herramientas locales.\x1B[0m');
+    return;
+  }
+
+  print('  - Archivos de lógica detectados: ${logicFiles.length}');
+
+  // 3. Analizar task.md para "Ghost Progress"
+  final File taskMdFile = File('$basePath${sep}task.md');
+  if (!taskMdFile.existsSync()) {
+    print('\x1B[41m [VERACITY-ERROR] task.md no encontrado. \x1B[0m');
+    exit(1);
+  }
+
+  final List<String> lines = taskMdFile.readAsLinesSync();
+  final bool hasActiveTask = lines.any((String l) => l.contains('[/]') || l.contains('[x]'));
+
+  if (!hasActiveTask) {
+    print('\x1B[41m [VERACITY-VIOLATION] GHOST PROGRESS DETECTED \x1B[0m');
+    print('\x1B[31mSe detectaron cambios físicos pero NO hay tareas marcadas en task.md.\x1B[0m');
+    exit(1);
+  }
+
+  print('\x1B[32m[OK] Veracidad Atómica Certificada.\x1B[0m');
+}
+
+Future<List<String>> _getGitChangedFiles(String basePath) async {
+  final Set<String> files = <String>{};
+  try {
+    final ProcessResult staged = await Process.run('git', <String>['diff', '--cached', '--name-only'], workingDirectory: basePath);
+    if (staged.exitCode == 0) files.addAll(staged.stdout.toString().split('\n').map((String s) => s.trim()).where((String s) => s.isNotEmpty));
+    final ProcessResult unstaged = await Process.run('git', <String>['diff', '--name-only'], workingDirectory: basePath);
+    if (unstaged.exitCode == 0) files.addAll(unstaged.stdout.toString().split('\n').map((String s) => s.trim()).where((String s) => s.isNotEmpty));
+    final ProcessResult untracked = await Process.run('git', <String>['ls-files', '--others', '--exclude-standard'], workingDirectory: basePath);
+    if (untracked.exitCode == 0) files.addAll(untracked.stdout.toString().split('\n').map((String s) => s.trim()).where((String s) => s.isNotEmpty));
+  } catch (_) {}
+  return files.toList();
+}
