@@ -174,7 +174,7 @@ export default function AdminDashboardPage() {
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
-                                <table className="w-full text-left">
+                                <table className="w-full text-left whitespace-nowrap">
                                     <thead className="bg-muted/20 border-b border-border">
                                         <tr>
                                             <th className="py-3 px-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Fecha</th>

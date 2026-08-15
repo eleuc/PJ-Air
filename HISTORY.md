@@ -1,7 +1,5 @@
 | Timestamp | Role | SessionID | PrevHash | Type | Task | Detail |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-07-05 17:57 | AI | Sentinel | bb8788f | CHALLENGE_ISSUED | GATE-GOLD-AUTH-PJ_AIR-20260705T175704-2jIA7G5_P5Re1Y_RjRNHYRpJQvKKo8RNBhtJpRVocmk | Level: GATE-GOLD | Project: PJ_AIR | Nonce: 2jIA7G5_P5Re1Y_RjRNHYRpJQvKKo8RNBhtJpRVocmk |
-| 2026-07-05 17:57 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 12515e8 | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
 | 2026-07-05 18:02 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 6dcae91 | TRACE | BASELINE | Ejecución administrativa detectada: logix baseline |
 | 2026-07-05 18:02 | AI | Sentinel | a711a7d | CHALLENGE_ISSUED | 0334bc53ee8136ee30881132eb79cd49391d9098f2322628a61eed6c55461f3e | Level: GATE-1 | Project: PJ_AIR | Nonce: l6vCg763ncSIzb0LrLiDqlJFYYpk5YdDJC9x6H5Zue4 |
 | 2026-07-05 18:02 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | a6703be | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
@@ -200,3 +198,5 @@
 | 2026-08-15 11:56 | AI | DEV_BYPASS | 8f93c57 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
 | 2026-08-15 11:57 | AI | DEV_BYPASS | 32bde18 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
 | 2026-08-15 11:57 | AI | Sentinel | b7bc7dc | CHALLENGE_ISSUED | 09bb1c72abeebdebdfa679c2cdca8370ff1c02672704a9b4db77ce54cdac4706 | Level: GATE-1 | Project: pj-air | Nonce: i18C1-K8IivgDExZnVOrAUWXPVa7-y5B-jgUotezxyY |
+| 2026-08-15 11:57 | AI | DEV_BYPASS | e49dfc0 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-15 11:58 | AI | DEV_BYPASS | 769f306 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |

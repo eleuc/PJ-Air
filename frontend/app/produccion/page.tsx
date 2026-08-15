@@ -181,8 +181,8 @@ export default function ProduccionPage() {
                         <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Sincronizando Cocina...</p>
                     </div>
                 ) : (
-                    <div className="bg-white rounded-[2rem] border border-border shadow-xl shadow-slate-200/50 overflow-hidden">
-                        <table className="w-full text-left">
+                    <div className="bg-white rounded-[2rem] border border-border shadow-xl shadow-slate-200/50 overflow-x-auto">
+                        <table className="w-full text-left whitespace-nowrap">
                             <thead className="bg-slate-50/80 text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-border">
                                 <tr>
                                     <th className="px-8 py-5">Orden</th>

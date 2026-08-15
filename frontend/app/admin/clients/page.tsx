@@ -272,8 +272,8 @@ export default function AdminClientsPage() {
                 </div>
 
                 {/* Table Container */}
-                <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
-                    <table className="w-full text-left">
+                <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-x-auto">
+                    <table className="w-full text-left whitespace-nowrap">
                         <thead>
                             <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-widest border-b border-slate-100">
                                 <th className="px-8 py-5">{t.adminClients.fullName}</th>

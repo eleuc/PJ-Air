@@ -90,6 +90,12 @@
           "label": "FEAT/FULL-STACK",
           "desc": "Certificacion y barrido del circuito de sincronizacion con Xero para pagos online y transferencias aprobadas.",
           "status": "DONE"
+        },
+        {
+          "id": "TASK-16-04",
+          "label": "FEAT/UI-UX",
+          "desc": "Revision diagnostica y pulido visual UI/UX: tablas responsivas (admin/produccion) y seccion de promociones bilingue con badges.",
+          "status": "DONE"
         }
       ]
     }

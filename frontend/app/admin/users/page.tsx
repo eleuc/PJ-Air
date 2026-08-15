@@ -386,8 +386,8 @@ export default function AdminUsersPage() {
                 )}
 
                 {!loading && !error && users.length > 0 && (
-                    <div className="bg-card rounded-2xl border border-border overflow-hidden">
-                        <table className="w-full text-left">
+                    <div className="bg-card rounded-2xl border border-border overflow-x-auto">
+                        <table className="w-full text-left whitespace-nowrap">
                             <thead className="bg-muted text-muted-foreground text-xs uppercase font-bold">
                                 <tr>
                                     <th className="px-6 py-4">{t.adminUsers.title}</th>

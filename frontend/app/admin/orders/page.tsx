@@ -444,8 +444,8 @@ ${order.notes ? `<div class="ft" style="margin-top:4px; padding-top:2px"><b>Nota
                         <p className="font-bold tracking-tight">Sincronizando órdenes...</p>
                     </div>
                 ) : (
-                    <div className="bg-white rounded-[2rem] border border-border overflow-hidden shadow-xl shadow-slate-200/50">
-                        <table className="w-full text-left">
+                    <div className="bg-white rounded-[2rem] border border-border overflow-x-auto shadow-xl shadow-slate-200/50">
+                        <table className="w-full text-left whitespace-nowrap">
                             <thead className="bg-slate-50/80 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400 border-b border-border">
                                 <tr>
                                     <th className="px-8 py-5">{t.adminOrders.items}</th>

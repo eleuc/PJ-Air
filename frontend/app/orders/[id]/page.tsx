@@ -254,17 +254,26 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
                             </div>
                         </div>
 
-                        {/* Promotions Section */}
                         <div className="mt-8 bg-card rounded-[32px] border border-border p-8 shadow-sm">
                             <h3 className="text-lg font-bold mb-4 flex items-center gap-2 font-serif"><CheckCircle2 className="text-green-500" size={18} /> {t.orders.promotions}</h3>
                             <div className="space-y-3">
-                                <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10">
-                                    <p className="text-sm font-bold text-primary">2x1 en Cookies Artesanales</p>
-                                    <p className="text-xs text-muted-foreground">Válido los días martes y jueves.</p>
+                                <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl border border-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all hover:shadow-md">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="bg-primary text-white text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">PROMO</span>
+                                            <p className="text-sm font-bold text-primary">{locale === 'en' ? '2-for-1 Artisan Cookies' : '2x1 en Cookies Artesanales'}</p>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">{locale === 'en' ? 'Valid on Tuesdays and Thursdays.' : 'Válido los días martes y jueves.'}</p>
+                                    </div>
                                 </div>
-                                <div className="p-4 bg-muted/50 rounded-2xl border border-border">
-                                    <p className="text-sm font-bold text-foreground">Envío Gratis en tu primera compra</p>
-                                    <p className="text-xs text-muted-foreground">Usa el código: BIEVENIDO_JHOANES</p>
+                                <div className="p-4 bg-gradient-to-r from-slate-100 to-slate-50 rounded-2xl border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all hover:shadow-md">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="bg-green-500 text-white text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">{locale === 'en' ? 'FREE' : 'GRATIS'}</span>
+                                            <p className="text-sm font-bold text-foreground">{locale === 'en' ? 'Free Shipping on your first order' : 'Envío Gratis en tu primera compra'}</p>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">{locale === 'en' ? 'Use code:' : 'Usa el código:'} <span className="font-mono font-bold text-slate-800 bg-slate-200/50 px-1.5 py-0.5 rounded">BIENVENIDO_JHOANES</span></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
