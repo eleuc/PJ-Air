@@ -627,7 +627,7 @@ export default function AdminUsersPage() {
                                                             onClick={(e) => { e.stopPropagation(); window.location.href = `/admin/orders?search=${order.id}`; }}
                                                             className="flex items-center gap-1 px-3 py-1.5 bg-muted text-muted-foreground border border-border rounded-lg text-[10px] font-black uppercase hover:bg-muted-foreground/10 transition-all font-sans"
                                                         >
-                                                            Ver Detalle
+                                                            {t.orders?.viewDetail || 'Ver Detalle'}
                                                         </button>
                                                     </div>
                                                 </div>

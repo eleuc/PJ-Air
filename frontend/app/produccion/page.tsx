@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { API_URL } from '@/lib/config';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface OrderItem {
     id: string;
@@ -40,6 +41,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function ProduccionPage() {
+    const { t } = useLanguage();
     const [orders, setOrders] = useState<Order[]>([]);
     const [deliveryUsers, setDeliveryUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -318,8 +320,8 @@ export default function ProduccionPage() {
                                                 <span className="absolute -top-2 -right-2 bg-slate-800 text-white w-7 h-7 flex items-center justify-center rounded-full text-[10px] font-black shadow-lg">x{item.quantity}</span>
                                             </div>
                                             <div>
-                                                <p className="font-black text-slate-800 text-lg leading-tight">{item.product?.name || 'Producto'}</p>
-                                                <p className="text-xs text-primary font-bold">Unidades: {item.quantity}</p>
+                                                <p className="font-black text-slate-800 text-lg leading-tight">{item.product?.name || t.reports?.product || 'Producto'}</p>
+                                                <p className="text-xs text-primary font-bold">{t.reports?.quantity || 'Unidades'}: {item.quantity}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -328,24 +330,24 @@ export default function ProduccionPage() {
 
                             <section className="grid grid-cols-2 gap-8 pt-8 border-t border-slate-100">
                                 <div>
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Cliente</h3>
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">{t.adminOrders?.client || 'Cliente'}</h3>
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
                                             <User size={18} />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-black text-slate-700">{selectedOrder.user?.profile?.full_name || 'Anónimo'}</p>
+                                            <p className="text-sm font-black text-slate-700">{selectedOrder.user?.profile?.full_name || 'Anonymous'}</p>
                                             <p className="text-[10px] text-muted-foreground font-bold">{selectedOrder.user?.email}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div>
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Entrega</h3>
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">{t.checkout?.delivery || 'Entrega'}</h3>
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center">
                                             <MapPin size={18} />
                                         </div>
-                                        <p className="text-xs font-bold text-slate-600 leading-tight italic">{selectedOrder.address?.address || 'Retiro en local'}</p>
+                                        <p className="text-xs font-bold text-slate-600 leading-tight italic">{selectedOrder.address?.address || t.checkout?.pickupLocation || 'Retiro en local'}</p>
                                     </div>
                                 </div>
                             </section>
@@ -353,7 +355,7 @@ export default function ProduccionPage() {
 
                         <footer className="p-8 bg-slate-50 border-t border-border flex justify-between items-center shrink-0">
                              <div className="flex flex-col">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Pedido</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.adminOrders?.grandTotal || 'Total Pedido'}</span>
                                 <span className="text-3xl font-black text-slate-800">${Number(selectedOrder.total).toFixed(2)}</span>
                              </div>
                              <div className="flex gap-3">

@@ -92,7 +92,7 @@ export default function ClientOrdersPage() {
                                                         ? 'bg-green-100 text-green-700'
                                                         : 'bg-primary/10 text-primary'
                                                 }`}>
-                                                    {order.status === 'Pedido Recibido' ? t.orders.delivered : (order.status === 'Pedido Enviado' ? t.orders.shipping : order.status)}
+                                                    {t.adminOrders?.statusLabels?.[order.status as keyof typeof t.adminOrders.statusLabels] || order.status}
                                                 </span>
                                             </div>
                                             <p className="text-sm text-muted-foreground font-medium">{t.orders.orderedOn} {new Date(order.created_at).toLocaleDateString()}</p>
@@ -101,12 +101,12 @@ export default function ClientOrdersPage() {
 
                                     <div className="grid grid-cols-2 md:flex items-center gap-8 w-full md:w-auto border-t md:border-t-0 pt-4 md:pt-0">
                                         <div>
-                                            <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Total</p>
+                                            <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">{t.orders.total}</p>
                                             <p className="text-lg font-black">${(Number(order.total) || 0).toFixed(2)}</p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">Entrega</p>
-                                            <p className="text-sm font-bold text-foreground">{order.delivery_date || 'Pendiente'}</p>
+                                            <p className="text-[10px] font-black text-muted-foreground uppercase mb-1">{t.orders.deliveryDate}</p>
+                                            <p className="text-sm font-bold text-foreground">{order.delivery_date || t.orders.pending}</p>
                                         </div>
                                     </div>
 
@@ -131,7 +131,7 @@ export default function ClientOrdersPage() {
                                             onClick={() => router.push(`/orders/${order.id}`)}
                                             className="flex-1 md:flex-none p-3 bg-muted text-foreground rounded-xl hover:bg-border transition-colors flex items-center justify-center gap-2"
                                         >
-                                            <Eye size={18} /> <span className="md:hidden">Ver Detalle</span>
+                                            <Eye size={18} /> <span className="md:hidden">{t.orders.viewDetail}</span>
                                         </button>
                                     </div>
                                 </div>
@@ -150,11 +150,11 @@ export default function ClientOrdersPage() {
                                         <div className="flex items-center gap-2 text-amber-800 text-xs font-bold">
                                             <CreditCard size={16} className="text-amber-600 shrink-0" />
                                             <span>
-                                                Pago Pendiente — Para pagar vía Transferencia Bancaria o Xero, coordina con tu representante. Tu referencia se actualizará una vez verificado.
+                                                {t.checkout.transferNoticeDesc}
                                             </span>
                                         </div>
                                         <span className="text-[10px] font-black uppercase tracking-wider bg-amber-200/60 text-amber-900 px-3 py-1 rounded-full shrink-0">
-                                            Sin Confirmar
+                                            {t.checkout.transferPendingApproval}
                                         </span>
                                     </div>
                                 )}

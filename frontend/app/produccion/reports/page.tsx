@@ -739,7 +739,7 @@ function ReportsPageContent() {
                     </div>
                     <div>
                         <h2 className="text-lg font-black uppercase tracking-tight">Historial Diario</h2>
-                        <p className="text-xs text-muted-foreground italic">Unidades totales por categoría · Haz click en "Ver Detalle" para generar el reporte</p>
+                        <p className="text-xs text-muted-foreground italic">Unidades totales por categoría · Haz click en "{t.orders?.viewDetail || 'Ver Detalle'}" para generar el reporte</p>
                     </div>
                 </div>
 
@@ -772,7 +772,7 @@ function ReportsPageContent() {
                                         <div className="flex justify-center">
                                             <button onClick={() => handleViewDayDetail(date)}
                                                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 text-primary border border-primary/20 rounded-xl text-[10px] font-black uppercase hover:bg-primary hover:text-white transition-all group">
-                                                Ver Detalle
+                                                {t.orders?.viewDetail || 'Ver Detalle'}
                                                 <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
                                             </button>
                                         </div>
@@ -808,7 +808,7 @@ function ReportsPageContent() {
                     </div>
                     <div>
                         <h2 className="text-lg font-black uppercase tracking-tight">Historial Semanal</h2>
-                        <p className="text-xs text-muted-foreground italic">De lunes a domingo · Haz click en "Ver Detalle" para generar el reporte semanal</p>
+                        <p className="text-xs text-muted-foreground italic">De lunes a domingo · Haz click en "{t.orders?.viewDetail || 'Ver Detalle'}" para generar el reporte semanal</p>
                     </div>
                 </div>
 
@@ -881,7 +881,7 @@ function ReportsPageContent() {
                     </div>
                     <div>
                         <h2 className="text-lg font-black uppercase tracking-tight">Historial Mensual</h2>
-                        <p className="text-xs text-muted-foreground italic">Del primer al último día del mes · Haz click en "Ver Detalle" para generar el reporte mensual</p>
+                        <p className="text-xs text-muted-foreground italic">Del primer al último día del mes · Haz click en "{t.orders?.viewDetail || 'Ver Detalle'}" para generar el reporte mensual</p>
                     </div>
                 </div>
 

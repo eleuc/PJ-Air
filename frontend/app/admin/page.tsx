@@ -203,7 +203,7 @@ export default function AdminDashboardPage() {
                                                             onClick={() => handleViewDayDetail(date)}
                                                             className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary/5 text-primary border border-primary/20 rounded-xl text-[10px] font-black uppercase hover:bg-primary hover:text-white transition-all group"
                                                         >
-                                                            Ver Detalle
+                                                            {t.orders?.viewDetail || 'Ver Detalle'}
                                                             <ArrowRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
                                                         </button>
                                                     </div>

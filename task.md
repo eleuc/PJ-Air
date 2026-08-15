@@ -6,3 +6,4 @@
 - [x] **TASK-16-02** [FEAT/UI-UX] Vista de confirmacion adaptativa (/orders/[id]): mostrar resumen e instrucciones de transferencia para pedidos bank_transfer sin forzar widget de Stripe.
 - [x] **TASK-16-03** [FEAT/FULL-STACK] Certificacion y barrido del circuito de sincronizacion con Xero para pagos online y transferencias aprobadas.
 - [x] **TASK-16-04** [FEAT/UI-UX] Revision diagnostica y pulido visual UI/UX (tablas responsivas, promociones i18n, badges).
+- [/] **TASK-16-05** [FEAT/I18N] Purga de textos hardcodeados en espanol en vistas de orders, admin y produccion.
