@@ -101,7 +101,7 @@
           "id": "TASK-16-05",
           "label": "FEAT/I18N",
           "desc": "Purga de textos hardcodeados en espanol en vistas de orders, admin y produccion para garantizar persistencia y cobertura de i18n.",
-          "status": "IN_PROGRESS"
+          "status": "DONE"
         }
       ]
     }
