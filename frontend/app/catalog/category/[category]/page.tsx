@@ -40,8 +40,8 @@ function ProductCard({
                         <span className="text-[9px] font-black uppercase tracking-tight">{locale === 'en' ? `Min: ${product.category.min_qty} units` : `Mínimo: ${product.category.min_qty} unidades`}</span>
                     </div>
                 )}
-                <div className="flex items-center justify-between w-full bg-muted/60 rounded-xl overflow-hidden border border-border/30">
-                    <button onClick={() => onDecrement(product.id)} className="px-3.5 py-2 text-muted-foreground hover:text-primary transition-all active:scale-90 flex items-center justify-center"><Minus size={13} /></button>
+                <div className="flex items-center justify-between w-full bg-muted/60 rounded-xl overflow-hidden border border-border/30 px-1">
+                    <button onClick={() => onDecrement(product.id)} className="w-10 h-9 text-muted-foreground hover:text-primary transition-all active:scale-90 flex items-center justify-center shrink-0"><Minus size={13} /></button>
                     <input 
                         type="number" 
                         value={quantity}
@@ -51,9 +51,10 @@ function ProductCard({
                                 onQuantityChange(product.id, val);
                             }
                         }}
-                        className="flex-1 bg-transparent text-center text-sm font-bold outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none py-1.5"
+                        style={{ textAlign: 'center' }}
+                        className="flex-1 w-full min-w-0 bg-transparent text-center text-sm font-bold outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none py-1.5"
                     />
-                    <button onClick={() => onIncrement(product.id)} className="px-3.5 py-2 text-muted-foreground hover:text-primary transition-all active:scale-90 flex items-center justify-center"><Plus size={13} /></button>
+                    <button onClick={() => onIncrement(product.id)} className="w-10 h-9 text-muted-foreground hover:text-primary transition-all active:scale-90 flex items-center justify-center shrink-0"><Plus size={13} /></button>
                 </div>
                 <button onClick={() => onAddToCart(product)}
                     className={`w-full flex items-center justify-center gap-1.5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${isJustAdded ? 'bg-green-500 text-white scale-95' : 'bg-primary text-white hover:bg-primary/90'}`}>

@@ -244,9 +244,9 @@ function ProductCard({
                 )}
 
                 {/* Quantity */}
-                <div className="flex items-center justify-between w-full bg-muted/60 rounded-xl border border-border/30 overflow-hidden">
+                <div className="flex items-center justify-between w-full bg-muted/60 rounded-xl border border-border/30 overflow-hidden px-1">
                     <button onClick={() => onDecrement(product.id)}
-                        className="px-3.5 py-2 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center">
+                        className="w-10 h-9 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center shrink-0">
                         <Minus size={13} strokeWidth={2.5} />
                     </button>
                     <input 
@@ -260,10 +260,11 @@ function ProductCard({
                             }
                             e.target.select();
                         }}
-                        className="flex-1 bg-transparent text-center text-sm font-bold outline-none text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:bg-primary/5 py-1.5"
+                        style={{ textAlign: 'center' }}
+                        className="flex-1 w-full min-w-0 bg-transparent text-center text-sm font-bold outline-none text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:bg-primary/5 py-1.5"
                     />
                     <button onClick={() => onIncrement(product.id)}
-                        className="px-3.5 py-2 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center">
+                        className="w-10 h-9 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center shrink-0">
                         <Plus size={13} strokeWidth={2.5} />
                     </button>
                 </div>
