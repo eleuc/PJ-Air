@@ -1,18 +1,5 @@
 | Timestamp | Role | SessionID | PrevHash | Type | Task | Detail |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-07-05 19:22 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | e3ed7f7 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
-| 2026-07-05 19:24 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 3b0f035 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-07-05 19:28 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 79b21b0 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-07-05 19:29 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 7289772 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-07-05 19:29 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 214cdda | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-07-05 19:29 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | b1ed4fd | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-07-05 19:30 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 665760b | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-07-05 19:31 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 7247c26 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-07-05 19:32 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 3698844 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-07-05 19:33 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | f1637a5 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-07-05 19:33 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 85ebabb | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-07-05 19:34 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 4fa4fa6 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-07-05 19:34 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 5d11692 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-05 19:36 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 3966a5e | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
 | 2026-07-05 19:37 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 34b0180 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-05 19:38 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 3cc6309 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
@@ -200,3 +187,16 @@
 | 2026-08-16 11:01 | AI | DEV_BYPASS | 7c15d59 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
 | 2026-08-16 11:01 | AI | WARN | 3bfab50 | SECURITY-WARNING | Handover Perímetro 1 | Cierre de sesión con firma delegada en Perímetro 1 (GATE-1). |
 | 2026-08-16 11:02 | AI | 1786892566539 | 980e046 | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
+| 2026-08-27 11:43 | AI | DEV_BYPASS | f7ddc5f | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 11:47 | AI | DEV_BYPASS | 5fd6595 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 13:45 | AI | DEV_BYPASS | d3fb7cd | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 13:45 | AI | DEV_BYPASS | 6513fa8 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 13:55 | AI | DEV_BYPASS | d829845 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 14:05 | AI | DEV_BYPASS | 2bc3351 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 14:05 | AI | DEV_BYPASS | ff62d53 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 14:05 | AI | DEV_BYPASS | 4355da0 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 14:06 | AI | DEV_BYPASS | 8b1ddeb | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 14:06 | AI | DEV_BYPASS | 9cbfdf3 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 14:11 | AI | DEV_BYPASS | 9bb2a01 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 14:15 | AI | DEV_BYPASS | a53e69c | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-27 14:15 | AI | Sentinel | 1865d55 | CHALLENGE_ISSUED | 9f17ed0766974b8260815b4b22ec6f84bb55756d987c545dce7f6fc0919bb111 | Level: GATE-1 | Project: pj-air | Nonce: jxHktpim-dClEuXXG8PKlZ57rRisuwIwIYWzdLKwFzQ |
