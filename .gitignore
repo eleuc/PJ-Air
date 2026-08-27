@@ -43,9 +43,3 @@ bin.old/
 scratch/
 **/RESTART_REQUIRED
 *.db
-node_modules/
-**/node_modules/
-dist/
-**/dist/
-.next/
-**/.next/

@@ -1,0 +1,6 @@
+{
+  "type": "SATELLITE",
+  "version_namespace": "PJAIR",
+  "name": "pj-air",
+  "description": "Nodo Satélite de Monitoreo Aéreo"
+}

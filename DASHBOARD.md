@@ -1,4 +1,4 @@
-# DASHBOARD — 3.8.0
+# DASHBOARD — 3.8.2
 **Generado**: 2026-08-15T11:15:46.208563
 **Profundidad de Sesión**: 🟢 BAJA (12.5%)
 **Integridad del Búnker**: 🟢 NOMINAL (98.9%)
@@ -34,7 +34,7 @@ Total: **0** capacidades activas en **0** nodos.
 
 ## 🛡️ Seguridad & Independencia
 - **Isomorphism**: CERTIFIED
-- **Kernel Version**: 3.8.0
+- **Kernel Version**: 3.8.2
 - **Node Isolation**: ACTIVE
 - **Git Trace**: `testing` @ `088fe2e0` (⚠️ Dirty)
 
