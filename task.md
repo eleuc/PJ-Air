@@ -5,9 +5,5 @@
 - [x] **TASK-16-01** [FEAT/UI-UX] Reestructuracion de metodos de pago en Checkout: Pago Inmediato Online (Stripe/PayPal) como opcion 1 y Transferencia Bancaria como opcion 2, eliminando Charge to Account.
 - [x] **TASK-16-02** [FEAT/UI-UX] Vista de confirmacion adaptativa (/orders/[id]): mostrar resumen e instrucciones de transferencia para pedidos bank_transfer sin forzar widget de Stripe.
 - [/] **TASK-16-03** [FEAT/FULL-STACK] Certificacion y barrido del circuito de sincronizacion con Xero para pagos online y transferencias aprobadas.
-  - [x] Reparar scopes de Xero (accounting.invoices y accounting.payments).
-  - [x] Corregir redirect_uri hacia localhost via rewrites de Next.js.
-  - [x] Ejecutar flujo OAuth local apuntando a la Demo Company de Xero.
-  - [ ] Validar creacion de Factura (Invoice) de prueba desde backend hacia Xero.
 - [x] **TASK-16-04** [FEAT/UI-UX] Revision diagnostica y pulido visual UI/UX: tablas responsivas (admin/produccion) y seccion de promociones bilingue con badges.
 - [x] **TASK-16-05** [FEAT/I18N] Purga de textos hardcodeados en espanol en vistas de orders, admin y produccion para garantizar persistencia y cobertura de i18n.
