@@ -4,7 +4,7 @@
   "kernel_version": "3.8.2",
   "status": "COMPLETED",
   "current_sprint": "S16",
-  "current_task": null,
+  "current_task": "TASK-16-03",
   "sprints": [
     {
       "id": "S14",
@@ -89,7 +89,7 @@
           "id": "TASK-16-03",
           "label": "FEAT/FULL-STACK",
           "desc": "Certificacion y barrido del circuito de sincronizacion con Xero para pagos online y transferencias aprobadas.",
-          "status": "TODO"
+          "status": "IN_PROGRESS"
         },
         {
           "id": "TASK-16-04",
