@@ -33,7 +33,7 @@ export class XeroService {
   async getXeroAuthUrl(): Promise<string> {
     const clientId = process.env.XERO_CLIENT_ID || 'mock-client-id';
     const redirectUri = `${process.env.FRONTEND_URL || 'https://testing.jhoanes.com'}/api/xero/callback`;
-    const scope = encodeURIComponent('openid profile email accounting.transactions accounting.settings offline_access');
+    const scope = encodeURIComponent('openid profile email accounting.invoices accounting.payments accounting.contacts accounting.settings offline_access');
     
     return `https://login.xero.com/identity/connect/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=pjair`;
   }
