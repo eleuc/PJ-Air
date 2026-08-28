@@ -167,9 +167,10 @@ export class OrdersService {
 
   async findAll(): Promise<Order[]> {
     return this.orderRepository.find({ 
-      relations: ['items', 'items.product', 'user', 'user.profile', 'delivery_user', 'delivery_user.profile', 'address'],
+      relations: ['items', 'items.product', 'items.product.category', 'user', 'user.profile', 'delivery_user', 'delivery_user.profile', 'address'],
       order: { created_at: 'DESC' },
-      take: 100
+      take: 100,
+      relationLoadStrategy: 'query'
     });
   }
 
@@ -177,14 +178,16 @@ export class OrdersService {
     return this.orderRepository.find({ 
       where: { user_id: userId },
       relations: ['items', 'items.product', 'address'],
-      order: { created_at: 'DESC' }
+      order: { created_at: 'DESC' },
+      relationLoadStrategy: 'query'
     });
   }
 
   async findOne(id: string): Promise<Order> {
     const order = await this.orderRepository.findOne({ 
       where: { id },
-      relations: ['items', 'items.product', 'user', 'user.profile', 'delivery_user', 'delivery_user.profile', 'address']
+      relations: ['items', 'items.product', 'items.product.category', 'user', 'user.profile', 'delivery_user', 'delivery_user.profile', 'address'],
+      relationLoadStrategy: 'query'
     });
     if (!order) throw new NotFoundException('Order not found');
     return order;
