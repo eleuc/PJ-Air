@@ -551,5 +551,33 @@
     "exile_name": "1787854852634_watcher.old",
     "hash": "098FBBC27B79376C7A91C8073BA2C0AD40D02140A5A630950F6C2BF3B99F34FB",
     "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\bin\\watcher.old"
+  },
+  {
+    "timestamp": "2026-08-27T19:01:48.535364",
+    "original_name": "bunker_profile.json",
+    "exile_name": "1787871708529_bunker_profile.json",
+    "hash": "96AE23830116B89D2EF6863277AB72307CF18D5229BB274207CCFE017BDDF191",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\bunker_profile.json"
+  },
+  {
+    "timestamp": "2026-08-27T19:01:48.548417",
+    "original_name": "database.sqlite",
+    "exile_name": "1787871708538_database.sqlite",
+    "hash": "FC8A29D78E68DB840CD15C9A5E39091D5F9842A0A4D83D8593C4347B0920EE96",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\database.sqlite"
+  },
+  {
+    "timestamp": "2026-08-27T19:01:48.555269",
+    "original_name": "GENESIS_REFERENCE.md",
+    "exile_name": "1787871708550_GENESIS_REFERENCE.md",
+    "hash": "66BECD18C9F3913C1AA42E8106362DA0D4BFB15C3978C876A3BDFCE7A17AAA32",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\GENESIS_REFERENCE.md"
+  },
+  {
+    "timestamp": "2026-08-27T22:29:57.382206",
+    "original_name": "database.sqlite",
+    "exile_name": "1787884197343_database.sqlite",
+    "hash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+    "original_path": "C:\\Users\\Ruben\\Documents\\pj-air\\database.sqlite"
   }
 ]

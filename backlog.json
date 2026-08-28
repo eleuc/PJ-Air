@@ -89,7 +89,7 @@
           "id": "TASK-16-03",
           "label": "FEAT/FULL-STACK",
           "desc": "Certificacion y barrido del circuito de sincronizacion con Xero para pagos online y transferencias aprobadas.",
-          "status": "IN_PROGRESS"
+          "status": "DONE"
         },
         {
           "id": "TASK-16-04",
@@ -101,6 +101,12 @@
           "id": "TASK-16-05",
           "label": "FEAT/I18N",
           "desc": "Purga de textos hardcodeados en espanol en vistas de orders, admin y produccion para garantizar persistencia y cobertura de i18n.",
+          "status": "DONE"
+        },
+        {
+          "id": "TASK-16-06",
+          "label": "BUGFIX/UI-UX",
+          "desc": "Resolución de condición de carrera (race condition) en CartContext.tsx donde cartKey fluctuaba entre guest y el usuario autenticado, provocando reseteos del carrito local y pérdida de productos añadidos.",
           "status": "DONE"
         }
       ]
