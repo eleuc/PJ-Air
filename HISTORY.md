@@ -1,9 +1,5 @@
 | Timestamp | Role | SessionID | PrevHash | Type | Task | Detail |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-07-05 19:50 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 4809753 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-07-05 19:50 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d73881e | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-07-05 19:50 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | c96705e | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
-| 2026-07-05 19:51 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | f254737 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-05 19:51 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 8223634 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
 | 2026-07-05 19:51 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 619b6f0 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
 | 2026-07-05 19:52 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 56a7a48 | TRACE | SYNC-CONTEXT | Ejecución administrativa detectada: logix sync-context |
@@ -200,3 +196,7 @@
 | 2026-08-28 07:43 | AI | DEV_BYPASS | 86fb8a1 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
 | 2026-08-28 07:46 | AI | DEV_BYPASS | 3bf5945 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
 | 2026-08-28 07:46 | AI | 1787917601573 | 20dd4be | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
+| 2026-08-28 07:56 | AI | DEV_BYPASS | 6158de3 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-28 07:56 | AI | DEV_BYPASS | 4310036 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-28 08:13 | AI | DEV_BYPASS | c1fec42 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-28 08:13 | AI | 1787919211676 | 75f0632 | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
