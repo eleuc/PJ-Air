@@ -29,7 +29,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-    const { user, isLoading: authLoading } = useAuth();
+    const { user, profile, isLoading: authLoading } = useAuth();
     const [cart, setCart] = useState<CartItem[]>([]);
     
     // Key depends on user ID to isolate carts
