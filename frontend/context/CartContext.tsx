@@ -29,14 +29,16 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-    const { profile } = useAuth();
+    const { user, isLoading: authLoading } = useAuth();
     const [cart, setCart] = useState<CartItem[]>([]);
     
     // Key depends on user ID to isolate carts
-    const cartKey = profile?.id ? `jhoanes-cart-${profile.id}` : 'jhoanes-cart-guest';
+    const cartKey = user?.id ? `jhoanes-cart-${user.id}` : 'jhoanes-cart-guest';
 
     // Load from localStorage when user changes or component mounts
     useEffect(() => {
+        if (authLoading) return;
+
         const savedCart = localStorage.getItem(cartKey);
         if (savedCart) {
             try {
@@ -48,16 +50,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         } else {
             setCart([]);
         }
-    }, [cartKey]);
+    }, [cartKey, authLoading]);
 
     // Save to localStorage on cart change
     useEffect(() => {
+        if (authLoading) return;
+
         if (cart.length > 0) {
             localStorage.setItem(cartKey, JSON.stringify(cart));
         } else {
             localStorage.removeItem(cartKey);
         }
-    }, [cart, cartKey]);
+    }, [cart, cartKey, authLoading]);
 
     const addToCart = (product: any, quantity: number) => {
         setCart(prevCart => {

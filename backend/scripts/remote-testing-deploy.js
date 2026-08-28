@@ -4,7 +4,7 @@ const config = {
     host: '187.124.67.53',
     port: 22,
     username: 'root',
-    password: 'o7BR&vX+F2;wqYye'
+    privateKey: require('fs').readFileSync(require('os').homedir() + '/.ssh/id_rsa')
 };
 
 const conn = new Client();
@@ -42,15 +42,16 @@ conn.on('ready', async () => {
         await executeCommand(conn, checkRepoCmd);
 
         // 2. Setup database from test snapshot (clean database)
-        console.log('2. Aprovisonando base de datos de testing...');
-        const setupDbCmd = 'cp /var/www/pj-air/backend/database.test.sqlite /var/www/pj-air-testing/database-testing.sqlite';
-        await executeCommand(conn, setupDbCmd);
+        // console.log('2. Aprovisonando base de datos de testing...');
+        // const setupDbCmd = 'cp /var/www/pj-air/backend/database.test.sqlite /var/www/pj-air-testing/database-testing.sqlite';
+        // await executeCommand(conn, setupDbCmd);
 
         // 3. Build Backend
         console.log('3. Building Backend...');
         const buildBackendCmd = [
             'cd /var/www/pj-air-testing/backend',
             'npm install',
+            'chmod -R +x node_modules/.bin',
             'npm run build'
         ].join(' && ');
         await executeCommand(conn, buildBackendCmd);
@@ -60,6 +61,7 @@ conn.on('ready', async () => {
         const buildFrontendCmd = [
             'cd /var/www/pj-air-testing/frontend',
             'npm install',
+            'chmod -R +x node_modules/.bin',
             'NEXT_PUBLIC_API_URL=https://testing.jhoanes.com/api npm run build'
         ].join(' && ');
         await executeCommand(conn, buildFrontendCmd);
@@ -79,6 +81,11 @@ conn.on('ready', async () => {
         // 6. Setup Nginx Server Block
         console.log('6. Configuring Nginx reverse proxy...');
         const nginxConfig = `
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ""      close;
+}
+
 server {
     server_name testing.jhoanes.com;
 
