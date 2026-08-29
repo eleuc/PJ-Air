@@ -10,10 +10,11 @@
   "turns": 1,
   "peak_bytes": 3535,
   "strike_count": 0,
-  "hwc_complete": false,
+  "hwc_complete": true,
   "last_update": "2026-08-28T10:08:23.485209",
   "input_pressure": 0,
   "degraded_ops_count": 0,
   "takeover_bytes_offset": 16285,
-  "conversation_uuid": "9ca19d3b-66d3-44fd-9be6-be65af773fea"
+  "conversation_uuid": "9ca19d3b-66d3-44fd-9be6-be65af773fea",
+  "hwc_ts": "2026-08-28T23:08:19.330878"
 }
