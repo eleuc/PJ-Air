@@ -1,7 +1,7 @@
-# VISION.md — Pedidos Jhoanes (PJ-AIR) (3.8.2)
+# VISION.md — Pedidos Jhoanes (PJ-AIR) (3.10.2)
 
 **Versión de Producto**: 2.2.11
-**Versión de Gobernanza (Kernel)**: 3.8.2
+**Versión de Gobernanza (Kernel)**: 3.10.2
 
 ## 1. Filosofía Central: Canal Digital de Distribución Directa (Pedidos Jhoanes)
 Nuestra meta principal es automatizar y agilizar el canal de ventas y logística de pedidos de productos de panadería y pastelería ("Jhoanes"). La aplicación sirve como el portal digital donde los clientes consultan el catálogo actualizado en tiempo real, configuran sus direcciones y efectúan sus pedidos transaccionales con reglas de precio dinámicas (descuentos generales y específicos por producto).

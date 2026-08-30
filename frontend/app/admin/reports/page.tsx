@@ -1,7 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect, useMemo, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 import { API_URL } from '@/lib/config';
@@ -82,9 +81,8 @@ const PAYMENT_STATUS_LABELS: Record<string, string> = {
     'unpaid': 'No Pagado',
 };
 
-function ReportsPageContent() {
+function ReportsPageContent({ dateParam }: { dateParam: string | null }) {
     const { t } = useLanguage();
-    const searchParams = useSearchParams();
 
     // --- State ---
     const [reportType, setReportType] = useState<'daily' | 'weekly' | 'monthly' | 'custom'>('daily');
@@ -136,9 +134,10 @@ function ReportsPageContent() {
     };
 
     // --- Auto-load from URL param (coming from dashboard 'Ver Detalle') ---
-    const dateParam = searchParams.get('date');
+    const processedDateRef = useRef<string | null>(null);
     useEffect(() => {
-        if (dateParam) {
+        if (dateParam && processedDateRef.current !== dateParam) {
+            processedDateRef.current = dateParam;
             setStartDate(dateParam);
             setEndDate(dateParam);
             setReportType('daily');
@@ -1196,19 +1195,13 @@ function ReportsPageContent() {
     );
 }
 
-// ─── Main Export Component with Suspense ──────────────────────────────────────
-export default function ReportsPage() {
+// ─── Main Export Component ──────────────────────────────────────
+export default function ReportsPage({ searchParams }: { searchParams: { date?: string } }) {
+    const dateParam = searchParams.date || null;
     return (
         <div className="flex min-h-screen bg-muted/30">
             <AdminSidebar />
-            <Suspense fallback={
-                <div className="flex-1 flex flex-col items-center justify-center min-h-screen">
-                    <Loader2 size={40} className="animate-spin text-primary mb-4" />
-                    <p className="font-black text-muted-foreground uppercase tracking-widest text-xs">Cargando reportes...</p>
-                </div>
-            }>
-                <ReportsPageContent />
-            </Suspense>
+            <ReportsPageContent dateParam={dateParam} />
         </div>
     );
 }
