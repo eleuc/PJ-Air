@@ -4,7 +4,7 @@ const config = {
     host: '187.124.67.53',
     port: 22,
     username: 'root',
-    password: 'o7BR&vX+F2;wqYye'
+    privateKey: require('fs').readFileSync(require('os').homedir() + '/.ssh/id_rsa')
 };
 
 const conn = new Client();
@@ -80,11 +80,11 @@ conn.on('ready', async () => {
 
         // 5. Build Backend
         console.log('\n--- 5. Building Backend ---');
-        await executeCommand(conn, 'cd /var/www/pj-air-testing/backend && npm install && npm run build');
+        await executeCommand(conn, 'cd /var/www/pj-air-testing/backend && npm install && chmod -R +x node_modules/.bin && npm run build');
 
         // 6. Build Frontend
         console.log('\n--- 6. Building Frontend ---');
-        await executeCommand(conn, 'cd /var/www/pj-air-testing/frontend && npm install && NEXT_PUBLIC_API_URL=https://testing.jhoanes.com/api npm run build');
+        await executeCommand(conn, 'cd /var/www/pj-air-testing/frontend && npm install && chmod -R +x node_modules/.bin && NEXT_PUBLIC_API_URL=https://testing.jhoanes.com/api npm run build');
 
         // 7. Restart PM2 processes
         console.log('\n--- 7. Starting / Reloading PM2 Processes ---');

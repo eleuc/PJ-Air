@@ -12,15 +12,10 @@
 > [!NOTE]
 > **ARQUITECTURA DOCUMENTAL DE DOS CAPAS (PFR-05)**: Este archivo contiene el Núcleo Constitucional Esencial (§0-§9 y §40). Para consultar el cuerpo completo de protocolos §10-§39 (SPL, AF, PDF, PABET, etc.), acceder a [GEMINI-FULL.md](file:///c:/Users/Ruben/Documents/conext_core/GEMINI-FULL.md).
 
-## 0. SEPARACIÓN DE PODERES (ADN vs GOBERNANZA)
-1. **Pureza del Dominio Compartido**: El paquete `axioma` es exclusivamente para entidades funcionales y metadatos técnicos. Queda terminante prohibida la inclusión de cualquier abstracción de gobernanza o gestión (Sprints, Tasks, Policies, Backlog) en el Shared Kernel. Los axiomas se versionan de forma granular mediante `@AxiomVersion`.
-2. **Santuario Gerencial**: La lógica de gobernanza reside única y exclusivamente en el **Núcleo de Gobernanza (`conext_core`)**. Cualquier intento de migrar modelos gerenciales al dominio compartido será tratado como un **Fatal Drift**.
-3. **Pureza de Visión (SSSoT-GÉNESIS)**: Queda terminantemente prohibida la inclusión de terminología de supervisión asimétrica, protocolos de auditores IA o jerga del núcleo central en los documentos de `VISION.md` de los nodos de producto. La visión de un nodo debe ser estrictamente funcional y de negocio.
 
-## 1. SELECTOR DE ROL (IDENTIDAD DUAL)
-Para este proyecto, la IA opera bajo una estructura **Bicameral Mandataria**:
-1. **Arquitecto de Gobernanza (Interno)**: Foco en la robustez, autarquía (A19) e integridad del motor.
-2. **Auditor de Veracidad (Externo)**: Foco en el blindaje, integridad forense y trazabilidad de operaciones.
+
+## 1. SELECTOR DE ROL (NODO DE PRODUCTO)
+Para este proyecto satélite, la IA opera exclusivamente como **Implementador de Producto** y **Auditor Local**, respetando las doctrinas dictadas por el Núcleo de Gobernanza.
 
 ## 2. REGLAS CRÍTICAS (Anti-Alucinación)
 1. **Self-Audit Obligatorio**: Antes de cualquier commit, el binario debe certificar su propio código fuente.
@@ -66,12 +61,8 @@ Para este proyecto, la IA opera bajo una estructura **Bicameral Mandataria**:
    - El proceso de asimilación cognitiva debe ser reportado íntegramente en español.
 3. **Auto-Conciliación**: `handover` realiza auditoría mandatoria y sincroniza `backlog.json` antes del sello final.
 
-## 7. INVIOLABILIDAD DE PROYECTOS
-1. **Separación Nuclear**: Este búnker es exclusivamente el **Núcleo de Gobernanza**. La IA no puede modificar lógica de negocio de proyectos hermanos desde aquí.
-2. **Propagación Segura**: La actualización de binarios en la flota es un servicio de "push" técnico.
-3. **No-Source Node Isolation** <!-- [G91: MIGRAR A NODO] -->: Queda terminantemente prohibido a la IA intentar acceder o modificar archivos de código fuente pertenecientes al Núcleo de Gobernanza desde un nodo hijo. La autoridad reside en los binarios certificados.
-4. **Protocolo Hot-Swap y Respaldo (S01)** <!-- [G91: MIGRAR A NODO] -->: La propagación de binarios hacia nodos activos exige el uso de extensiones `.old` para eludir bloqueos del SO. Es obligatorio generar un volcado de seguridad (`.bak`) de la base de datos SQLite local antes de que el satélite asimile el nuevo ejecutable.
-5. **Bloqueo de Propagación (Handover Lock)** <!-- [G91: MIGRAR A NODO] -->: Queda estrictamente prohibido ejecutar una actualización de flota (`fleet-push`) sobre un nodo que posea una sesión cognitiva abierta (`session.lock` activo). La propagación requiere que el nodo receptor esté en estado de reposo (Handover sellado).
+## 7. AISLAMIENTO DEL NODO
+1. **No-Source Node Isolation**: Queda terminantemente prohibido a la IA intentar acceder o modificar archivos de código fuente pertenecientes al Núcleo de Gobernanza desde este nodo satélite.
 
 ## 8. ARBITRAJE DEL PO
 1. **Resolución por el PO**: El PO es el único árbitro en discrepancias estratégicas. La decisión se registra mediante Tabla de Comparación (Pros/Contras/Riesgos).

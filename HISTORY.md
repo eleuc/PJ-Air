@@ -1,11 +1,5 @@
 | Timestamp | Role | SessionID | PrevHash | Type | Task | Detail |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-07-05 20:03 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | be567f0 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-07-05 23:18 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | d89e7d4 | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
-| 2026-07-05 23:19 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | be4dc89 | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-07-05 23:22 | AI | 1783308161514 | 2090692 | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
-| 2026-07-05 23:25 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | 50a521d | TRACE | HANDOVER | Ejecución administrativa detectada: logix handover |
-| 2026-07-05 23:25 | AI | 1783308326913 | b7106ae | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
 | 2026-07-08 04:59 | GENERAL | aa506f91880ef1d5ec9fd870ab5a0aff | a0d496e | TRACE | UNKNOWN | Ejecución administrativa detectada: logix unknown |
 | 2026-07-08 04:59 | ARCHITECT | aa506f91880ef1d5ec9fd870ab5a0aff | 43851e3 | TRACE | TAKEOVER | Ejecución administrativa detectada: logix takeover |
 | 2026-07-08 05:14 | AGENT | aa506f91880ef1d5ec9fd870ab5a0aff | 9d08d2a | ODOMETER_RESET | TAKEOVER | Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff |
@@ -200,3 +194,9 @@
 | 2026-08-30 00:45 | AI | DEV_BYPASS | 892450d | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
 | 2026-08-30 00:45 | AI | WARN | b5dfd9e | SECURITY-WARNING | Handover Perímetro 1 | Cierre de sesión con firma delegada en Perímetro 1 (GATE-1). |
 | 2026-08-30 00:46 | AI | 1788065196646 | f11bc49 | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |
+| 2026-08-30 09:43 | AI | DEV_BYPASS | 79b773c | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-30 09:56 | AI | DEV_BYPASS | ceecfd5 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-30 11:08 | AI | DEV_BYPASS | 83f5172 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-30 11:09 | AI | DEV_BYPASS | a627714 | ALERT | GOV_MODE | [DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría. |
+| 2026-08-30 11:09 | AI | WARN | fb99c18 | SECURITY-WARNING | Handover Perímetro 1 | Cierre de sesión con firma delegada en Perímetro 1 (GATE-1). |
+| 2026-08-30 11:10 | AI | 1788102610094 | 5d69a66 | HANDOVER | Session Transfer | Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED. |

@@ -1,7 +1,7 @@
 {
   "project": "pj-air",
   "version": "0.8.0",
-  "kernel_version": "3.10.1",
+  "kernel_version": "3.10.2",
   "status": "COMPLETED",
   "current_sprint": "S17",
   "current_task": "TASK-16-03",
@@ -120,7 +120,7 @@
         {
           "id": "TASK-S17-PURGE-01",
           "title": "Purga de Tests Tautológicos y Mocks (Zero Tolerance)",
-          "status": "TODO",
+          "status": "DONE",
           "assigned_to": "IA",
           "type": "REFACTOR",
           "priority": "CRITICAL",
@@ -129,11 +129,20 @@
         {
           "id": "TASK-S17-PURGE-02",
           "title": "Saneamiento de GEMINI.md y Amnesia",
-          "status": "TODO",
+          "status": "DONE",
           "assigned_to": "IA",
           "type": "DOCUMENTATION",
           "priority": "CRITICAL",
           "description": "Borrar las reglas exclusivas del Core del archivo GEMINI.md local, ajustar el rol del nodo y ejecutar logix recovery de ser necesario para purgar locks residuales."
+        },
+        {
+          "id": "TASK-S17-PERF-03",
+          "title": "Fix de Performance (Loop Infinito) en Reportes",
+          "status": "DONE",
+          "assigned_to": "IA",
+          "type": "BUGFIX",
+          "priority": "CRITICAL",
+          "description": "Corregir el useEffect en frontend/app/produccion/reports/page.tsx y frontend/app/admin/reports/page.tsx que dependía del objeto searchParams, causando renders infinitos y un DDoS interno."
         }
       ]
     }

@@ -1,18 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminSidebar from '@/components/layout/AdminSidebar';
-import { MapPin, Plus, Edit2, Trash2, Search, Globe, ChevronRight } from 'lucide-react';
-
-const MOCK_ZONES = [
-    { id: 2, name: 'Centro', description: 'Casco histórico y zonas empresariales.' },
-    { id: 3, name: 'Este', description: 'Zonas residenciales y centros comerciales del este.' },
-    { id: 1, name: 'Norte', description: 'Cubre sectores desde el centro hasta la salida norte.' },
-];
+import { MapPin, Plus, Edit2, Trash2, Search, Globe, ChevronRight, Loader2 } from 'lucide-react';
+import { api } from '@/lib/api';
 
 export default function AdminZonesPage() {
-    const [zones, setZones] = useState(MOCK_ZONES);
+    const [zones, setZones] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+        const fetchZones = async () => {
+            try {
+                const data = await api.get('/zones') as any[];
+                setZones(Array.isArray(data) ? data : []);
+            } catch (err) {
+                console.error('Error fetching zones:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchZones();
+    }, []);
 
     return (
         <div className="flex min-h-screen bg-muted/30">
@@ -34,7 +44,12 @@ export default function AdminZonesPage() {
                     </header>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {zones.map(zone => (
+                        {isLoading ? (
+                            <div className="col-span-full py-12 flex flex-col items-center justify-center text-muted-foreground gap-4">
+                                <Loader2 className="animate-spin text-primary" size={32} />
+                                <p className="font-bold">Cargando zonas...</p>
+                            </div>
+                        ) : zones.map(zone => (
                             <div key={zone.id} className="bg-card p-6 rounded-3xl border border-border shadow-sm hover:shadow-xl transition-all group">
                                 <div className="w-12 h-12 bg-secondary text-primary rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                     <MapPin size={24} />

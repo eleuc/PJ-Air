@@ -31,7 +31,8 @@ export class XeroService {
   }
 
   async getXeroAuthUrl(): Promise<string> {
-    const clientId = process.env.XERO_CLIENT_ID || 'mock-client-id';
+    const clientId = process.env.XERO_CLIENT_ID;
+    if (!clientId) throw new Error('XERO_CLIENT_ID is not configured');
     const redirectUri = `${process.env.FRONTEND_URL || 'https://testing.jhoanes.com'}/api/xero/callback`;
     const scope = encodeURIComponent('openid profile email accounting.invoices accounting.payments accounting.contacts accounting.settings offline_access');
     
@@ -39,19 +40,15 @@ export class XeroService {
   }
 
   async handleCallback(code: string): Promise<any> {
-    const clientId = process.env.XERO_CLIENT_ID || 'mock-client-id';
-    const clientSecret = process.env.XERO_CLIENT_SECRET || 'mock-client-secret';
+    const clientId = process.env.XERO_CLIENT_ID;
+    const clientSecret = process.env.XERO_CLIENT_SECRET;
+    
+    if (!clientId || !clientSecret) {
+      throw new BadRequestException('Xero credentials are not configured');
+    }
     const redirectUri = `${process.env.FRONTEND_URL || 'https://testing.jhoanes.com'}/api/xero/callback`;
 
     this.logger.log(`Exchanging code for tokens with Xero...`);
-    
-    // In mock/sandbox mode if credentials are mock
-    if (clientId === 'mock-client-id') {
-      await this.setConfig('xero_access_token', 'mock_access_token');
-      await this.setConfig('xero_refresh_token', 'mock_refresh_token');
-      await this.setConfig('xero_tenant_id', 'mock_tenant_id');
-      return { success: true, message: 'Mock Xero connection established successfully' };
-    }
 
     try {
       const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
@@ -103,11 +100,12 @@ export class XeroService {
     const refreshToken = await this.getConfig('xero_refresh_token');
     if (!refreshToken) return null;
 
-    const clientId = process.env.XERO_CLIENT_ID || 'mock-client-id';
-    const clientSecret = process.env.XERO_CLIENT_SECRET || 'mock-client-secret';
+    const clientId = process.env.XERO_CLIENT_ID;
+    const clientSecret = process.env.XERO_CLIENT_SECRET;
 
-    if (clientId === 'mock-client-id') {
-      return 'mock_access_token';
+    if (!clientId || !clientSecret) {
+      this.logger.error('Xero credentials are not configured');
+      return null;
     }
 
     try {
@@ -155,15 +153,6 @@ export class XeroService {
     if (!accessToken || !tenantId) {
       this.logger.warn(`Xero integration is not authorized yet. Skipping sync for order ${orderId}.`);
       return { success: false };
-    }
-
-    // If mock, return simulated success
-    if (accessToken === 'mock_access_token') {
-      const mockInvoiceId = `xero_inv_${Math.random().toString(36).substring(7)}`;
-      order.xero_invoice_id = mockInvoiceId;
-      await this.orderRepository.save(order);
-      this.logger.log(`[MOCK XERO] Order ${orderId} synced to Xero as Invoice ${mockInvoiceId}`);
-      return { success: true, invoiceId: mockInvoiceId };
     }
 
     try {
