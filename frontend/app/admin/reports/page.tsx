@@ -136,8 +136,8 @@ function ReportsPageContent() {
     };
 
     // --- Auto-load from URL param (coming from dashboard 'Ver Detalle') ---
+    const dateParam = searchParams.get('date');
     useEffect(() => {
-        const dateParam = searchParams.get('date');
         if (dateParam) {
             setStartDate(dateParam);
             setEndDate(dateParam);
@@ -145,7 +145,7 @@ function ReportsPageContent() {
             setViewMode('general');
             fetchReportData(dateParam, dateParam, '');
         }
-    }, [searchParams]);
+    }, [dateParam]);
 
     const fetchHistory = async () => {
         setLoadingHistory(true);
