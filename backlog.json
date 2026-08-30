@@ -1,9 +1,9 @@
 {
   "project": "pj-air",
-  "version": "3.8.2",
-  "kernel_version": "3.8.2",
+  "version": "0.8.0",
+  "kernel_version": "3.10.1",
   "status": "COMPLETED",
-  "current_sprint": "S16",
+  "current_sprint": "S17",
   "current_task": "TASK-16-03",
   "sprints": [
     {
@@ -108,6 +108,32 @@
           "label": "BUGFIX/UI-UX",
           "desc": "Resolución de condición de carrera (race condition) en CartContext.tsx donde cartKey fluctuaba entre guest y el usuario autenticado, provocando reseteos del carrito local y pérdida de productos añadidos.",
           "status": "DONE"
+        }
+      ]
+    },
+    {
+      "id": "S17",
+      "name": "Purga Inaugural Mandatoria (Doctrina 3.10.1)",
+      "status": "IN_PROGRESS",
+      "goal": "Ejecutar de forma mandatoria la limpieza de código, eliminación de mocks y estabilización de tests para cumplir con la nueva Doctrina Global impuesta por el Core 3.10.1.",
+      "tasks": [
+        {
+          "id": "TASK-S17-PURGE-01",
+          "title": "Purga de Tests Tautológicos y Mocks (Zero Tolerance)",
+          "status": "TODO",
+          "assigned_to": "IA",
+          "type": "REFACTOR",
+          "priority": "CRITICAL",
+          "description": "Revisar y eliminar mocks, datos hardcodeados en producción y expandir tests para cubrir flujos reales según la Regla 4 y 9. Reparar o eliminar tests fallidos."
+        },
+        {
+          "id": "TASK-S17-PURGE-02",
+          "title": "Saneamiento de GEMINI.md y Amnesia",
+          "status": "TODO",
+          "assigned_to": "IA",
+          "type": "DOCUMENTATION",
+          "priority": "CRITICAL",
+          "description": "Borrar las reglas exclusivas del Core del archivo GEMINI.md local, ajustar el rol del nodo y ejecutar logix recovery de ser necesario para purgar locks residuales."
         }
       ]
     }

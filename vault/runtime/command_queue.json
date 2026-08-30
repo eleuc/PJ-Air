@@ -374,5 +374,29 @@
     "agentId": "Antigravity",
     "timestamp": "2026-08-20T23:07:28.292392",
     "signature": null
+  },
+  {
+    "id": "ORCH-1788043813862",
+    "command": "upgrade",
+    "args": [],
+    "agentId": "Antigravity",
+    "timestamp": "2026-08-29T18:50:13.862818",
+    "signature": null
+  },
+  {
+    "id": "ORCH-1788047540173",
+    "command": "upgrade",
+    "args": [],
+    "agentId": "Antigravity",
+    "timestamp": "2026-08-29T19:52:20.174547",
+    "signature": null
+  },
+  {
+    "id": "ORCH-1788050103613",
+    "command": "upgrade",
+    "args": [],
+    "agentId": "Antigravity",
+    "timestamp": "2026-08-29T20:35:03.613834",
+    "signature": null
   }
 ]

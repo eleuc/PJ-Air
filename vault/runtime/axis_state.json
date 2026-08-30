@@ -1,27 +1,27 @@
 {
-  "timestamp": "2026-08-02T04:45:16.129081",
+  "timestamp": "2026-08-30T00:41:48.401782",
   "kernel": {
-    "version": "3.4.2",
-    "status": "EVOLVING",
-    "dna_intact": false,
-    "saturation_level": 2,
+    "version": "3.10.1",
+    "status": "NOMINAL",
+    "dna_intact": true,
+    "saturation_level": 15,
     "pulse_breakdown": {
-      "session_cp": 1.8432,
+      "session_cp": 0.10962000000000001,
       "historical_pressure": 10.0,
       "rule_pressure": 0.0,
       "immediate_spike": 0.0,
-      "total_computed": 1.8432000000000002
+      "total_computed": 15.22519
     },
-    "bhi": 88.875,
-    "odometer_bytes": 0,
+    "bhi": 95.5,
+    "odometer_bytes": 1768,
     "odometer_budget": 2000000,
-    "last_audit": "2026-08-01T17:34:00.322407"
+    "last_audit": "2026-08-28T23:08:19.096020"
   },
   "backlog": {
-    "current_sprint": "S12",
-    "sprint_name": "Sprint 12: Respaldos Periódicos Automáticos en Google Drive",
+    "current_sprint": "S16",
+    "sprint_name": "Sprint 16: Reestructuracion de Pagos, Vista de Confirmacion y Circuito Xero",
     "active_task": "N/A",
-    "version": "3.2.0",
+    "version": "0.8.0",
     "pending_tasks": []
   },
   "session": {
@@ -40,7 +40,7 @@
       },
       {
         "name": "CHROME-AGENT",
-        "status": "INTACT"
+        "status": "DEVIATED"
       },
       {
         "name": "CHROME-SCRIPTS",
@@ -64,16 +64,44 @@
   "federated_states": [],
   "stream": [
     {
-      "id": "TASK-12-01",
-      "label": "TECH/INFRA",
-      "desc": "Instalación y vinculación interactiva de rclone en el VPS con la cuenta de Google Drive del cliente.",
+      "id": "TASK-16-01",
+      "label": "FEAT/UI-UX",
+      "desc": "Reestructuracion de metodos de pago en Checkout: Pago Inmediato Online (Stripe/PayPal) como opcion 1 y Transferencia Bancaria como opcion 2, eliminando Charge to Account.",
       "status": "DONE",
       "detail_doc": null
     },
     {
-      "id": "TASK-12-02",
-      "label": "TECH/INFRA",
-      "desc": "Creación del script de respaldo automático y programación de la tarea en crontab (2:00 AM diario).",
+      "id": "TASK-16-02",
+      "label": "FEAT/UI-UX",
+      "desc": "Vista de confirmacion adaptativa (/orders/[id]): mostrar resumen e instrucciones de transferencia para pedidos bank_transfer sin forzar widget de Stripe.",
+      "status": "DONE",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-16-03",
+      "label": "FEAT/FULL-STACK",
+      "desc": "Certificacion y barrido del circuito de sincronizacion con Xero para pagos online y transferencias aprobadas.",
+      "status": "DONE",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-16-04",
+      "label": "FEAT/UI-UX",
+      "desc": "Revision diagnostica y pulido visual UI/UX: tablas responsivas (admin/produccion) y seccion de promociones bilingue con badges.",
+      "status": "DONE",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-16-05",
+      "label": "FEAT/I18N",
+      "desc": "Purga de textos hardcodeados en espanol en vistas de orders, admin y produccion para garantizar persistencia y cobertura de i18n.",
+      "status": "DONE",
+      "detail_doc": null
+    },
+    {
+      "id": "TASK-16-06",
+      "label": "BUGFIX/UI-UX",
+      "desc": "Resolución de condición de carrera (race condition) en CartContext.tsx donde cartKey fluctuaba entre guest y el usuario autenticado, provocando reseteos del carrito local y pérdida de productos añadidos.",
       "status": "DONE",
       "detail_doc": null
     }
@@ -82,556 +110,5 @@
     "total_capabilities": 0,
     "nodes_indexed": []
   },
-  "forensic_ledger": [
-    {
-      "id": 275,
-      "timestamp": "2026-08-02T04:42:52.259559",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "19f04e505f76af15453ec2a59445c6b8ab0b8a43826f716a13793dcb3002c265",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría.",
-      "hash": "fb7bf7d8e3d71999d88b7ecdc3048b17903791bf9a8fb6189a78afed95e7436d"
-    },
-    {
-      "id": 274,
-      "timestamp": "2026-08-02T04:42:48.665513",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "d99a9a483ae9766a0d19f6553de5f0badaac2d63f67941c255f930589b4bbd88",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría.",
-      "hash": "19f04e505f76af15453ec2a59445c6b8ab0b8a43826f716a13793dcb3002c265"
-    },
-    {
-      "id": 273,
-      "timestamp": "2026-08-02T04:42:43.636482",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "3b31ec963593613f1aa3f6bbefde16b805eee564368aa88e77ad345982b2699d",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría.",
-      "hash": "d99a9a483ae9766a0d19f6553de5f0badaac2d63f67941c255f930589b4bbd88"
-    },
-    {
-      "id": 272,
-      "timestamp": "2026-08-01T17:34:00.336186",
-      "role": "AI",
-      "sessionid": "RELAY-1785620040322",
-      "prevhash": "98ccbcfd00418f914353cf80f557b51029247006162fe7f2047aaead369345dc",
-      "type": "HANDOVER",
-      "task": "Session Transfer",
-      "detail": "Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: DNA-DRIFTED.",
-      "hash": "3b31ec963593613f1aa3f6bbefde16b805eee564368aa88e77ad345982b2699d"
-    },
-    {
-      "id": 271,
-      "timestamp": "2026-08-01T17:33:57.824813",
-      "role": "AI",
-      "sessionid": "DRIFT-WARN",
-      "prevhash": "90942e83f053995d1baae6c2dc6a92fdb07502f15fd29879e9660ddda0624e01",
-      "type": "SECURITY-WARNING",
-      "task": "Handover Perímetro 1",
-      "detail": "Cierre de sesión con firma delegada en Perímetro 1 (GATE-1).",
-      "hash": "98ccbcfd00418f914353cf80f557b51029247006162fe7f2047aaead369345dc"
-    },
-    {
-      "id": 270,
-      "timestamp": "2026-08-01T17:33:42.896913",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "ff555b925a17266f904614776a76ee2f07a441f6291b9720296dfcf5dbddc5db",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría.",
-      "hash": "90942e83f053995d1baae6c2dc6a92fdb07502f15fd29879e9660ddda0624e01"
-    },
-    {
-      "id": 269,
-      "timestamp": "2026-08-01T17:04:04.155495",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "2cf42e4d0e18bae2e02681ce2970fb417459196d8d97ce1ae223da43b0e7a778",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría.",
-      "hash": "ff555b925a17266f904614776a76ee2f07a441f6291b9720296dfcf5dbddc5db"
-    },
-    {
-      "id": 268,
-      "timestamp": "2026-08-01T17:03:31.981128",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "a5d380d77a0ad59232fa34cb61120ea9caf8f2bed872be7fbc54894ba6192828",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=soft) sin auditoría.",
-      "hash": "2cf42e4d0e18bae2e02681ce2970fb417459196d8d97ce1ae223da43b0e7a778"
-    },
-    {
-      "id": 267,
-      "timestamp": "2026-07-30T16:40:34.991305",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "ae1be6079bd0270be7463c1dad45f1b4927d399df5299e7a887ecae8d50d169e",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "a5d380d77a0ad59232fa34cb61120ea9caf8f2bed872be7fbc54894ba6192828"
-    },
-    {
-      "id": 266,
-      "timestamp": "2026-07-30T16:34:11.533645",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "8e1edebb4fafe332a331bca653cce0c08f6c8ec0df2d53e0af78f6f38bf8056e",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "ae1be6079bd0270be7463c1dad45f1b4927d399df5299e7a887ecae8d50d169e"
-    },
-    {
-      "id": 265,
-      "timestamp": "2026-07-30T16:34:10.898665",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "52bede09d12a149ac212a11015fbd34aa8d5ab7dfde7e0015fd30b07b20d7fd8",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "8e1edebb4fafe332a331bca653cce0c08f6c8ec0df2d53e0af78f6f38bf8056e"
-    },
-    {
-      "id": 264,
-      "timestamp": "2026-07-30T16:34:08.957952",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "abe06c8bd23bc318ae354f999e2714711ae17b39b8d3259ef41b3b94d6eaee35",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "52bede09d12a149ac212a11015fbd34aa8d5ab7dfde7e0015fd30b07b20d7fd8"
-    },
-    {
-      "id": 263,
-      "timestamp": "2026-07-30T16:33:24.004309",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "7aeaa9f5139247ec83fe7a387f70bac655687bb2cb8312e7215debe446217f9b",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "abe06c8bd23bc318ae354f999e2714711ae17b39b8d3259ef41b3b94d6eaee35"
-    },
-    {
-      "id": 262,
-      "timestamp": "2026-07-30T16:32:41.668570",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "dfa456b41b5804259c64da6ea410b87d75cdb3c3e2fece1aa2cb19a83639c8b0",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "7aeaa9f5139247ec83fe7a387f70bac655687bb2cb8312e7215debe446217f9b"
-    },
-    {
-      "id": 261,
-      "timestamp": "2026-07-30T16:32:23.073778",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "144f3f502fb056cebd9921a7dbd93ef9c84cfc0e63becce6f8a02770fc6e90c7",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "dfa456b41b5804259c64da6ea410b87d75cdb3c3e2fece1aa2cb19a83639c8b0"
-    },
-    {
-      "id": 260,
-      "timestamp": "2026-07-22T17:41:08.381400",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "ec8c69765917b4296d6f60210fa4771558a8bbf1f624b71b00826ca2adc823f9",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "144f3f502fb056cebd9921a7dbd93ef9c84cfc0e63becce6f8a02770fc6e90c7"
-    },
-    {
-      "id": 259,
-      "timestamp": "2026-07-22T17:23:23.429667",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "be359a3a29c4734cb56d04ed5254cca80e4f15b5fb08a37dba2e41d616ea4bad",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "ec8c69765917b4296d6f60210fa4771558a8bbf1f624b71b00826ca2adc823f9"
-    },
-    {
-      "id": 258,
-      "timestamp": "2026-07-22T17:23:22.081756",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "8e1249fecb7e794443cec951bf5d3fec7d4b7df23063df5d8f56e998362acb91",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "be359a3a29c4734cb56d04ed5254cca80e4f15b5fb08a37dba2e41d616ea4bad"
-    },
-    {
-      "id": 257,
-      "timestamp": "2026-07-22T17:23:18.782129",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "2a17b7c2ccc85161ef75e699cfb66dca77ef50fc014d9a6eea7217706fc055f4",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "8e1249fecb7e794443cec951bf5d3fec7d4b7df23063df5d8f56e998362acb91"
-    },
-    {
-      "id": 256,
-      "timestamp": "2026-07-22T08:50:57.775737",
-      "role": "AGENT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "3a60faa5d003454b0ece91f9e956bd2e37714c6d39450a6f9be9f02e5bfb9c34",
-      "type": "ODOMETER_RESET",
-      "task": "TAKEOVER",
-      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
-      "hash": "2a17b7c2ccc85161ef75e699cfb66dca77ef50fc014d9a6eea7217706fc055f4"
-    },
-    {
-      "id": 255,
-      "timestamp": "2026-07-22T08:50:53.677646",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "c59a561dabc889df8725fe03e4eaae21d23996f4bf6371cd7b8c10e06f029099",
-      "type": "TRACE",
-      "task": "TAKEOVER",
-      "detail": "Ejecución administrativa detectada: logix takeover",
-      "hash": "3a60faa5d003454b0ece91f9e956bd2e37714c6d39450a6f9be9f02e5bfb9c34"
-    },
-    {
-      "id": 254,
-      "timestamp": "2026-07-22T08:50:53.286471",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "600cd9ed7fb27d1bc41ac87fd300c774d6aa694a6d87b91a63b91b42b0e1b209",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "c59a561dabc889df8725fe03e4eaae21d23996f4bf6371cd7b8c10e06f029099"
-    },
-    {
-      "id": 253,
-      "timestamp": "2026-07-22T08:50:51.004443",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "37ee4816c232b463dc8a931d9d1a9f677c3b3bc79e320e48e06be6e05a6db0a5",
-      "type": "TRACE",
-      "task": "SYNC-CONTEXT",
-      "detail": "Ejecución administrativa detectada: logix sync-context",
-      "hash": "600cd9ed7fb27d1bc41ac87fd300c774d6aa694a6d87b91a63b91b42b0e1b209"
-    },
-    {
-      "id": 252,
-      "timestamp": "2026-07-22T08:50:50.408710",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "24d087a56bb1afb53f138cfc234fac604fa5a1edb15cb52b809f32350173dd40",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "37ee4816c232b463dc8a931d9d1a9f677c3b3bc79e320e48e06be6e05a6db0a5"
-    },
-    {
-      "id": 251,
-      "timestamp": "2026-07-19T16:18:46.042297",
-      "role": "AGENT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "6f7c3e49afd41e46c573882ece3c29ad5e61be4b77eaba5429ff2e2ce0141541",
-      "type": "ODOMETER_RESET",
-      "task": "TAKEOVER",
-      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
-      "hash": "24d087a56bb1afb53f138cfc234fac604fa5a1edb15cb52b809f32350173dd40"
-    },
-    {
-      "id": 250,
-      "timestamp": "2026-07-19T16:18:33.147173",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "2628abdc49f784a5dedaddb1a88ccd53d4a85599eaa158d5d051143646702085",
-      "type": "TRACE",
-      "task": "TAKEOVER",
-      "detail": "Ejecución administrativa detectada: logix takeover",
-      "hash": "6f7c3e49afd41e46c573882ece3c29ad5e61be4b77eaba5429ff2e2ce0141541"
-    },
-    {
-      "id": 249,
-      "timestamp": "2026-07-19T16:18:30.784349",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "85be3d61a783e34d1a1ac80d8ec14cb51abcb3f7b3479cd202d610909d7a01d9",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "2628abdc49f784a5dedaddb1a88ccd53d4a85599eaa158d5d051143646702085"
-    },
-    {
-      "id": 248,
-      "timestamp": "2026-07-19T16:18:20.671270",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "90b90de0641bc1bed989cf975eb3817e76c2c856183c3408795d280178e3c46a",
-      "type": "TRACE",
-      "task": "SYNC-CONTEXT",
-      "detail": "Ejecución administrativa detectada: logix sync-context",
-      "hash": "85be3d61a783e34d1a1ac80d8ec14cb51abcb3f7b3479cd202d610909d7a01d9"
-    },
-    {
-      "id": 247,
-      "timestamp": "2026-07-19T16:18:19.755701",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "f201612761afc759e82268db08ff027b99474a522ce5b3d3a09575785633c7a2",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "90b90de0641bc1bed989cf975eb3817e76c2c856183c3408795d280178e3c46a"
-    },
-    {
-      "id": 246,
-      "timestamp": "2026-07-17T12:07:19.050866",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "5e803e7b7127b525880ed943d6a2e0b3d7fc1265e8b00b70ae37c765890c062e",
-      "type": "TRACE",
-      "task": "BASELINE",
-      "detail": "Ejecución administrativa detectada: logix baseline",
-      "hash": "f201612761afc759e82268db08ff027b99474a522ce5b3d3a09575785633c7a2"
-    },
-    {
-      "id": 245,
-      "timestamp": "2026-07-17T12:07:18.911026",
-      "role": "AI",
-      "sessionid": "DEV_BYPASS",
-      "prevhash": "e4fe3dbe94eb78e853223fd866455d480b88ddee2cf916729a03e067cbf5265f",
-      "type": "ALERT",
-      "task": "GOV_MODE",
-      "detail": "[DEV-MODE-BYPASS] Búnker operando en modo dev (DPI_GOV_MODE=dev) sin auditoría.",
-      "hash": "5e803e7b7127b525880ed943d6a2e0b3d7fc1265e8b00b70ae37c765890c062e"
-    },
-    {
-      "id": 244,
-      "timestamp": "2026-07-14T00:27:20.216215",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "726dd1dd9db182737159d987f3075e8fb3ea29cdc3fccd3c187be43c88c8def1",
-      "type": "TRACE",
-      "task": "SYNC-VERSION",
-      "detail": "Ejecución administrativa detectada: logix sync-version",
-      "hash": "e4fe3dbe94eb78e853223fd866455d480b88ddee2cf916729a03e067cbf5265f"
-    },
-    {
-      "id": 243,
-      "timestamp": "2026-07-08T08:01:10.656908",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "01a43719cadf851c2959eca1a0a891f8bb4d89b18a80cb449a5d7d829d877138",
-      "type": "TRACE",
-      "task": "FLEET-PUSH",
-      "detail": "Ejecución administrativa detectada: logix fleet-push",
-      "hash": "726dd1dd9db182737159d987f3075e8fb3ea29cdc3fccd3c187be43c88c8def1"
-    },
-    {
-      "id": 242,
-      "timestamp": "2026-07-08T08:01:04.286656",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "555317c5237f3156dcb97fa14e749aedc4e3d7115cbc4efd3cf9a79c197b0aa3",
-      "type": "TRACE",
-      "task": "PUSH",
-      "detail": "Ejecución administrativa detectada: logix push",
-      "hash": "01a43719cadf851c2959eca1a0a891f8bb4d89b18a80cb449a5d7d829d877138"
-    },
-    {
-      "id": 241,
-      "timestamp": "2026-07-08T07:44:04.995065",
-      "role": "AGENT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "ff06507d0b21436fcd5915e3527593ed528537e6316d8c46d61d631a97a96679",
-      "type": "ODOMETER_RESET",
-      "task": "TAKEOVER",
-      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
-      "hash": "555317c5237f3156dcb97fa14e749aedc4e3d7115cbc4efd3cf9a79c197b0aa3"
-    },
-    {
-      "id": 240,
-      "timestamp": "2026-07-08T07:42:39.581136",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "da372df229acdc68a5559be8015b2519dc0c3e1cc733e8dab7a418d5747538c2",
-      "type": "TRACE",
-      "task": "TAKEOVER",
-      "detail": "Ejecución administrativa detectada: logix takeover",
-      "hash": "ff06507d0b21436fcd5915e3527593ed528537e6316d8c46d61d631a97a96679"
-    },
-    {
-      "id": 239,
-      "timestamp": "2026-07-08T07:42:35.986777",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "18e1d2d6f28af2dd84e659540dba3b261326d6a436cf1b04180e5f561578fdaa",
-      "type": "TRACE",
-      "task": "UNKNOWN",
-      "detail": "Ejecución administrativa detectada: logix unknown",
-      "hash": "da372df229acdc68a5559be8015b2519dc0c3e1cc733e8dab7a418d5747538c2"
-    },
-    {
-      "id": 238,
-      "timestamp": "2026-07-08T05:14:05.555226",
-      "role": "AGENT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "9d08d2ae3c8fd91e10d192aa65d013e076c37680ad1c10365d7cd754c33cf231",
-      "type": "ODOMETER_RESET",
-      "task": "TAKEOVER",
-      "detail": "Odómetro reiniciado. Nueva sesión UUID: aa506f91880ef1d5ec9fd870ab5a0aff",
-      "hash": "18e1d2d6f28af2dd84e659540dba3b261326d6a436cf1b04180e5f561578fdaa"
-    },
-    {
-      "id": 237,
-      "timestamp": "2026-07-08T04:59:16.085892",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "43851e3f10dd5ad5459be81164b167aec5994243a67a771dda28651922b3bcc5",
-      "type": "TRACE",
-      "task": "TAKEOVER",
-      "detail": "Ejecución administrativa detectada: logix takeover",
-      "hash": "9d08d2ae3c8fd91e10d192aa65d013e076c37680ad1c10365d7cd754c33cf231"
-    },
-    {
-      "id": 236,
-      "timestamp": "2026-07-08T04:59:13.553377",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "a0d496e7a56663c00144031a1fd32285c17f46c7fcd7d1b9fd5a05842ebd0b15",
-      "type": "TRACE",
-      "task": "UNKNOWN",
-      "detail": "Ejecución administrativa detectada: logix unknown",
-      "hash": "43851e3f10dd5ad5459be81164b167aec5994243a67a771dda28651922b3bcc5"
-    },
-    {
-      "id": 235,
-      "timestamp": "2026-07-05T23:25:26.928095",
-      "role": "AI",
-      "sessionid": "RELAY-1783308326913",
-      "prevhash": "b7106aefe2f4cb3fd561cb88024e46100ac5060cbaf5a6bb838cbd70f2e67ad4",
-      "type": "HANDOVER",
-      "task": "Session Transfer",
-      "detail": "Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED.",
-      "hash": "a0d496e7a56663c00144031a1fd32285c17f46c7fcd7d1b9fd5a05842ebd0b15"
-    },
-    {
-      "id": 234,
-      "timestamp": "2026-07-05T23:25:24.562257",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "50a521d527965d6b501c1d133d1604670bae4b3e0a184327cfb643069465088e",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "b7106aefe2f4cb3fd561cb88024e46100ac5060cbaf5a6bb838cbd70f2e67ad4"
-    },
-    {
-      "id": 233,
-      "timestamp": "2026-07-05T23:22:41.521780",
-      "role": "AI",
-      "sessionid": "RELAY-1783308161514",
-      "prevhash": "20906924e74ca7b3558ad0c615aad56c788ab96a9bf5f78aa2ee2273eaaa627b",
-      "type": "HANDOVER",
-      "task": "Session Transfer",
-      "detail": "Automated Fast-Handover (v1.4.4) completed. Logic: Decoupled-Seal. Status: LOCKED.",
-      "hash": "50a521d527965d6b501c1d133d1604670bae4b3e0a184327cfb643069465088e"
-    },
-    {
-      "id": 232,
-      "timestamp": "2026-07-05T23:19:59.186775",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "be4dc8917d832418b3c3ec4a15951f898a1edc88a42fe38dc2f6ea49177f817c",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "20906924e74ca7b3558ad0c615aad56c788ab96a9bf5f78aa2ee2273eaaa627b"
-    },
-    {
-      "id": 231,
-      "timestamp": "2026-07-05T23:18:45.521046",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "d89e7d4a903250d48921e6169a1cf46e1e21dfc3637b4cfaba0f5330b7d32bf3",
-      "type": "TRACE",
-      "task": "UNKNOWN",
-      "detail": "Ejecución administrativa detectada: logix unknown",
-      "hash": "be4dc8917d832418b3c3ec4a15951f898a1edc88a42fe38dc2f6ea49177f817c"
-    },
-    {
-      "id": 230,
-      "timestamp": "2026-07-05T20:03:09.375703",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "be567f03ffc7057dcafb1766e13bd2e4f36e3f471650f5f34d43048f504708e0",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "d89e7d4a903250d48921e6169a1cf46e1e21dfc3637b4cfaba0f5330b7d32bf3"
-    },
-    {
-      "id": 229,
-      "timestamp": "2026-07-05T20:03:05.657219",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "e6e8cba2fd7e8011557274576613970c177010c47d88e19b425b87fba1da4341",
-      "type": "TRACE",
-      "task": "SYNC-CONTEXT",
-      "detail": "Ejecución administrativa detectada: logix sync-context",
-      "hash": "be567f03ffc7057dcafb1766e13bd2e4f36e3f471650f5f34d43048f504708e0"
-    },
-    {
-      "id": 228,
-      "timestamp": "2026-07-05T20:01:58.719962",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "bc0d29cfec48bb9801f5a8b676b363dca54b51c87034b174fff2b51229ab9101",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "e6e8cba2fd7e8011557274576613970c177010c47d88e19b425b87fba1da4341"
-    },
-    {
-      "id": 227,
-      "timestamp": "2026-07-05T20:01:37.029596",
-      "role": "ARCHITECT",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "8100555b298fc7e3dfb43063b9efdabec246b5366868571836183f17c2799657",
-      "type": "TRACE",
-      "task": "BASELINE",
-      "detail": "Ejecución administrativa detectada: logix baseline",
-      "hash": "bc0d29cfec48bb9801f5a8b676b363dca54b51c87034b174fff2b51229ab9101"
-    },
-    {
-      "id": 226,
-      "timestamp": "2026-07-05T19:59:23.067936",
-      "role": "GENERAL",
-      "sessionid": "aa506f91880ef1d5ec9fd870ab5a0aff",
-      "prevhash": "6e98763ad1bb0970ff92d9fee0b72bc67bc065fd3afd32f4471d515a9bc6a9cf",
-      "type": "TRACE",
-      "task": "HANDOVER",
-      "detail": "Ejecución administrativa detectada: logix handover",
-      "hash": "8100555b298fc7e3dfb43063b9efdabec246b5366868571836183f17c2799657"
-    }
-  ]
+  "forensic_ledger": []
 }
